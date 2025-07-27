@@ -18,6 +18,7 @@ from customadmin.models import Contact
 import hmac
 import hashlib
 import json
+from django.views.decorators.http import require_POST
 def get_paystack_credentials():
     """Safe method to get Paystack credentials with multiple fallbacks"""
     if settings.TEST_MODE:
@@ -527,14 +528,29 @@ def member_dashboard(request):
 
 
 
+
 @login_required
 def vcf_file_detail(request, vcf_id):
     vcf = get_object_or_404(VCFFile, id=vcf_id, vcf_type='premium', hidden=False)
     # Only allow if user has purchased/subscribed
     if not request.user.user_purchases.filter(vcf_file=vcf, is_verified=True, is_active=True).exists():
         return redirect('members:vcf_tabs')
-    contacts = Contact.objects.filter(vcf_file=vcf)
-    return render(request, 'members/vcf_file_detail.html', {'vcf': vcf, 'contacts': contacts})
+    contacts_qs = Contact.objects.filter(vcf_file=vcf)
+    # Build a list of dicts with name, phone, email for template
+    contacts = []
+    for c in contacts_qs:
+        contacts.append({
+            'name': c.name,
+            'phone': c.phone,
+            'email': getattr(c, 'email', '')
+        })
+    # Check if user is already joined as contact
+    user = request.user
+    profile = getattr(user, 'profile', None)
+    profile_name = profile.profile_name if profile and profile.profile_name else user.get_full_name() or user.username
+    number = user.mobile_number if hasattr(user, 'mobile_number') else user.username
+    joined = any((c['phone'] == number or c['name'] == profile_name) for c in contacts)
+    return render(request, 'members/vcf_file_detail.html', {'vcf': vcf, 'contacts': contacts, 'joined': joined})
 
 # Helper: get joined free VCF ids for user
 def get_joined_free_vcf_ids(user):
@@ -562,3 +578,85 @@ def join_free_vcf(request, vcf_id):
             is_active=True
         )
     return redirect('members:vcf_tabs')
+
+
+@member_required
+@require_POST
+def ajax_join_vcf(request, vcf_id):
+    from customadmin.models import Contact
+    from .models import MemberProfile
+    vcf = get_object_or_404(VCFFile, id=vcf_id)
+    user = request.user
+    # Get profile info
+    profile = getattr(user, 'profile', None)
+    profile_name = profile.profile_name if profile and profile.profile_name else user.get_full_name() or user.username
+    email = profile.email if profile and profile.email else user.email
+    number = user.mobile_number if hasattr(user, 'mobile_number') else user.username
+    # Check if already joined (by number or name)
+    already = Contact.objects.filter(vcf_file=vcf, phone=number).exists() or Contact.objects.filter(vcf_file=vcf, name=profile_name).exists()
+    if already:
+        return JsonResponse({'success': False, 'error': 'Already joined.'})
+    # Add as contact, include email only if user wants
+    contact_kwargs = {'vcf_file': vcf, 'name': profile_name, 'phone': number}
+    if hasattr(profile, 'include_email_in_vcf') and profile.include_email_in_vcf:
+        contact_kwargs['email'] = email
+    contact = Contact.objects.create(**contact_kwargs)
+    # Return new contact info for AJAX update
+    return JsonResponse({'success': True, 'contact': {'name': contact.name, 'phone': contact.phone, 'email': getattr(contact, 'email', '')}})
+
+
+# Member settings page
+@member_required
+def member_settings(request):
+    return render(request, 'members/settings.html')
+
+@member_required
+@require_POST
+def ajax_update_profile_name(request):
+    try:
+        data = json.loads(request.body)
+        profile_name = data.get('profile_name', '').strip()
+        if not profile_name:
+            return JsonResponse({'success': False, 'error': 'Name cannot be empty.'})
+        from .models import MemberProfile
+        profile, _ = MemberProfile.objects.get_or_create(account=request.user)
+        profile.profile_name = profile_name
+        profile.save()
+        return JsonResponse({'success': True})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
+
+# AJAX: Update email
+@member_required
+@require_POST
+def ajax_update_email(request):
+    try:
+        data = json.loads(request.body)
+        email = data.get('email', '').strip()
+        if not email:
+            return JsonResponse({'success': False, 'error': 'Email cannot be empty.'})
+        # Update both MemberProfile and User email if needed
+        from .models import MemberProfile
+        profile, _ = MemberProfile.objects.get_or_create(account=request.user)
+        profile.email = email
+        profile.save()
+        request.user.email = email
+        request.user.save()
+        return JsonResponse({'success': True})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
+
+# AJAX: Update include_email_in_vcf
+@member_required
+@require_POST
+def ajax_update_include_email(request):
+    try:
+        data = json.loads(request.body)
+        include_email = data.get('include_email_in_vcf', True)
+        from .models import MemberProfile
+        profile, _ = MemberProfile.objects.get_or_create(account=request.user)
+        profile.include_email_in_vcf = bool(include_email)
+        profile.save()
+        return JsonResponse({'success': True})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})

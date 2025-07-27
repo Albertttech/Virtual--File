@@ -1,9 +1,14 @@
 from django.urls import path
+
 from . import views
 
 app_name = 'members'
 
 urlpatterns = [
+    path('ajax/update-include-email/', views.ajax_update_include_email, name='ajax_update_include_email'),
+    path('settings/', views.member_settings, name='member_settings'),
+    path('ajax/update-profile-name/', views.ajax_update_profile_name, name='ajax_update_profile_name'),
+    path('ajax/update-email/', views.ajax_update_email, name='ajax_update_email'),
     path('test-payment/<int:vcf_id>/', views.test_payment, name='test-payment'),
     path('subscribe-vcf/<int:vcf_id>/pay/', views.initiate_payment, name='initiate-payment'),
     path('verify-payment/<str:reference>/', views.verify_payment, name='verify-payment'),
@@ -14,6 +19,7 @@ urlpatterns = [
     path('dashboard/', views.member_dashboard, name='dashboard'),
     path('vcf-tabs/', views.vcf_tabs, name='vcf_tabs'),
     path('vcf-detail/<int:vcf_id>/', views.vcf_file_detail, name='vcf_file_detail'),
+    path('ajax/join-vcf/<int:vcf_id>/', views.ajax_join_vcf, name='ajax_join_vcf'),
     path('join-free-vcf/<int:vcf_id>/', views.join_free_vcf, name='join_free_vcf'),
     path('subscribe-vcf/<int:vcf_id>/', views.subscribe_vcf, name='subscribe_vcf'),
     path('check-access/<int:vcf_id>/', views.check_vcf_access, name='check-access'),

@@ -46,6 +46,19 @@ class MemberAccount(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return self.username
 
+    def get_full_name(self):
+        try:
+            return f"{self.profile.first_name} {self.profile.last_name}".strip() or self.username
+        except:
+            return self.username
+
+    def get_short_name(self):
+        try:
+            return self.profile.first_name or self.username
+        except:
+            return self.username
+
+
 class MemberProfile(models.Model):
     account = models.OneToOneField(
         MemberAccount, 
@@ -54,7 +67,9 @@ class MemberProfile(models.Model):
     )
     first_name = models.CharField(max_length=30, blank=True)
     last_name = models.CharField(max_length=30, blank=True)
-    email = models.EmailField(blank=True)
+    email = models.EmailField(max_length=255, blank=True, null=True)
+    include_email_in_vcf = models.BooleanField(default=True)
+    profile_name = models.CharField(max_length=100, blank=True)
     contact_name = models.CharField(max_length=100, blank=True)
     profile_picture = models.ImageField(
         upload_to='profile_pics/',
