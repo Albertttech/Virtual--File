@@ -1,0 +1,19 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create VCF File</title>
+    <link rel="stylesheet" href="{% static 'vcfviewer/style.css' %}">
+</head>
+<body>
+    <div class="container">
+        <h1>Create New VCF File</h1>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Create</button>
+        </form>
+        <a href="{% url 'home' %}">Back</a>
+    </div>
+</body>
+</html>

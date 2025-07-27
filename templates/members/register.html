@@ -1,0 +1,141 @@
+{% extends 'members/base.html' %}
+{% block title %}Register{% endblock %}
+{% block content %}
+<div class="glass p-8 w-full max-w-md mx-auto mt-8">
+  <h2 class="text-2xl font-bold neon mb-6 text-center">Member Registration</h2>
+  <form method="post" class="space-y-6">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+
+    <div class="flex items-end gap-2">
+      <div class="flex-1 max-w-[25%]">
+        <label for="id_country_code" class="block mb-1 text-sm font-medium">Country Code</label>
+        <div class="relative">
+          <select id="id_country_code" name="country_code" class="country-code-select w-full bg-gray-800 text-white px-3 py-2 rounded border border-gray-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-500">
+            {% for code, name in form.country_code.field.choices %}
+              {% if name %}
+                {% with code_part=code name_part=name|cut:code %}
+                  <option value="{{ code }}" {% if form.country_code.value == code %}selected{% endif %}>
+                    {{ code_part }}&nbsp;&nbsp;&nbsp;&nbsp;{{ name_part }}
+                  </option>
+                {% endwith %}
+              {% else %}
+                <option value="{{ code }}" {% if form.country_code.value == code %}selected{% endif %}>{{ code }}</option>
+              {% endif %}
+            {% endfor %}
+          </select>
+          {% if form.country_code.errors %}
+            <div class="text-red-400 text-xs mt-1">{{ form.country_code.errors.0 }}</div>
+          {% endif %}
+        </div>
+      </div>
+      <div class="flex-1 w-full">
+        <label for="id_mobile_number" class="block mb-1 text-sm font-medium">Mobile Number</label>
+        <input type="text" name="mobile_number" id="id_mobile_number" 
+               class="w-full bg-gray-800 text-white px-3 py-2 rounded border border-gray-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
+               value="{{ form.mobile_number.value|default_if_none:'' }}">
+        {% if form.mobile_number.errors %}
+          <div class="text-red-400 text-xs mt-1">{{ form.mobile_number.errors.0 }}</div>
+        {% endif %}
+      </div>
+    </div>
+
+    <div>
+      <label for="id_password1" class="block mb-1 text-sm font-medium">Password</label>
+      <input type="password" name="password1" id="id_password1" 
+             class="w-full bg-gray-800 text-white px-3 py-2 rounded border border-gray-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-500">
+      {% if form.password1.errors %}
+        <div class="text-red-400 text-xs mt-1">{{ form.password1.errors.0 }}</div>
+      {% endif %}
+    </div>
+
+    <div>
+      <label for="id_password2" class="block mb-1 text-sm font-medium">Confirm Password</label>
+      <input type="password" name="password2" id="id_password2" 
+             class="w-full bg-gray-800 text-white px-3 py-2 rounded border border-gray-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-500">
+      {% if form.password2.errors %}
+        <div class="text-red-400 text-xs mt-1">{{ form.password2.errors.0 }}</div>
+      {% endif %}
+    </div>
+
+    <button type="submit" class="w-full glass-btn mt-4 py-2 px-4 bg-blue-600 hover:bg-blue-700 rounded-md transition duration-200">Register</button>
+    
+    <p class="text-xs text-center mt-4">
+      Already have an account?
+      <a href="{% url 'members:login' %}" class="text-blue-400 hover:underline">Sign in</a>
+    </p>
+  </form>
+</div>
+
+<style>
+  /* Base select styling - works for closed state */
+  .country-code-select {
+    width: 100%;
+    background-color: rgba(31, 41, 55, 0.8);
+    border: 1px solid rgba(75, 85, 99, 0.8);
+    color: white;
+    padding: 0.5rem;
+    border-radius: 0.25rem;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+  }
+
+  /* For dropdown options - works in most modern browsers */
+  .country-code-select option {
+    color: black !important;
+    background: white !important;
+  }
+
+  /* Firefox specific fixes */
+  @-moz-document url-prefix() {
+    .country-code-select {
+      color: black;
+      background-color: white;
+    }
+    .country-code-select option {
+      color: black !important;
+    }
+  }
+
+  /* Mobile responsiveness */
+  @media (max-width: 640px) {
+    .flex.items-end.gap-2 {
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .flex.items-end.gap-2 > div {
+      max-width: 100% !important;
+      width: 100% !important;
+    }
+  }
+</style>
+
+<script>
+  // Force proper styling for all browsers
+  document.addEventListener('DOMContentLoaded', function() {
+    const select = document.getElementById('id_country_code');
+    
+    // Double enforcement for problematic browsers
+    if (select) {
+      const options = select.options;
+      for (let i = 0; i < options.length; i++) {
+        options[i].style.color = 'black';
+        options[i].style.backgroundColor = 'white';
+      }
+      
+      // Clone and replace to force repaint
+      const newSelect = select.cloneNode(true);
+      select.parentNode.replaceChild(newSelect, select);
+    }
+    
+    // Mobile number formatting example
+    const mobileInput = document.getElementById('id_mobile_number');
+    if (mobileInput) {
+      mobileInput.addEventListener('input', function(e) {
+        this.value = this.value.replace(/[^0-9]/g, '');
+      });
+    }
+  });
+</script>
+{% endblock %}

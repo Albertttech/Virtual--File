@@ -1,0 +1,22 @@
+{% extends 'customadmin/base.html' %}
+{% block title %}Admin Sign In{% endblock %}
+{% block content %}
+<div class="glass p-8 w-full max-w-md mx-auto mt-8">
+  <h2 class="text-2xl font-bold neon mb-6 text-center">Admin Sign In</h2>
+  <form method="post" class="space-y-6">
+    {% csrf_token %}
+    {% if error %}
+      <div class="text-red-400 text-xs mb-2 text-center">{{ error }}</div>
+    {% endif %}
+    <div>
+      <label for="id_username" class="block mb-1 text-sm font-medium">Username</label>
+      <input type="text" name="username" id="id_username" class="w-full px-3 py-2 rounded bg-gray-900 bg-opacity-40 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400 text-white" required>
+    </div>
+    <div>
+      <label for="id_password" class="block mb-1 text-sm font-medium">Password</label>
+      <input type="password" name="password" id="id_password" class="w-full px-3 py-2 rounded bg-gray-900 bg-opacity-40 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400 text-white" required>
+    </div>
+    <button type="submit" class="w-full glass-btn mt-4">Sign In</button>
+  </form>
+</div>
+{% endblock %}

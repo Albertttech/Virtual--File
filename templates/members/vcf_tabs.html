@@ -1,0 +1,216 @@
+{% extends 'members/base.html' %}
+{% block title %}VCF Tabs{% endblock %}
+{% block content %}
+<style>
+  .tab-bar {
+    background: linear-gradient(90deg, #232946 0%, #6dd5ed 100%);
+    border-radius: 2rem;
+    box-shadow: 0 4px 24px #6dd5ed33, 0 0 8px #e11d7433;
+    padding: 0.5rem;
+    margin-bottom: 2rem;
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    max-width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .tab-button {
+    font-size: 1.1rem;
+    font-weight: 600;
+    padding: 0.75rem 2.5rem;
+    border-radius: 2rem;
+    background: rgba(30,41,59,0.85);
+    color: #fff;
+    border: none;
+    box-shadow: 0 2px 8px #2193b033;
+    transition: all 0.2s cubic-bezier(.4,2,.3,1);
+    cursor: pointer;
+    outline: none;
+    letter-spacing: 0.02em;
+  }
+
+  .tab-button.active, .tab-button:focus {
+    background: linear-gradient(90deg, #6dd5ed 0%, #e11d74 100%);
+    color: #fff;
+    box-shadow: 0 0 16px #6dd5edcc, 0 0 8px #e11d74cc;
+    transform: scale(1.07);
+  }
+
+  .tab-button:not(.active):hover {
+    background: #334155;
+    color: #6dd5ed;
+    box-shadow: 0 0 8px #6dd5ed77;
+  }
+  .tab-button span {
+    display: block;
+    line-height: 1.1;
+  }
+  .tab-content {
+    animation: fadeInTab 0.5s cubic-bezier(.4,2,.3,1);
+    background: rgba(30,41,59,0.7);
+    border-radius: 1.5rem;
+    box-shadow: 0 8px 32px rgba(31,38,135,0.37), 0 0 24px #2193b0a0;
+    padding: 2.5rem 2rem;
+    margin-bottom: 2.5rem;
+  }
+  .vcf-card {
+    background: rgba(30,41,59,0.5);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(109,213,237,0.2);
+  }
+  .vcf-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(109,213,237,0.2);
+    border-color: rgba(109,213,237,0.4);
+  }
+  .purchased-badge {
+    background: rgba(16,185,129,0.2);
+    color: #10b981;
+    border: 1px solid rgba(16,185,129,0.4);
+  }
+  @keyframes fadeInTab {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: none; }
+  }
+</style>
+
+<div class="w-full max-w-6xl mx-auto mt-10 px-4">
+  <h1 class="text-3xl font-bold neon mb-8 text-center">VCF Files Collection</h1>
+  
+  <div class="tab-bar">
+    <button onclick="showTab('free')" id="tab-free" class="tab-button"><span>My VCFs</span></button>
+    <button onclick="showTab('free')" id="tab-free" class="tab-button"><span>Free VCFs</span></button>
+    <button onclick="showTab('premium')" id="tab-premium" class="tab-button"><span>Premium VCFs</span></button>
+    <button onclick="showTab('demo')" id="tab-demo" class="tab-button"><span>Demo VCFs</span></button>
+  </div>
+  <!-- Demo VCFs Tab -->
+  <div id="tab-content-demo" class="tab-content hidden">
+    <h2 class="text-xl font-semibold mb-6 text-blue-300 flex items-center">
+      <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+      </svg>
+      Demo VCF Files
+    </h2>
+    <div class="text-center py-8 text-blue-300">
+      <svg class="w-12 h-12 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+      </svg>
+      <p>No demo VCF files available at the moment</p>
+    </div>
+  </div>
+
+  <!-- Free VCFs Tab -->
+  <div id="tab-content-free" class="tab-content">
+    <h2 class="text-xl font-semibold mb-6 text-blue-300 flex items-center">
+      <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+      </svg>
+      Free VCF Files
+    </h2>
+    
+    {% if free_vcfs %}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {% for vcf in free_vcfs %}
+      <div class="vcf-card">
+        <h3 class="font-bold text-lg mb-2">{{ vcf.name }}</h3>
+        <div class="flex justify-between text-sm mb-4">
+          <span class="text-blue-300">
+            {% if vcf.unlimited_contacts %}
+              Unlimited contacts
+            {% else %}
+              {{ vcf.max_contacts|default:"0" }} contacts
+            {% endif %}
+          </span>
+        </div>
+        <a href="{% url 'members:download-vcf' vcf.id %}" 
+           class="glass-btn w-full text-center py-2 inline-block">
+           Download Now
+        </a>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-8 text-blue-300">
+      <svg class="w-12 h-12 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+      </svg>
+      <p>No free VCF files available at the moment</p>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Premium VCFs Tab -->
+  <div id="tab-content-premium" class="tab-content hidden">
+    <h2 class="text-xl font-semibold mb-6 text-blue-300 flex items-center">
+      <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+      </svg>
+      Premium VCF Files
+    </h2>
+    
+    {% if premium_vcfs %}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {% for vcf in premium_vcfs %}
+      <div class="vcf-card">
+        <div class="flex justify-between items-start mb-2">
+          <h3 class="font-bold text-lg">{{ vcf.name }}</h3>
+          {% if vcf.id in purchased_ids %}
+          <span class="purchased-badge text-xs px-2 py-1 rounded-full">Purchased</span>
+          {% endif %}
+        </div>
+        
+        <div class="flex justify-between text-sm mb-4">
+          <span class="text-blue-300">
+            {% if vcf.unlimited_contacts %}
+              Unlimited contacts
+            {% else %}
+              {{ vcf.max_contacts|default:"0" }} contacts
+            {% endif %}
+          </span>
+          <span class="text-green-400 font-medium">₦{{ vcf.subscription_price }}</span>
+        </div>
+        
+        {% if vcf.id in purchased_ids %}
+          <a href="{% url 'members:download-vcf' vcf.id %}" 
+             class="glass-btn w-full text-center py-2 inline-block bg-green-600/20 hover:bg-green-600/30">
+             Open File
+          </a>
+        {% else %}
+          <a href="{% url 'members:subscribe_vcf' vcf.id %}" 
+             class="glass-btn w-full text-center py-2 inline-block bg-gradient-to-r from-blue-500 to-purple-600">
+             Subscribe Now
+          </a>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-8 text-blue-300">
+      <svg class="w-12 h-12 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+      </svg>
+      <p>No premium VCF files available at the moment</p>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<script>
+function showTab(tab) {
+  const tabs = ['free', 'premium', 'demo'];
+  tabs.forEach(t => {
+    document.getElementById(`tab-content-${t}`).classList.add('hidden');
+    document.getElementById(`tab-${t}`).classList.remove('active');
+  });
+  document.getElementById(`tab-content-${tab}`).classList.remove('hidden');
+  document.getElementById(`tab-${t}`).classList.add('active');
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  showTab('free');
+});
+</script>
+{% endblock %}

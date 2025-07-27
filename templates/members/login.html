@@ -1,0 +1,27 @@
+{% extends 'members/base.html' %}
+{% block title %}Sign In{% endblock %}
+{% block content %}
+<div class="glass p-8 w-full max-w-md mx-auto mt-8">
+  <h2 class="text-2xl font-bold neon mb-6 text-center">Member Sign In</h2>
+  <form method="post" class="space-y-6">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    <div>
+      <label for="id_username" class="block mb-1 text-sm font-medium">Username</label>
+      {{ form.username }}
+      {% if form.username.errors %}
+        <div class="text-red-400 text-xs mt-1">{{ form.username.errors.0 }}</div>
+      {% endif %}
+    </div>
+    <div>
+      <label for="id_password" class="block mb-1 text-sm font-medium">Password</label>
+      {{ form.password }}
+      {% if form.password.errors %}
+        <div class="text-red-400 text-xs mt-1">{{ form.password.errors.0 }}</div>
+      {% endif %}
+    </div>
+    <button type="submit" class="w-full glass-btn mt-4">Sign In</button>
+    <p class="text-xs text-center mt-4">Don't have an account? <a href="{% url 'members:register' %}" class="text-blue-400 hover:underline">Register</a></p>
+  </form>
+</div>
+{% endblock %}

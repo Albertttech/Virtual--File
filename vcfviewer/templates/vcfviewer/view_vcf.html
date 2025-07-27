@@ -1,0 +1,67 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ vcf.name }} - Contacts</title>
+    <link rel="stylesheet" href="{% static 'vcfviewer/vcfstyles.css' %}">
+</head>
+<body>
+    <div class="container">
+        <h1>{{ vcf.name }}</h1>
+        <p><strong>Max Contacts:</strong> {{ max_count }}</p>
+        <p><strong>Added:</strong> {{ current_count }} / {{ max_count }}</p>
+
+        <!-- ⚡ Futuristic Progress Bar -->
+        <div class="energy-bar-container">
+            <div class="energy-bar-fill" style="--progress: {{ progress }}%;">
+                <span class="progress-text">{{ progress }}%</span>
+            </div>
+        </div>
+
+        <!-- ✅ Add Contact Form -->
+        <h2>Add Contact</h2>
+        {% if error %}
+            <p style="color: red;">{{ error }}</p>
+        {% endif %}
+        {% if success %}
+            <p style="color: green;">{{ success }}</p>
+        {% endif %}
+        <form method="post">
+            {% csrf_token %}
+            <label for="id_name">Name:</label>
+            {{ form.name }}
+
+            <label for="id_country_code">Country Code:</label>
+            {{ form.country_code }}
+
+            <label for="id_phone">Phone:</label>
+            {{ form.phone }}
+
+            <button type="submit">Add Contact</button>
+        </form>
+
+        <!-- 📇 Contact List -->
+        <h2>Contacts</h2>
+        <ul>
+            {% for contact in contacts %}
+                <li>{{ contact.name }} - {{ contact.phone }}</li>
+            {% empty %}
+                <li>No contacts yet.</li>
+            {% endfor %}
+        </ul>
+
+        <br>
+        <a href="{% url 'home' %}">Back to VCF List</a>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const bar = document.querySelector(".energy-bar-fill");
+            const progress = parseInt(bar.style.getPropertyValue('--progress'));
+            if (progress >= 80) {
+                bar.style.boxShadow = '0 0 30px rgba(0,255,255,0.6), 0 0 50px rgba(0,255,255,0.4)';
+            }
+        });
+    </script>
+</body>
+</html>

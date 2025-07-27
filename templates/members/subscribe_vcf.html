@@ -1,0 +1,71 @@
+{% extends 'members/base.html' %}
+{% block title %}Subscribe to {{ vcf.name }}{% endblock %}
+{% block content %}
+<!-- Add to subscribe_vcf.html -->
+<div class="mt-4 text-center">
+    <a href="{% url 'members:check-access' vcf.id %}" 
+       class="text-sm text-blue-400 hover:underline"
+       target="_blank">
+       Check Access Status (Debug)
+    </a>
+</div>
+<div class="w-full max-w-xl mx-auto mt-12">
+  <div class="glass p-8 rounded-lg">
+    <h1 class="text-2xl font-bold neon mb-4 text-center">
+      {% if has_access %}
+        Access Granted: {{ vcf.name }}
+      {% else %}
+        Subscribe to {{ vcf.name }}
+      {% endif %}
+    </h1>
+    
+    <table class="min-w-full text-left text-sm mb-8 border-separate border-spacing-y-2 double-spaced-table">
+      <tr>
+        <td class="font-semibold pr-4">Name:</td>
+        <td>{{ vcf.name }}</td>
+      </tr>
+      <tr>
+        <td class="font-semibold pr-4">Type:</td>
+        <td>{{ vcf.vcf_type|title }}</td>
+      </tr>
+      <tr>
+        <td class="font-semibold pr-4">Max Contacts:</td>
+        <td>{% if vcf.unlimited_contacts %}Unlimited{% else %}{{ vcf.max_contacts|default:'-' }}{% endif %}</td>
+      </tr>
+      <tr>
+        <td class="font-semibold pr-4">Subscription Price:</td>
+        <td>₦{{ vcf.subscription_price|default:'0.00' }}</td>
+      </tr>
+    </table>
+
+    {% if has_access %}
+      <div class="text-center">
+        <a href="{% url 'members:download-vcf' vcf.id %}" 
+           class="glass-btn px-6 py-2 inline-block">
+           Open VCF File
+        </a>
+        <div class="mt-4 text-sm text-green-400">
+          You have access to this file
+        </div>
+      </div>
+    {% else %}
+      <form method="post" action="{% url 'members:initiate-payment' vcf.id %}" 
+            class="flex flex-col items-center mt-6 w-full max-w-sm mx-auto glass p-4 rounded-lg">
+        {% csrf_token %}
+        <input type="email" name="email" placeholder="Your Email" 
+               class="rounded-lg bg-slate-800 text-white px-3 py-2 mb-3 w-full" required
+               value="{{ request.user.profile.email|default:'' }}">
+        <button type="submit" class="glass-btn px-6 py-2 w-full">
+          Pay ₦{{ vcf.subscription_price|default:'0.00' }}
+        </button>
+      </form>
+    {% endif %}
+
+    <div class="flex justify-center mt-4">
+      <a href="{% url 'members:vcf_tabs' %}" class="text-blue-400 hover:underline text-sm">
+        Back to VCF Tabs
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}

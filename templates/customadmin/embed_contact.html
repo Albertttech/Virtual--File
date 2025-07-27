@@ -1,0 +1,42 @@
+{% extends 'customadmin/base.html' %}
+{% block title %}Embed Contact{% endblock %}
+{% block content %}
+<div class="w-full max-w-2xl mx-auto mt-10">
+  <h1 class="text-2xl font-bold neon mb-6 text-center">Embed Contact</h1>
+  {% if message %}
+    <div class="bg-green-700 text-white rounded px-4 py-2 mb-4">{{ message }}</div>
+  {% endif %}
+  {% if error %}
+    <div class="bg-red-700 text-white rounded px-4 py-2 mb-4">{{ error }}</div>
+  {% endif %}
+  <form method="post" class="glass p-6 rounded-lg mb-8">
+    {% csrf_token %}
+    <div class="flex flex-row items-center gap-2 mb-4">
+      <label for="contact_name" class="font-semibold w-32">Name</label>
+      <input type="text" name="contact_name" id="contact_name" placeholder="Full Name" class="rounded-lg bg-slate-800 text-white px-3 py-2 flex-[2_2_0%]" required />
+      <select name="country_code" id="country_code" class="rounded-lg bg-slate-800 text-white px-3 py-2 w-28" required>
+        {% for code in country_codes %}
+          <option value="{{ code.dial_code }}">{{ code.name }} ({{ code.dial_code }})</option>
+        {% endfor %}
+      </select>
+      <input type="text" name="phone_number" placeholder="Phone Number" class="rounded-lg bg-slate-800 text-white px-3 py-2 flex-[2_2_0%]" required />
+    </div>
+    <div class="glass p-6 rounded-lg mb-4">
+      <h2 class="text-lg font-semibold mb-4 text-blue-300">Available VCF Files</h2>
+      {% if vcfs %}
+        <ul class="space-y-3">
+          {% for vcf in vcfs %}
+            <li class="flex items-center justify-between bg-slate-800 rounded-lg px-4 py-3 shadow">
+              <span class="font-semibold text-white">{{ vcf.name }}</span>
+            <input type="checkbox" name="vcf_ids" value="{{ vcf.id }}" class="accent-green-600 w-5 h-5 ml-2" {% if vcf.max_contacts and vcf.contacts.count >= vcf.max_contacts %}disabled{% endif %} />
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p class="text-gray-400">No VCF files available.</p>
+      {% endif %}
+    </div>
+    <button type="submit" class="glass-btn mt-4">Embed</button>
+  </form>
+</div>
+{% endblock %}

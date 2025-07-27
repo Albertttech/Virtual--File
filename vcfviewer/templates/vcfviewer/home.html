@@ -1,0 +1,31 @@
+<!-- vcfviewer/templates/vcfviewer/home.html -->
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>VCF Manager</title>
+    <link rel="stylesheet" href="{% static 'vcfviewer/style.css' %}">
+</head>
+<body>
+    <div class="container">
+        <h1>VCF Files</h1>
+        <a href="{% url 'create_vcf' %}" class="download-link">Create New VCF File</a>
+        <table>
+            <thead>
+                <tr><th>Name</th><th>Max Contacts</th><th>Actions</th></tr>
+            </thead>
+            <tbody>
+                {% for vcf in vcfs %}
+                    <tr>
+                        <td>{{ vcf.name }}</td>
+                        <td>{{ vcf.max_contacts }}</td>
+                        <td><a href="{% url 'view_vcf' vcf.pk %}">View</a></td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="3">No VCF files created yet.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

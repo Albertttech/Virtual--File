@@ -1,0 +1,60 @@
+{% extends 'customadmin/base.html' %}
+{% load static %}
+{% block title %}All VCF Files{% endblock %}
+
+{% block content %}
+<div class="glass p-8 w-full mt-8">
+  <h1 class="text-2xl font-bold neon mb-4">All VCF Files</h1>
+  <table class="min-w-full text-left text-sm sortable double-spaced-table">
+<style>
+  /* Double-spaced table rows for MS Word-like look */
+  .double-spaced-table th, .double-spaced-table td {
+    padding-top: 1.25rem;
+    padding-bottom: 1.25rem;
+    line-height: 2.2;
+    vertical-align: middle;
+  }
+  .double-spaced-table tr {
+    border-bottom-width: 2px;
+  }
+</style>
+    <thead>
+      <tr class="border-b border-blue-800">
+        <th class="py-2 px-3">Name</th>
+        <th class="py-2 px-3">Type</th>
+        <th class="py-2 px-3">Max Contacts</th>
+        <th class="py-2 px-3">Added</th>
+        <th class="py-2 px-3">Progress</th>
+        <th class="py-2 px-3">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for vcf in vcfs %}
+      <tr class="hover:bg-blue-900/20 transition">
+        <td class="py-2 px-3 font-semibold">{{ vcf.name }}</td>
+        <td class="py-2 px-3">{{ vcf.vcf_type|title }}</td>
+        <td class="py-2 px-3">
+          {% if vcf.unlimited_contacts %}
+            Unlimited
+          {% else %}
+            {{ vcf.max_contacts|default:'-' }}
+          {% endif %}
+        </td>
+        <td class="py-2 px-3">{{ vcf.current_count }} / {% if vcf.unlimited_contacts %}Unlimited{% else %}{{ vcf.max_contacts|default:'-' }}{% endif %}</td>
+        <td class="py-2 px-3">
+          <div class="progress-bar mt-1">
+            <div class="progress-bar-inner" style="width: {{ vcf.progress }}%"></div>
+          </div>
+          <span class="text-xs text-blue-300 ml-2">{{ vcf.progress }}%</span>
+        </td>
+        <td class="py-2 px-3">
+          <a href="{% url 'customadmin:view_vcf' vcf.id %}" class="glass-btn text-xs px-3 py-1">View</a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="5" class="text-center text-blue-300 py-4">No VCF files found.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

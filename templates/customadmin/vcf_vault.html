@@ -1,0 +1,101 @@
+{% extends 'customadmin/base.html' %}
+{% block title %}VCF Vault{% endblock %}
+{% block content %}
+<style>
+  .tab-bar {
+    background: linear-gradient(90deg, #232946 0%, #6dd5ed 100%);
+    border-radius: 2rem;
+    box-shadow: 0 4px 24px #6dd5ed33, 0 0 8px #e11d7433;
+    padding: 0.5rem;
+    margin-bottom: 2rem;
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .tab-button {
+    font-size: 1.1rem;
+    font-weight: 600;
+    padding: 0.75rem 2.5rem;
+    border-radius: 2rem;
+    background: rgba(30,41,59,0.85);
+    color: #fff;
+    border: none;
+    box-shadow: 0 2px 8px #2193b033;
+    transition: all 0.2s cubic-bezier(.4,2,.3,1);
+    cursor: pointer;
+    outline: none;
+    letter-spacing: 0.02em;
+  }
+  .tab-button.active, .tab-button:focus {
+    background: linear-gradient(90deg, #6dd5ed 0%, #e11d74 100%);
+    color: #fff;
+    box-shadow: 0 0 16px #6dd5edcc, 0 0 8px #e11d74cc;
+    transform: scale(1.07);
+  }
+  .tab-button:not(.active):hover {
+    background: #334155;
+    color: #6dd5ed;
+    box-shadow: 0 0 8px #6dd5ed77;
+  }
+  .tab-content {
+    animation: fadeInTab 0.5s cubic-bezier(.4,2,.3,1);
+    background: rgba(30,41,59,0.7);
+    border-radius: 1.5rem;
+    box-shadow: 0 8px 32px rgba(31,38,135,0.37), 0 0 24px #2193b0a0;
+    padding: 2.5rem 2rem;
+    margin-bottom: 2.5rem;
+  }
+  @keyframes fadeInTab {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: none; }
+  }
+</style>
+<div class="w-full max-w-4xl mx-auto mt-10">
+  <h1 class="text-2xl font-bold neon mb-6 text-center">VCF Vault</h1>
+  <div class="tab-bar">
+    <button onclick="showTab('hidden')" id="tab-hidden" class="tab-button active">Hidden VCF</button>
+    <button onclick="showTab('demo')" id="tab-demo" class="tab-button">Demo</button>
+    <button onclick="showTab('deleted')" id="tab-deleted" class="tab-button">Deleted VCF</button>
+  </div>
+  <div id="tab-content-hidden" class="tab-content">
+    <h2 class="text-lg font-semibold mb-4 text-blue-300">Hidden VCF Files</h2>
+    {% if hidden_vcfs %}
+      <ul class="space-y-3">
+        {% for vcf in hidden_vcfs %}
+          <li class="flex items-center justify-between bg-slate-800 rounded-lg px-4 py-3 shadow">
+            <span class="font-semibold text-white">{{ vcf.name }}</span>
+            <span class="text-xs text-gray-400 ml-2">{{ vcf.created_at|date:'Y-m-d' }}</span>
+            <form method="post" action="{% url 'customadmin:unhide_vcf' vcf.id %}" style="display:inline;">
+              {% csrf_token %}
+              <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-bold py-1 px-3 rounded text-xs ml-2">Restore</button>
+            </form>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="text-gray-400">No hidden VCF files.</p>
+    {% endif %}
+  </div>
+  <div id="tab-content-demo" class="tab-content" style="display:none;">
+    <h2 class="text-lg font-semibold mb-4 text-blue-300">Demo VCF Files</h2>
+    <p class="text-gray-400">Demo VCF functionality coming soon.</p>
+  </div>
+  <div id="tab-content-deleted" class="tab-content" style="display:none;">
+    <h2 class="text-lg font-semibold mb-4 text-blue-300">Deleted VCF Files</h2>
+    <p class="text-gray-400">Deleted VCF functionality coming soon.</p>
+  </div>
+</div>
+<script>
+function showTab(tab) {
+  document.getElementById('tab-content-hidden').style.display = (tab === 'hidden') ? '' : 'none';
+  document.getElementById('tab-content-demo').style.display = (tab === 'demo') ? '' : 'none';
+  document.getElementById('tab-content-deleted').style.display = (tab === 'deleted') ? '' : 'none';
+  document.getElementById('tab-hidden').classList.toggle('active', tab === 'hidden');
+  document.getElementById('tab-demo').classList.toggle('active', tab === 'demo');
+  document.getElementById('tab-deleted').classList.toggle('active', tab === 'deleted');
+}
+</script>
+{% endblock %}
