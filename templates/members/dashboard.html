@@ -42,9 +42,9 @@
     <div class="glass p-6 flex flex-col items-start border-t-4 border-yellow-500 fade-in delay-4">
       <div class="flex items-center mb-2">
         <i class="fa-solid fa-box-open w-8 h-8 text-yellow-400 mr-2"></i>
-        <span class="text-lg font-semibold">Subscription Packages</span>
+        <span class="text-lg font-semibold">My Subscription Packages</span>
       </div>
-      <span class="text-3xl font-bold text-yellow-400 flex justify-right w-full">5</span>
+      <span class="text-3xl font-bold text-yellow-400 flex justify-right w-full">{{ total_subscribed }}</span>
       <div class="progress-bar mt-2"><div class="progress-bar-inner" style="width: 70%; background:linear-gradient(90deg,#facc15,#fde68a)"></div></div>
     </div>
     <!-- Total Subscribers Card -->
@@ -62,18 +62,26 @@
         <i class="fa-solid fa-gift w-8 h-8 text-gray-400 mr-2"></i>
         <span class="text-lg font-semibold">Free Packages</span>
       </div>
-      <span class="text-3xl font-bold text-gray-400 flex justify-center w-full">3</span>
+      <span class="text-3xl font-bold text-gray-400 flex justify-center w-full">{{ total_free_packages }}</span>
       <div class="progress-bar mt-2"><div class="progress-bar-inner" style="width: 50%; background:linear-gradient(90deg,#d1d5db,#f3f4f6)"></div></div>
     </div>
   </div>
 
   <!-- Charts Row -->
   <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-    <div class="glass p-6 fade-in delay-1">
-      <div class="flex items-center mb-4">
-        <span class="text-lg font-semibold neon">User Growth</span>
+    <div class="glass p-6 fade-in delay-1 flex flex-col justify-center items-center h-full">
+      <div class="flex items-center mb-4 w-full justify-between">
+        <span class="text-lg font-semibold neon">Contact Growth</span>
+        <select id="growthRange" class="bg-gray-900 text-white rounded px-2 py-1 text-sm border border-blue-700 focus:outline-none">
+          <option value="month" selected>Month</option>
+          <option value="week">Week</option>
+          <option value="day">Day</option>
+          <option value="year">Year</option>
+        </select>
       </div>
-      <canvas id="lineChart" height="120"></canvas>
+      <div class="flex-1 w-full flex flex-col justify-center items-center">
+        <canvas id="lineChart" height="180"></canvas>
+      </div>
     </div>
     <div class="glass p-6 fade-in delay-2">
       <div class="flex items-center mb-4">
@@ -162,13 +170,22 @@
       }
     });
     // Chart.js - Pie Chart
+    // Pass Django values as JS variables
+    var userPremiumCount = "{{ user_premium_count|add:'0' }}";
+    var userFreeCount = "{{ user_free_count|add:'0' }}";
+    var userDemoCount = "{{ user_demo_count|add:'0' }}";
+    // Convert to numbers
+    userPremiumCount = parseInt(userPremiumCount, 10);
+    userFreeCount = parseInt(userFreeCount, 10);
+    userDemoCount = parseInt(userDemoCount, 10);
+
     new Chart(document.getElementById('pieChart'), {
       type: 'pie',
       data: {
-        labels: ['Personal', 'Business', 'Other'],
+        labels: ['Premium', 'Free', 'Demo'],
         datasets: [{
-          data: [60, 30, 10],
-          backgroundColor: ['#6dd5ed', '#e11d74', '#22d3ee'],
+          data: [userPremiumCount, userFreeCount, userDemoCount],
+          backgroundColor: ['#e11d74', '#6dd5ed', '#2563eb'],
           borderColor: '#22223b',
         }]
       },

@@ -1,24 +1,35 @@
+
 import os
-from django.views.decorators.csrf import csrf_exempt
 import uuid
 import requests
+import hmac
+import hashlib
+import json
+
 from django.conf import settings
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth import get_user_model
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import get_user_model, authenticate, login, logout, update_session_auth_hash
 from django.http import FileResponse, Http404, JsonResponse, HttpResponse
 from django.urls import reverse
 from django.db import IntegrityError
 from django.contrib import messages
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
+from django.contrib.auth.decorators import login_required
+
 from .models import VCFFile, UserPurchase
 from .forms import MemberRegisterForm, MemberLoginForm
 from common.decorators import member_required
 from customadmin.models import Contact
-import hmac
-import hashlib
-import json
-from django.views.decorators.http import require_POST
+from django.contrib.auth.views import PasswordResetView
+# Password reset view (email-based)
+class MemberPasswordResetView(PasswordResetView):
+    template_name = 'members/password_reset_form.html'
+    email_template_name = 'members/password_reset_email.html'
+    subject_template_name = 'members/password_reset_subject.txt'
+    success_url = '/members/password-reset/done/'
+    # Optionally override form_valid to add custom logic/messagess
+
 def get_paystack_credentials():
     """Safe method to get Paystack credentials with multiple fallbacks"""
     if settings.TEST_MODE:
@@ -522,9 +533,106 @@ def member_logout(request):
     messages.success(request, "You have been logged out successfully.")
     return redirect('members:login')
 
+# AJAX endpoint for password change
+@csrf_exempt
+@member_required
+def ajax_change_password(request):
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'error': 'Invalid request method.'})
+    try:
+        data = json.loads(request.body)
+        old_password = data.get('old_password')
+        new_password = data.get('new_password')
+        user = request.user
+
+        if not old_password or not new_password:
+            return JsonResponse({'success': False, 'error': 'All fields are required.'})
+        if not user.check_password(old_password):
+            return JsonResponse({'success': False, 'error': 'Current password is incorrect.'})
+        if old_password == new_password:
+            return JsonResponse({'success': False, 'error': 'New password must be different from current password.'})
+
+        from django.core.exceptions import ValidationError
+        from django.contrib.auth import password_validation
+        try:
+            password_validation.validate_password(new_password, user)
+        except ValidationError as ve:
+            return JsonResponse({'success': False, 'error': ' '.join(ve.messages)})
+
+        user.set_password(new_password)
+        user.save()
+
+        # ✅ FORCE logout (works even if session still exists)
+        logout(request)
+
+        return JsonResponse({
+            'success': True,
+            'logout': True,
+            'redirect_url': '/members/login/'
+        })
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': f'Unexpected error: {str(e)}'})
+
 @member_required
 def member_dashboard(request):
-    return render(request, 'members/dashboard.html')
+    # For pie chart: user premium, user free, user demo VCF counts
+    user_premium_count = 0
+    user_free_count = 0
+    user_demo_count = 0
+    if request.user.is_authenticated:
+        # Premium VCFs user has subscribed to
+        user_premium_count = request.user.user_purchases.filter(
+            vcf_file__vcf_type='premium',
+            vcf_file__hidden=False,
+            is_verified=True,
+            is_active=True
+        ).count()
+        # Free VCFs user has joined
+        user_free_count = request.user.user_purchases.filter(
+            vcf_file__vcf_type='free',
+            vcf_file__hidden=False,
+            is_verified=True,
+            is_active=True
+        ).count()
+        # Demo VCFs user has joined (if you have a demo type)
+        user_demo_count = request.user.user_purchases.filter(
+            vcf_file__vcf_type='demo',
+            vcf_file__hidden=False,
+            is_verified=True,
+            is_active=True
+        ).count()
+    # Total VCF files (free + premium, not hidden)
+    total_vcf_files = VCFFile.objects.filter(hidden=False).count()
+    # Total free packages (not hidden)
+    total_free_packages = VCFFile.objects.filter(vcf_type='free', hidden=False).count()
+    # Total premium VCF files subscribed/purchased by user
+    total_subscribed = request.user.user_purchases.filter(
+        vcf_file__vcf_type='premium',
+        vcf_file__hidden=False,
+        is_verified=True,
+        is_active=True
+    ).count() if request.user.is_authenticated else 0
+    # Total contacts in all VCFs the user has joined (free and premium)
+    contact_count = 0
+    if request.user.is_authenticated:
+        # Get all VCF ids the user has joined (free and premium)
+        joined_vcf_ids = request.user.user_purchases.filter(
+            is_verified=True,
+            is_active=True,
+            vcf_file__hidden=False
+        ).values_list('vcf_file_id', flat=True)
+        from customadmin.models import Contact
+        contact_count = Contact.objects.filter(vcf_file_id__in=joined_vcf_ids).count()
+    # Pass all to template
+    return render(request, 'members/dashboard.html', {
+        'total_vcf_files': total_vcf_files,
+        'total_subscribed': total_subscribed,
+        'total_free_packages': total_free_packages,
+        'total_contacts': contact_count,
+        'user_premium_count': user_premium_count,
+        'user_free_count': user_free_count,
+        'user_demo_count': user_demo_count,
+    })
 
 
 
@@ -539,9 +647,24 @@ def vcf_file_detail(request, vcf_id):
     # Build a list of dicts with name, phone, email for template
     contacts = []
     for c in contacts_qs:
+        # Determine country code
+        country_code = ''
+        phone = c.phone.strip()
+        if hasattr(c, 'country_code') and c.country_code:
+            country_code = c.country_code
+        elif phone.startswith('+') and len(phone) > 4:
+            # Extract country code from phone
+            country_code = phone[:4] if phone[1:4].isdigit() else phone[:3]
+        elif phone and not phone.startswith('+'):
+            country_code = '+234'
+        # Only add country code if not already present
+        display_phone = phone
+        if country_code and not phone.startswith('+'):
+            display_phone = country_code + phone
         contacts.append({
             'name': c.name,
-            'phone': c.phone,
+            'phone': display_phone,
+            'country_code': country_code,
             'email': getattr(c, 'email', '')
         })
     # Check if user is already joined as contact
@@ -549,8 +672,16 @@ def vcf_file_detail(request, vcf_id):
     profile = getattr(user, 'profile', None)
     profile_name = profile.profile_name if profile and profile.profile_name else user.get_full_name() or user.username
     number = user.mobile_number if hasattr(user, 'mobile_number') else user.username
+    main_email = profile.email if profile and profile.email else user.email
     joined = any((c['phone'] == number or c['name'] == profile_name) for c in contacts)
-    return render(request, 'members/vcf_file_detail.html', {'vcf': vcf, 'contacts': contacts, 'joined': joined})
+    return render(request, 'members/vcf_file_detail.html', {
+        'vcf': vcf,
+        'contacts': contacts,
+        'joined': joined,
+        'profile_name': profile_name,
+        'main_email': main_email,
+        'user': user
+    })
 
 # Helper: get joined free VCF ids for user
 def get_joined_free_vcf_ids(user):
@@ -608,7 +739,38 @@ def ajax_join_vcf(request, vcf_id):
 # Member settings page
 @member_required
 def member_settings(request):
-    return render(request, 'members/settings.html')
+    password_error = None
+    password_success = None
+    if request.method == 'POST' and 'old_password' in request.POST:
+        old_password = request.POST.get('old_password')
+        new_password = request.POST.get('new_password')
+        confirm_new_password = request.POST.get('confirm_new_password')
+        user = request.user
+        if not old_password or not new_password or not confirm_new_password:
+            password_error = 'All fields are required.'
+        elif new_password != confirm_new_password:
+            password_error = 'New passwords do not match.'
+        elif not user.check_password(old_password):
+            password_error = 'Current password is incorrect.'
+        elif old_password == new_password:
+            password_error = 'New password must be different from current password.'
+        else:
+            from django.core.exceptions import ValidationError
+            from django.contrib.auth import password_validation
+            try:
+                password_validation.validate_password(new_password, user)
+                user.set_password(new_password)
+                user.save()
+                update_session_auth_hash(request, user)
+                password_success = 'Password updated successfully.'
+            except ValidationError as ve:
+                password_error = ' '.join(ve.messages)
+            except Exception as e:
+                password_error = f'Unexpected error: {str(e)}'
+    return render(request, 'members/settings.html', {
+        'password_error': password_error,
+        'password_success': password_success,
+    })
 
 @member_required
 @require_POST
@@ -657,6 +819,33 @@ def ajax_update_include_email(request):
         profile, _ = MemberProfile.objects.get_or_create(account=request.user)
         profile.include_email_in_vcf = bool(include_email)
         profile.save()
+        return JsonResponse({'success': True})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
+
+
+# AJAX: Update member info for a specific VCF file
+@member_required
+@require_POST
+def ajax_update_vcf_member(request, vcf_id):
+    try:
+        data = json.loads(request.body)
+        profile_name = data.get('profile_name', '').strip()
+        email = data.get('email', '').strip()
+        if not profile_name:
+            return JsonResponse({'success': False, 'error': 'Profile name is required.'})
+        from customadmin.models import Contact
+        vcf = get_object_or_404(VCFFile, id=vcf_id)
+        user = request.user
+        # Find contact for this user in this VCF (by phone or name)
+        profile = getattr(user, 'profile', None)
+        number = user.mobile_number if hasattr(user, 'mobile_number') else user.username
+        contact = Contact.objects.filter(vcf_file=vcf).filter(models.Q(phone=number) | models.Q(name=profile_name)).first()
+        if not contact:
+            return JsonResponse({'success': False, 'error': 'Contact not found for this VCF.'})
+        contact.name = profile_name
+        contact.email = email if email else None
+        contact.save()
         return JsonResponse({'success': True})
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)})

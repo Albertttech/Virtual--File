@@ -6,6 +6,11 @@
   <div class="bg-slate-900/80 rounded-xl shadow-lg p-8 relative">
     <div id="join-container" class="absolute top-6 right-8">
       <div class="flex items-center gap-2">
+        <a href="#" id="edit-icon" class="p-2 rounded-full hover:bg-green-100" title="Edit Member Info">
+          <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536M9 13l6.536-6.536a2 2 0 112.828 2.828L11.828 15.828a2 2 0 01-2.828 0L9 13z" />
+          </svg>
+        </a>
         <a href="#" id="upload-icon" class="p-2 rounded-full hover:bg-orange-100" title="Upload">
           <svg class="w-5 h-5 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 9l5-5 5 5M12 4v12" />
@@ -25,6 +30,25 @@
         {% endif %}
       </div>
       <!-- Modal -->
+      <div id="edit-modal-overlay" class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 hidden">
+        <div id="edit-modal-content" class="bg-white rounded-xl shadow-xl p-8 w-full max-w-md mx-auto text-center relative">
+          <button id="close-edit-modal" class="absolute top-3 right-3 text-gray-400 hover:text-red-400 text-2xl font-bold">&times;</button>
+          <div id="edit-modal-body" class="text-lg font-semibold text-slate-800">
+            <span class="text-green-600 text-xl font-bold">Your VCF Info</span><br><br>
+            <form id="edit-member-form" class="space-y-6">
+              <div class="mb-4 text-left">
+                <label class="block text-sm font-semibold text-slate-700 mb-1" for="edit-profile-name">Name in VCF:</label>
+                <input type="text" id="edit-profile-name" name="profile_name" value="{{ profile_name }}" class="px-3 py-2 bg-slate-100 rounded text-slate-800 w-full border border-slate-300 focus:outline-none focus:ring-2 focus:ring-green-400" />
+              </div>
+              <div class="mb-4 text-left">
+                <label class="block text-sm font-semibold text-slate-700 mb-1" for="edit-email">Email:</label>
+                <input type="email" id="edit-email" name="email" value="{{ main_email }}" class="px-3 py-2 bg-slate-100 rounded text-slate-800 w-full border border-slate-300 focus:outline-none focus:ring-2 focus:ring-green-400" />
+              </div>
+              <button type="submit" class="mt-2 px-6 py-2 bg-green-500 text-white rounded-lg font-semibold w-full">Update</button>
+            </form>
+          </div>
+        </div>
+      </div>
       <div id="modal-overlay" class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 hidden">
         <div id="modal-content" class="bg-white rounded-xl shadow-xl p-8 w-full max-w-md mx-auto text-center relative">
           <button id="close-modal" class="absolute top-3 right-3 text-gray-400 hover:text-red-400 text-2xl font-bold">&times;</button>
@@ -34,6 +58,73 @@
     </div>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+  // Edit modal logic
+  const editModalOverlay = document.getElementById('edit-modal-overlay');
+  const closeEditModalBtn = document.getElementById('close-edit-modal');
+  document.getElementById('edit-icon').addEventListener('click', function(e) {
+    e.preventDefault();
+    editModalOverlay.classList.remove('hidden');
+  });
+  closeEditModalBtn.addEventListener('click', function() {
+    editModalOverlay.classList.add('hidden');
+  });
+  editModalOverlay.addEventListener('click', function(e) {
+    if (e.target === editModalOverlay) editModalOverlay.classList.add('hidden');
+  });
+  // AJAX update for member info in current VCF
+  document.getElementById('edit-member-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const profileName = document.getElementById('edit-profile-name').value.trim();
+    const email = document.getElementById('edit-email').value.trim();
+    if (!profileName) {
+      alert('Profile name is required.');
+      return;
+    }
+    fetch(`{% url 'members:ajax_update_vcf_member' vcf.id %}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': '{{ csrf_token }}'
+      },
+      body: JSON.stringify({ profile_name: profileName, email: email })
+    })
+    .then(r => r.json())
+    .then(data => {
+      if (data.success) {
+        showSuccessToast('VCF info updated!');
+        editModalOverlay.classList.add('hidden');
+        // Update contact table row for current user
+        const tbody = document.getElementById('contacts-table-body');
+        if (tbody) {
+          // Find row by name or email (since phone may not change)
+          const rows = tbody.querySelectorAll('tr');
+          for (let row of rows) {
+            const nameCell = row.querySelector('td:nth-child(1)');
+            const emailCell = row.querySelector('td:nth-child(3)');
+            if (nameCell && nameCell.textContent.trim() === profileName) {
+              nameCell.textContent = profileName;
+              emailCell.textContent = email;
+              break;
+            }
+          }
+        }
+      } else {
+        alert(data.error || 'Update failed');
+      }
+    })
+    .catch(() => alert('Update failed'));
+  });
+
+  // Toast logic
+  function showSuccessToast(message) {
+    let toast = document.createElement('div');
+    toast.textContent = message;
+    toast.className = 'fixed top-6 right-8 z-[9999] px-6 py-3 bg-green-500 text-white rounded-lg shadow-lg font-semibold opacity-0 transition-all duration-500';
+    document.body.appendChild(toast);
+    setTimeout(() => { toast.style.opacity = '1'; toast.style.transform = 'translateY(0)'; }, 50);
+    setTimeout(() => { toast.style.opacity = '0'; toast.style.transform = 'translateY(-20px)'; }, 3050);
+    setTimeout(() => { if (toast.parentNode) toast.parentNode.removeChild(toast); }, 3550);
+  }
   // Modal logic
   const modalOverlay = document.getElementById('modal-overlay');
   const modalBody = document.getElementById('modal-body');
@@ -51,11 +142,48 @@ document.addEventListener('DOMContentLoaded', function() {
   });
   document.getElementById('download-icon').addEventListener('click', function(e) {
     e.preventDefault();
-    openModal('<span class="text-blue-600 text-xl font-bold">Download VCF File</span><br><br><button class="mt-4 px-6 py-2 bg-blue-500 text-white rounded-lg font-semibold">Download</button>');
+    openModal('<span class="text-blue-600 text-xl font-bold">Download VCF File</span><br><br><button id="modal-download-btn" class="mt-4 px-6 py-2 bg-blue-500 text-white rounded-lg font-semibold">Download</button>');
   });
   closeModalBtn.addEventListener('click', closeModal);
   modalOverlay.addEventListener('click', function(e) {
     if (e.target === modalOverlay) closeModal();
+  });
+
+  // VCF download logic
+  document.addEventListener('click', function(e) {
+    if (e.target && e.target.id === 'modal-download-btn') {
+      // Collect contacts from table
+      const rows = document.querySelectorAll('#contacts-table-body tr');
+      let vcfData = '';
+      rows.forEach(row => {
+        const cells = row.querySelectorAll('td');
+        if (cells.length >= 3) {
+          const name = cells[0].textContent.trim();
+          let phone = cells[1].textContent.trim();
+          // Ensure phone starts with +
+          if (!phone.startsWith('+') && phone.length > 0) {
+            phone = '+' + phone;
+          }
+          const email = cells[2].textContent.trim();
+          vcfData += 'BEGIN:VCARD\nVERSION:3.0\n';
+          vcfData += `FN:${name}\n`;
+          vcfData += `TEL;TYPE=CELL:${phone}\n`;
+          if (email) vcfData += `EMAIL:${email}\n`;
+          vcfData += 'END:VCARD\n';
+        }
+      });
+      // Download as .vcf file
+      const blob = new Blob([vcfData.replace(/\n/g, '\r\n')], { type: 'text/vcard' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = '{{ vcf.name|default:"contacts" }}.vcf';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      closeModal();
+    }
   });
   const joinBtn = document.getElementById('join-btn');
   if (joinBtn) {

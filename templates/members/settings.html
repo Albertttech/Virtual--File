@@ -114,9 +114,9 @@
       </script>
       </form>
       <div class="flex flex-col md:flex-row md:items-center md:gap-4 mb-2">
-        <label class="w-32 text-blue-200 font-medium">Password:</label>
-        <a href="#" class="text-blue-400 hover:underline">Reset Password</a>
-      </div>
+        <label for="password_input" class="w-32 text-blue-200 font-medium">Password:</label>
+        <input type="password" id="password_input" name="password" placeholder="Enter new password" class="flex-1 bg-slate-800 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400" readonly />
+        <button type="button" id="password_btn" class="ml-2 px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700 transition">Edit</button>      </div>
       <div class="flex flex-col md:flex-row md:items-center md:gap-4 mb-2">
         <label class="w-32 text-blue-200 font-medium">Demo:</label>
         <span class="text-blue-400">Coming soon...</span>
@@ -142,15 +142,15 @@
       </div>
       <div class="flex items-center space-x-2">
         <input id="box4" name="box-group" type="checkbox" class="accent-blue-500 w-5 h-5 rounded border-2 border-blue-400 focus:ring-2 focus:ring-blue-400" {% if request.user.profile and request.user.profile.include_email_in_vcf %}checked{% endif %}/>
-        <label for="box4" class="text-blue-200">Include my email</label>
+        <label for="box4" class="text-blue-200">Auto include my <br>email in all my New VCF</label>
       </div>
       <div class="flex items-center space-x-2">
         <input id="box5" name="box-group" type="checkbox" class="accent-blue-500 w-5 h-5 rounded border-2 border-blue-400 focus:ring-2 focus:ring-blue-400" />
-        <label for="box5" class="text-blue-200">Demo 5</label>
+        <label for="box5" class="text-blue-200">Email for New VCF File (when created)</label>
       </div>
       <div class="flex items-center space-x-2">
         <input id="box6" name="box-group" type="checkbox" class="accent-blue-500 w-5 h-5 rounded border-2 border-blue-400 focus:ring-2 focus:ring-blue-400" />
-        <label for="box6" class="text-blue-200">Demo 6</label>
+        <label for="box6" class="text-blue-200">Update me when my premium file are updated</label>
       </div>
     </div>
     <script>
@@ -173,13 +173,227 @@
           })
           .catch(() => alert('Could not update email preference'));
         });
+        // Demo 5: Email for Free & Premium VCF File (when created)
+        const box5 = document.getElementById('box5');
+        box5.addEventListener('change', function() {
+          // TODO: Implement backend logic for demo 5
+          // Example: fetch('/your-endpoint/', { method: 'POST', body: JSON.stringify({ email_for_creation: box5.checked }) })
+        });
+        // Demo 6: My Premium VCF Contact Update
+        const box6 = document.getElementById('box6');
+        box6.addEventListener('change', function() {
+          // TODO: Implement backend logic for demo 6
+          // Example: fetch('/your-endpoint/', { method: 'POST', body: JSON.stringify({ premium_contact_update: box6.checked }) })
+        });
       });
+                // Password edit/save logic
+          const passwordInput = document.getElementById('password_input');
+          const passwordBtn = document.getElementById('password_btn');
+          let passwordEditing = false;
+          passwordBtn.addEventListener('click', function() {
+            if (!passwordEditing) {
+              passwordInput.readOnly = false;
+              passwordInput.focus();
+              passwordBtn.textContent = 'Save';
+              passwordEditing = true;
+            } else {
+              // Save via AJAX (implement backend logic as needed)
+              const value = passwordInput.value;
+              passwordBtn.disabled = true;
+              fetch('/members/ajax/update-password/', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: JSON.stringify({ password: value })
+              })
+              .then(r => r.json())
+              .then(data => {
+                if (data.success) {
+                  passwordInput.readOnly = true;
+                  passwordBtn.textContent = 'Edit';
+                  passwordEditing = false;
+                  passwordInput.value = '';
+                  alert('Password updated!');
+                } else {
+                  alert(data.error || 'Save failed');
+                }
+              })
+              .catch(() => alert('Save failed'))
+              .finally(() => { passwordBtn.disabled = false; });
+            }
+          });
     </script>
   </div>
   <!-- File Setting Section -->
   <div class="bg-slate-900/80 rounded-xl shadow-lg p-8">
     <h2 class="text-xl font-semibold mb-6 text-blue-300">File Settings</h2>
-    <div class="text-blue-400">(Coming soon...)</div>
+    <div class="flex flex-col md:flex-row md:items-center md:gap-4 mb-4">
+      <label for="reset_password_btn" class="w-32 text-blue-200 font-medium">Password Reset:</label>
+      <button type="button" id="reset_password_btn" class="ml-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition">Reset Password</button>
+    </div>
+    <!-- Password Reset Modal -->
+    <div id="resetPasswordModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+      <div class="bg-slate-800 rounded-xl p-8 shadow-lg w-full max-w-md">
+        <h3 class="text-lg font-bold text-blue-300 mb-4">Reset Password</h3>
+        <p class="text-blue-200 mb-6">Are you sure you want to reset your password? You will receive an email with instructions.</p>
+        <div class="flex justify-end gap-2">
+          <button id="cancelResetBtn" class="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700">Cancel</button>
+          <button id="confirmResetBtn" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">Confirm</button>
+        </div>
+      </div>
+    </div>
+    <!-- Password Change Modal -->
+    <div id="changePasswordModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+      <div class="bg-slate-800 rounded-xl p-8 shadow-lg w-full max-w-md">
+        <h3 class="text-lg font-bold text-blue-300 mb-4">Change Password</h3>
+        <form method="post" action="{% url 'members:member_settings' %}" id="changePasswordForm" autocomplete="off">
+          {% csrf_token %}
+          <div class="mb-4">
+            <label for="old_password" class="block text-blue-200 mb-1">Current Password</label>
+            <input type="password" id="old_password" name="old_password" class="w-full bg-slate-700 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400" required />
+          </div>
+          <div class="mb-4">
+            <label for="new_password" class="block text-blue-200 mb-1">New Password</label>
+            <input type="password" id="new_password" name="new_password" class="w-full bg-slate-700 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400" required />
+          </div>
+          <div class="mb-6">
+            <label for="confirm_new_password" class="block text-blue-200 mb-1">Confirm New Password</label>
+            <input type="password" id="confirm_new_password" name="confirm_new_password" class="w-full bg-slate-700 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400" required />
+          </div>
+          <div class="flex justify-end gap-2">
+            <button type="button" id="cancelChangeBtn" class="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700" onclick="document.getElementById('changePasswordModal').classList.add('hidden');">Cancel</button>
+            <button type="submit" id="updatePasswordBtn" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Update Password</button>
+          </div>
+          {% if password_error %}
+            <div class="mt-4 text-red-400">{{ password_error }}</div>
+          {% endif %}
+          {% if password_success %}
+            <div class="mt-4 text-green-400">{{ password_success }}</div>
+          {% endif %}
+        </form>
+      </div>
+    </div>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const resetBtn = document.getElementById('reset_password_btn');
+    const resetModal = document.getElementById('resetPasswordModal');
+    const cancelResetBtn = document.getElementById('cancelResetBtn');
+    const confirmResetBtn = document.getElementById('confirmResetBtn');
+    const changeModal = document.getElementById('changePasswordModal');
+    const cancelChangeBtn = document.getElementById('cancelChangeBtn');
+    const changeForm = document.getElementById('changePasswordForm');
+
+    if (resetBtn && resetModal && cancelResetBtn && confirmResetBtn && changeModal && cancelChangeBtn && changeForm) {
+      resetBtn.addEventListener('click', function() {
+        resetModal.classList.remove('hidden');
+      });
+
+      cancelResetBtn.addEventListener('click', function() {
+        resetModal.classList.add('hidden');
+      });
+
+      confirmResetBtn.addEventListener('click', function() {
+        resetModal.classList.add('hidden');
+        changeModal.classList.remove('hidden');
+      });
+
+      resetModal.addEventListener('click', function(e) {
+        if (e.target === resetModal) {
+          resetModal.classList.add('hidden');
+        }
+      });
+
+      cancelChangeBtn.addEventListener('click', function() {
+        changeModal.classList.add('hidden');
+      });
+
+      changeModal.addEventListener('click', function(e) {
+        if (e.target === changeModal) {
+          changeModal.classList.add('hidden');
+        }
+      });
+
+    changeForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const oldPassword = document.getElementById('old_password').value;
+    const newPassword = document.getElementById('new_password').value;
+    const confirmNewPassword = document.getElementById('confirm_new_password').value;
+    const updateBtn = document.getElementById('updatePasswordBtn');
+
+    if (!oldPassword || !newPassword || !confirmNewPassword) {
+        showToast('All fields are required.', false);
+        return;
+    }
+    if (newPassword !== confirmNewPassword) {
+        showToast('New passwords do not match.', false);
+        return;
+    }
+
+    // Show loading state
+    updateBtn.disabled = true;
+    updateBtn.textContent = 'Updating...';
+
+    fetch('{% url "members:ajax_change_password" %}', {
+        method: 'POST',
+        headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        },
+        body: JSON.stringify({
+        old_password: oldPassword,
+        new_password: newPassword
+        })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success && data.logout) {
+        showToast('Password changed. Logging out...', true);
+        setTimeout(() => {
+            window.location.href = data.redirect_url || '/members/login/';
+        }, 1500);
+        } else if (data.success) {
+        showToast('Password updated successfully!', true);
+        changeModal.classList.add('hidden');
+        } else {
+        showToast(data.error || 'Password update failed.', false);
+        }
+    })
+    .catch(() => {
+        showToast('Password update failed.', false);
+    })
+    .finally(() => {
+        updateBtn.disabled = false;
+        updateBtn.textContent = 'Update Password';
+    });
+    });
+
+
+      function showToast(message, success) {
+        let toast = document.getElementById('toastMsg');
+        if (!toast) {
+          toast = document.createElement('div');
+          toast.id = 'toastMsg';
+          toast.className = 'fixed top-6 right-6 z-[9999] px-6 py-3 rounded-lg shadow-lg text-white text-sm font-semibold transition-all duration-500';
+          document.body.appendChild(toast);
+        }
+        toast.textContent = message;
+        toast.style.background = success
+          ? 'linear-gradient(90deg,#16a34a,#22d3ee)'
+          : 'linear-gradient(90deg,#e11d74,#f43f5e)';
+        toast.style.opacity = '1';
+        toast.style.pointerEvents = 'auto';
+        setTimeout(() => {
+          toast.style.opacity = '0';
+          toast.style.pointerEvents = 'none';
+        }, 3000);
+      }
+    }
+  });
+</script>
+
   </div>
 </div>
 {% endblock %}
