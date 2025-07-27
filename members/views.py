@@ -14,10 +14,10 @@ from django.contrib import messages
 from .models import VCFFile, UserPurchase
 from .forms import MemberRegisterForm, MemberLoginForm
 from common.decorators import member_required
+from customadmin.models import Contact
 import hmac
 import hashlib
 import json
-
 def get_paystack_credentials():
     """Safe method to get Paystack credentials with multiple fallbacks"""
     if settings.TEST_MODE:
@@ -426,23 +426,44 @@ def subscribe_vcf(request, vcf_id):
     })
 
 def vcf_tabs(request):
-    free_vcfs = VCFFile.objects.filter(vcf_type='free', hidden=False)
+    # Get joined free VCFs for user
+    joined_free_ids = get_joined_free_vcf_ids(request.user)
+    free_vcfs = VCFFile.objects.filter(vcf_type='free', hidden=False).exclude(id__in=joined_free_ids)
     premium_vcfs = VCFFile.objects.filter(vcf_type='premium', hidden=False)
-    
+
     purchased_ids = []
     if request.user.is_authenticated:
         purchased_ids = list(request.user.user_purchases.filter(
             is_verified=True,
             is_active=True
         ).values_list('vcf_file_id', flat=True))
-    
+        my_premium_vcfs = VCFFile.objects.filter(
+            vcf_type='premium',
+            hidden=False,
+            file_purchases__user=request.user,
+            file_purchases__is_verified=True,
+            file_purchases__is_active=True
+        ).distinct()
+        my_free_vcfs = VCFFile.objects.filter(
+            vcf_type='free',
+            hidden=False,
+            file_purchases__user=request.user,
+            file_purchases__is_verified=True,
+            file_purchases__is_active=True
+        ).distinct()
+    else:
+        my_premium_vcfs = VCFFile.objects.none()
+        my_free_vcfs = VCFFile.objects.none()
+
     # Debug output
     print(f"User {request.user} purchased IDs: {purchased_ids}")
-    
+
     return render(request, 'members/vcf_tabs.html', {
         'free_vcfs': free_vcfs,
         'premium_vcfs': premium_vcfs,
-        'purchased_ids': purchased_ids
+        'purchased_ids': purchased_ids,
+        'my_premium_vcfs': my_premium_vcfs,
+        'my_free_vcfs': my_free_vcfs
     })
 
 # Authentication views
@@ -503,3 +524,41 @@ def member_logout(request):
 @member_required
 def member_dashboard(request):
     return render(request, 'members/dashboard.html')
+
+
+
+@login_required
+def vcf_file_detail(request, vcf_id):
+    vcf = get_object_or_404(VCFFile, id=vcf_id, vcf_type='premium', hidden=False)
+    # Only allow if user has purchased/subscribed
+    if not request.user.user_purchases.filter(vcf_file=vcf, is_verified=True, is_active=True).exists():
+        return redirect('members:vcf_tabs')
+    contacts = Contact.objects.filter(vcf_file=vcf)
+    return render(request, 'members/vcf_file_detail.html', {'vcf': vcf, 'contacts': contacts})
+
+# Helper: get joined free VCF ids for user
+def get_joined_free_vcf_ids(user):
+    if not user.is_authenticated:
+        return []
+    return list(user.user_purchases.filter(
+        vcf_file__vcf_type='free',
+        is_verified=True,
+        is_active=True
+    ).values_list('vcf_file_id', flat=True))
+
+# Join free VCF view
+@member_required
+def join_free_vcf(request, vcf_id):
+    vcf = get_object_or_404(VCFFile, id=vcf_id, vcf_type='free', hidden=False)
+    # Check if already joined
+    already_joined = request.user.user_purchases.filter(vcf_file=vcf, is_verified=True, is_active=True).exists()
+    if not already_joined:
+        UserPurchase.objects.create(
+            user=request.user,
+            vcf_file=vcf,
+            payment_reference=f"FREEJOIN-{request.user.id}-{vcf.id}",
+            amount_paid=0,
+            is_verified=True,
+            is_active=True
+        )
+    return redirect('members:vcf_tabs')

@@ -1,3 +1,5 @@
+from django.conf import settings
+from decouple import config
 import logging
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout

@@ -1,0 +1,22 @@
+{% extends 'members/base.html' %}
+{% block title %}VCF File Details{% endblock %}
+{% block content %}
+<div class="w-full max-w-4xl mx-auto mt-10 px-4">
+  <h1 class="text-3xl font-bold neon mb-8 text-center">VCF File: {{ vcf.name }}</h1>
+  <div class="bg-slate-900/80 rounded-xl shadow-lg p-8">
+    <h2 class="text-lg font-semibold mb-4 text-blue-200">Contacts ({{ contacts|length }})</h2>
+    {% if contacts %}
+      <ul class="divide-y divide-blue-900/40">
+        {% for contact in contacts %}
+        <li class="py-3 flex justify-between items-center">
+          <span class="font-medium text-white">{{ contact.name }}</span>
+          <span class="text-blue-300">{{ contact.phone }}</span>
+        </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <div class="text-center text-blue-400 py-8">No contacts found in this file.</div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

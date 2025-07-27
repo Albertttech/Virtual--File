@@ -19,6 +19,17 @@ PAYSTACK_SUCCESS_URL = config('PAYSTACK_SUCCESS_URL')
 TEST_MODE = config('TEST_MODE', default=False, cast=bool)
 
 # =============================
+# Admin credentials
+ADMIN_USERNAME = config('ADMIN_USERNAME')
+ADMIN_PASSWORD = config('ADMIN_PASSWORD')
+ADMIN_EMAIL = config('ADMIN_EMAIL')
+# =============================
+# Superuser credentials (for initial setup)
+SUPERUSER_USERNAME = config('SUPERUSER_USERNAME')
+SUPERUSER_PASSWORD = config('SUPERUSER_PASSWORD')
+SUPERUSER_EMAIL = config('SUPERUSER_EMAIL')
+
+# =============================
 # Application Definition
 # =============================
 INSTALLED_APPS = [
