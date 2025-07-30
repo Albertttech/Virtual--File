@@ -3,72 +3,86 @@
 {% block title %}Futuristic Member Dashboard{% endblock %}
 
 {% block content %}
-  <!-- Quick Actions & Stats -->
-  <div class="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
-    <button class="glass-btn flex items-center justify-center gap-2 fade-in delay-1"><svg class="w-5 h-5 neon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4"/></svg>Add User</button>
-    <a href="#" class="glass-btn flex items-center justify-center gap-2 fade-in delay-5"><svg class="w-5 h-5 text-yellow-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16 12H8m8 0a4 4 0 11-8 0 4 4 0 018 0z"/></svg>Embed</a>
-    <button class="glass-btn flex items-center justify-center gap-2 fade-in delay-2"><svg class="w-5 h-5 neon-accent" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>Export Data</button>
-    <button class="glass-btn flex items-center justify-center gap-2 fade-in delay-3"><svg class="w-5 h-5 neon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>Verify</button>
-    <button class="glass-btn flex items-center justify-center gap-2 fade-in delay-4"><svg class="w-5 h-5 neon-accent" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12h18"/></svg>More</button>
+  <!-- Responsive margin to prevent header overlap -->
+  <div class="h-16 sm:h-16 md:h-16 lg:h-16 xl:h-16 2xl:h-16"></div>
+  <!-- Quick Actions & Stats (hidden on mobile, tooltips on desktop, toggled with sidebar) -->
+  <div id="dashboard-action-buttons" class="hidden md:grid grid-cols-5 gap-2 mb-8 w-full max-w-full">
+    <button class="glass-btn flex items-center justify-center gap-1 sm:gap-2 fade-in delay-1 min-w-0 w-full max-w-[120px] sm:max-w-[140px] md:max-w-[150px] px-2 sm:px-3 text-xs sm:text-sm group" title="Add User">
+      <svg class="w-5 h-5 neon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4"/></svg>
+      <span class="sr-only group-hover:not-sr-only group-hover:absolute group-hover:top-full group-hover:left-1/2 group-hover:-translate-x-1/2 group-hover:bg-slate-800 group-hover:text-white group-hover:text-xs group-hover:rounded group-hover:px-2 group-hover:py-1 group-hover:mt-1 group-hover:shadow-lg">Add User</span>
+    </button>
+    <a href="#" class="glass-btn flex items-center justify-center gap-1 sm:gap-2 fade-in delay-5 min-w-0 w-full max-w-[120px] sm:max-w-[140px] md:max-w-[150px] px-2 sm:px-3 text-xs sm:text-sm group" title="Embed">
+      <svg class="w-5 h-5 text-yellow-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16 12H8m8 0a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+      <span class="sr-only group-hover:not-sr-only group-hover:absolute group-hover:top-full group-hover:left-1/2 group-hover:-translate-x-1/2 group-hover:bg-slate-800 group-hover:text-white group-hover:text-xs group-hover:rounded group-hover:px-2 group-hover:py-1 group-hover:mt-1 group-hover:shadow-lg">Embed</span>
+    </a>
+    <button class="glass-btn flex items-center justify-center gap-1 sm:gap-2 fade-in delay-2 min-w-0 w-full max-w-[120px] sm:max-w-[140px] md:max-w-[150px] px-2 sm:px-3 text-xs sm:text-sm group" title="Export Data">
+      <svg class="w-5 h-5 neon-accent" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+      <span class="sr-only group-hover:not-sr-only group-hover:absolute group-hover:top-full group-hover:left-1/2 group-hover:-translate-x-1/2 group-hover:bg-slate-800 group-hover:text-white group-hover:text-xs group-hover:rounded group-hover:px-2 group-hover:py-1 group-hover:mt-1 group-hover:shadow-lg">Export Data</span>
+    </button>
+    <button class="glass-btn flex items-center justify-center gap-1 sm:gap-2 fade-in delay-3 min-w-0 w-full max-w-[120px] sm:max-w-[140px] md:max-w-[150px] px-2 sm:px-3 text-xs sm:text-sm group" title="Verify">
+      <svg class="w-5 h-5 neon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
+      <span class="sr-only group-hover:not-sr-only group-hover:absolute group-hover:top-full group-hover:left-1/2 group-hover:-translate-x-1/2 group-hover:bg-slate-800 group-hover:text-white group-hover:text-xs group-hover:rounded group-hover:px-2 group-hover:py-1 group-hover:mt-1 group-hover:shadow-lg">Verify</span>
+    </button>
+    <button class="glass-btn flex items-center justify-center gap-1 sm:gap-2 fade-in delay-4 min-w-0 w-full max-w-[120px] sm:max-w-[140px] md:max-w-[150px] px-2 sm:px-3 text-xs sm:text-sm group" title="More">
+      <svg class="w-5 h-5 neon-accent" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12h18"/></svg>
+      <span class="sr-only group-hover:not-sr-only group-hover:absolute group-hover:top-full group-hover:left-1/2 group-hover:-translate-x-1/2 group-hover:bg-slate-800 group-hover:text-white group-hover:text-xs group-hover:rounded group-hover:px-2 group-hover:py-1 group-hover:mt-1 group-hover:shadow-lg">More</span>
+    </button>
   </div>
 
-  <!-- Stats Cards -->
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-    <div class="glass p-6 flex flex-col items-start border-t-4 border-blue-700 fade-in delay-1">
-      <div class="flex items-center mb-2">
-        <i class="fa-solid fa-file-lines w-8 h-8 neon mr-2 text-blue-400"></i>
-        <span class="text-lg font-semibold">Total VCF Files</span>
+  <!-- Stats Cards - Modern Responsive Layout -->
+  <div class="flex flex-wrap gap-4 sm:gap-6 mb-8 w-full max-w-full justify-center">
+    <div class="glass w-full sm:w-[48%] md:w-[30%] lg:w-[18%] p-4 xs:p-5 sm:p-6 flex flex-col items-center border-t-4 border-blue-700 fade-in delay-1 min-w-[180px] max-w-xs flex-1">
+      <div class="flex flex-col items-center mb-2 w-full">
+        <i class="fa-solid fa-file-lines w-8 h-8 neon mb-1 text-blue-400"></i>
+        <span class="text-lg font-semibold text-center">Total VCF Files</span>
       </div>
-      <span class="text-3xl font-bold neon">{{ total_vcf_files }}</span>
-      <div class="progress-bar mt-2"><div class="progress-bar-inner" style="width: 80%"></div></div>
+      <span class="text-2xl xs:text-3xl font-bold neon break-words w-full text-center">{{ total_vcf_files }}</span>
+      <div class="progress-bar mt-2 w-full"><div class="progress-bar-inner" style="width: 80%"></div></div>
     </div>
-    <div class="glass p-6 flex flex-col items-start border-t-4 border-pink-600 fade-in delay-2">
-      <div class="flex items-center mb-2">
-        <i class="fa-solid fa-address-book w-8 h-8 neon-accent mr-2 text-pink-400"></i>
-        <span class="text-lg font-semibold">Total Contacts</span>
+    <div class="glass w-full sm:w-[48%] md:w-[30%] lg:w-[18%] p-4 xs:p-5 sm:p-6 flex flex-col items-center border-t-4 border-pink-600 fade-in delay-2 min-w-[180px] max-w-xs flex-1">
+      <div class="flex flex-col items-center mb-2 w-full">
+        <i class="fa-solid fa-address-book w-8 h-8 neon-accent mb-1 text-pink-400"></i>
+        <span class="text-lg font-semibold text-center">Total Contacts</span>
       </div>
-      <span class="text-3xl font-bold neon-accent">{{ total_contacts }}</span>
-      <div class="progress-bar mt-2"><div class="progress-bar-inner" style="width: 60%; background:linear-gradient(90deg,#e11d74,#6dd5ed)"></div></div>
+      <span class="text-2xl xs:text-3xl font-bold neon-accent break-words w-full text-center">{{ total_contacts }}</span>
+      <div class="progress-bar mt-2 w-full"><div class="progress-bar-inner" style="width: 60%; background:linear-gradient(90deg,#e11d74,#6dd5ed)"></div></div>
     </div>
-    <div class="glass p-6 flex flex-col items-start border-t-4 border-green-500 fade-in delay-3">
-      <div class="flex items-center mb-2">
-        <i class="fa-solid fa-users w-8 h-8 text-green-400 mr-2"></i>
-        <span class="text-lg font-semibold">Active Users</span>
+    <div class="glass w-full sm:w-[48%] md:w-[30%] lg:w-[18%] p-4 xs:p-5 sm:p-6 flex flex-col items-center border-t-4 border-green-500 fade-in delay-3 min-w-[180px] max-w-xs flex-1">
+      <div class="flex flex-col items-center mb-2 w-full">
+        <i class="fa-solid fa-users w-8 h-8 text-green-400 mb-1 mr-0"></i>
+        <span class="text-lg font-semibold text-center">Active Users</span>
       </div>
-      <span class="text-3xl font-bold text-green-400">2,345</span>
-      <div class="progress-bar mt-2"><div class="progress-bar-inner" style="width: 90%; background:linear-gradient(90deg,#6dd5ed,#22d3ee)"></div></div>
+      <span class="text-2xl xs:text-3xl font-bold text-green-400 break-words w-full text-center">2,345</span>
+      <div class="progress-bar mt-2 w-full"><div class="progress-bar-inner" style="width: 90%; background:linear-gradient(90deg,#6dd5ed,#22d3ee)"></div></div>
     </div>
-    <!-- Subscription Packages Card -->
-    <div class="glass p-6 flex flex-col items-start border-t-4 border-yellow-500 fade-in delay-4">
-      <div class="flex items-center mb-2">
-        <i class="fa-solid fa-box-open w-8 h-8 text-yellow-400 mr-2"></i>
-        <span class="text-lg font-semibold">My Subscription Packages</span>
+    <div class="glass w-full sm:w-[48%] md:w-[30%] lg:w-[18%] p-4 xs:p-5 sm:p-6 flex flex-col items-center border-t-4 border-yellow-500 fade-in delay-4 min-w-[180px] max-w-xs flex-1">
+      <div class="flex flex-col items-center mb-2 w-full">
+        <i class="fa-solid fa-box-open w-8 h-8 text-yellow-400 mb-1 mr-0"></i>
+        <span class="text-lg font-semibold text-center">My Subscription Packages</span>
       </div>
-      <span class="text-3xl font-bold text-yellow-400 flex justify-right w-full">{{ total_subscribed }}</span>
-      <div class="progress-bar mt-2"><div class="progress-bar-inner" style="width: 70%; background:linear-gradient(90deg,#facc15,#fde68a)"></div></div>
+      <span class="text-2xl xs:text-3xl font-bold text-yellow-400 break-words w-full text-center">{{ total_subscribed }}</span>
+      <div class="progress-bar mt-2 w-full"><div class="progress-bar-inner" style="width: 70%; background:linear-gradient(90deg,#facc15,#fde68a)"></div></div>
     </div>
-    <!-- Total Subscribers Card -->
-    <div class="glass p-6 flex flex-col items-start border-t-4 border-purple-600 fade-in delay-5">
-      <div class="flex items-center mb-2">
-        <i class="fa-solid fa-user-check w-8 h-8 text-purple-400 mr-2"></i>
-        <span class="text-lg font-semibold">Total Subscribers</span>
+    <div class="glass w-full sm:w-[48%] md:w-[30%] lg:w-[18%] p-4 xs:p-5 sm:p-6 flex flex-col items-center border-t-4 border-purple-600 fade-in delay-5 min-w-[180px] max-w-xs flex-1">
+      <div class="flex flex-col items-center mb-2 w-full">
+        <i class="fa-solid fa-user-check w-8 h-8 text-purple-400 mb-1 mr-0"></i>
+        <span class="text-lg font-semibold text-center">Total Contacts</span>
       </div>
-      <span class="text-3xl font-bold text-purple-400 flex justify-center w-full">1,200</span>
-      <div class="progress-bar mt-2"><div class="progress-bar-inner" style="width: 65%; background:linear-gradient(90deg,#a78bfa,#f472b6)"></div></div>
+      <span class="text-2xl xs:text-3xl font-bold text-purple-400 break-words w-full text-center">1,200</span>
+      <div class="progress-bar mt-2 w-full"><div class="progress-bar-inner" style="width: 65%; background:linear-gradient(90deg,#a78bfa,#f472b6)"></div></div>
     </div>
-    <!-- Free Packages Card -->
-    <div class="glass p-6 flex flex-col items-start border-t-4 border-gray-400 fade-in delay-6">
-      <div class="flex items-center mb-2">
-        <i class="fa-solid fa-gift w-8 h-8 text-gray-400 mr-2"></i>
-        <span class="text-lg font-semibold">Free Packages</span>
+    <div class="glass w-full sm:w-[48%] md:w-[30%] lg:w-[18%] p-4 xs:p-5 sm:p-6 flex flex-col items-center border-t-4 border-gray-400 fade-in delay-6 min-w-[180px] max-w-xs flex-1">
+      <div class="flex flex-col items-center mb-2 w-full">
+        <i class="fa-solid fa-gift w-8 h-8 text-gray-400 mb-1 mr-0"></i>
+        <span class="text-lg font-semibold text-center">Free Packages</span>
       </div>
-      <span class="text-3xl font-bold text-gray-400 flex justify-center w-full">{{ total_free_packages }}</span>
-      <div class="progress-bar mt-2"><div class="progress-bar-inner" style="width: 50%; background:linear-gradient(90deg,#d1d5db,#f3f4f6)"></div></div>
+      <span class="text-2xl xs:text-3xl font-bold text-gray-400 break-words w-full text-center">{{ total_free_packages }}</span>
+      <div class="progress-bar mt-2 w-full"><div class="progress-bar-inner" style="width: 50%; background:linear-gradient(90deg,#d1d5db,#f3f4f6)"></div></div>
     </div>
   </div>
 
   <!-- Charts Row -->
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+  <div class="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-8 w-full max-w-full">
     <div class="glass p-6 fade-in delay-1 flex flex-col justify-center items-center h-full">
       <div class="flex items-center mb-4 w-full justify-between">
         <span class="text-lg font-semibold neon">Contact Growth</span>
@@ -92,12 +106,12 @@
   </div>
 
   <!-- Table & Recent Activity -->
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-    <div class="glass p-6 fade-in delay-1 overflow-x-auto">
+  <div class="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-8 w-full max-w-full">
+    <div class="glass p-4 xs:p-5 sm:p-6 fade-in delay-1 overflow-x-auto min-w-0">
       <div class="flex items-center mb-4">
         <span class="text-lg font-semibold neon">Recent Users</span>
       </div>
-      <table class="min-w-full text-left text-sm sortable">
+      <table class="min-w-full text-left text-sm sortable whitespace-nowrap">
         <thead>
           <tr class="border-b border-blue-800">
             <th class="py-2 px-3">Name</th>
@@ -216,5 +230,6 @@
         th.classList.add(asc ? 'asc' : 'desc');
       });
     });
+// ...existing code...
 </script>
 {% endblock %}
