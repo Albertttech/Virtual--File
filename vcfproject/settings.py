@@ -2,7 +2,7 @@ from pathlib import Path
 import os
 from decouple import config, Csv
 import logging
-
+import dj_database_url
 # Base directory
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -81,10 +81,7 @@ WSGI_APPLICATION = 'vcfproject.wsgi.application'
 # Database
 # =============================
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'adb.sqlite3',
-    }
+    'default': dj_database_url.config(default=config('DATABASE_URL'))
 }
 
 # =============================
