@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -68,10 +69,10 @@
   </style>
   {% block extra_head %}{% endblock %}
 </head>
-<body class="min-h-screen md:flex bg-slate-900">
+<body class="min-h-screen flex flex-col md:flex-row bg-slate-900">
 
   <!-- Sidebar -->
-  <aside id="sidebar" class="glass fixed inset-y-0 left-0 z-30 w-64 h-screen transform transition-transform duration-300 -translate-x-full md:fixed md:top-0 md:left-0 md:h-screen md:z-40 md:translate-x-0 md:static md:transform-none md:flex md:flex-col shadow-xl">
+  <aside id="sidebar" class="glass fixed inset-y-0 left-0 z-30 w-64 max-w-full h-screen transform transition-transform duration-300 -translate-x-full md:fixed md:top-0 md:left-0 md:h-screen md:z-40 md:translate-x-0 md:static md:transform-none md:flex md:flex-col shadow-xl">
     <div class="flex items-center h-16 px-6 border-b border-blue-800">
       <span class="text-2xl font-bold tracking-wide neon">VCF Admin</span>
     </div>
@@ -140,21 +141,29 @@
   <div id="sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-40 z-20 hidden md:hidden"></div>
 
   <!-- Sticky Header OUTSIDE main -->
-  <header class="fixed top-0 left-0 right-0 z-50 glass flex items-center justify-between px-6 h-16 backdrop-blur-lg md:ml-64 transition-all duration-300">
-    <div class="flex items-center">
+  <header class="fixed top-0 left-0 right-0 z-50 glass flex flex-row flex-wrap items-center px-4 sm:px-6 h-16 backdrop-blur-lg md:ml-64 transition-all duration-300 w-full">
+    <div class="flex items-center flex-shrink-0">
       <button id="menu-btn" class="md:hidden mr-4 focus:outline-none">
         <svg class="w-7 h-7 neon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
       </button>
       <span class="text-xl font-semibold neon tracking-wide">VCF Admin Dashboard</span>
     </div>
-    <div class="flex items-center space-x-4">
+    <div class="flex-1 flex justify-center">
+      <form class="hidden md:flex items-center gap-2" action="#" method="get" autocomplete="off">
+        <input type="text" placeholder="Search..." class="rounded-lg px-3 py-1.5 bg-slate-800 text-white border border-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm w-36 md:w-64" />
+        <button type="submit" class="glass-btn px-3 py-1.5 flex items-center justify-center text-xs">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+        </button>
+      </form>
+    </div>
+    <div class="hidden md:flex items-center gap-3 flex-shrink-0">
       <span class="text-gray-200 font-medium">{{ request.user.username }}</span>
       <img src="https://img.icons8.com/ios-filled/50/1e293b/admin-settings-male.png" alt="Admin" class="w-8 h-8 rounded-full border-2 border-blue-900 shadow glass-avatar" />
     </div>
   </header>
 
   <!-- Main content wrapper, add pt-20 for header height -->
-  <main class="flex-1 flex flex-col min-h-screen transition-all duration-300 p-6 overflow-x-hidden md:ml-64 pt-20">
+  <main class="flex-1 flex flex-col min-h-screen transition-all duration-300 p-2 xs:p-4 sm:p-6 overflow-x-hidden md:ml-64 pt-20 w-full max-w-full">
 
     {% block content %}{% endblock %} 
      <!-- Footer -->
