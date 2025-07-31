@@ -1,36 +1,63 @@
+# =============================
+# Core Django Imports
+# =============================
 from pathlib import Path
 import os
-from decouple import config, Csv
 import logging
+from dotenv import load_dotenv
+from decouple import config, Csv
 import dj_database_url
-# Base directory
+
+# =============================
+# Load environment variables
+# =============================
+load_dotenv()
+
+# =============================
+# Base Directory
+# =============================
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # =============================
-# Environment Variables (from .env)
+# Debug & Secret Key Settings
 # =============================
 SECRET_KEY = config('SECRET_KEY')
 DEBUG = config('DEBUG', default=False, cast=bool)
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=Csv())
 
+# =============================
+# Allowed Hosts and CSRF Origins
+# =============================
+ALLOWED_HOSTS = config("ALLOWED_HOSTS", cast=Csv())
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://58d57bd5-0670-4922-8fd3-58042be67f50-00-2huud3ci0678c.spock.replit.dev",
+    "https://fastgain.publicmail.repl.co",
+]
+
+# =============================
+# Paystack Configuration
+# =============================
 PAYSTACK_SECRET_KEY = config('PAYSTACK_SECRET_KEY')
 PAYSTACK_PUBLIC_KEY = config('PAYSTACK_PUBLIC_KEY')
 PAYSTACK_SUCCESS_URL = config('PAYSTACK_SUCCESS_URL')
 TEST_MODE = config('TEST_MODE', default=False, cast=bool)
 
 # =============================
-# Admin credentials
+# Admin Credentials (Custom Admin Login)
+# =============================
 ADMIN_USERNAME = config('ADMIN_USERNAME')
 ADMIN_PASSWORD = config('ADMIN_PASSWORD')
 ADMIN_EMAIL = config('ADMIN_EMAIL')
+
 # =============================
-# Superuser credentials (for initial setup)
+# Superuser Credentials (For Django Admin)
+# =============================
 SUPERUSER_USERNAME = config('SUPERUSER_USERNAME')
 SUPERUSER_PASSWORD = config('SUPERUSER_PASSWORD')
 SUPERUSER_EMAIL = config('SUPERUSER_EMAIL')
 
 # =============================
-# Application Definition
+# Installed Applications
 # =============================
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -39,6 +66,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
     'django_extensions',
     'paystackapi',
     'vcfviewer',
@@ -46,6 +74,9 @@ INSTALLED_APPS = [
     'members',
 ]
 
+# =============================
+# Middleware Stack
+# =============================
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -58,8 +89,14 @@ MIDDLEWARE = [
     'vcfproject.middleware.AuthMiddleware',
 ]
 
+# =============================
+# URL Configuration
+# =============================
 ROOT_URLCONF = 'vcfproject.urls'
 
+# =============================
+# Templates Configuration
+# =============================
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -75,17 +112,24 @@ TEMPLATES = [
     },
 ]
 
+# =============================
+# WSGI Application
+# =============================
 WSGI_APPLICATION = 'vcfproject.wsgi.application'
 
 # =============================
-# Database
+# Database Configuration
 # =============================
 DATABASES = {
-    'default': dj_database_url.config(default=config('DATABASE_URL'))
+    'default': dj_database_url.config(
+        default=f"postgres://{os.getenv('DB_USER')}:{os.getenv('DB_PASSWORD')}@{os.getenv('DB_HOST')}:{os.getenv('DB_PORT')}/{os.getenv('DB_NAME')}",
+        conn_max_age=600,
+        ssl_require=True
+    )
 }
 
 # =============================
-# Password Validation
+# Password Validators
 # =============================
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
@@ -103,7 +147,7 @@ USE_I18N = True
 USE_TZ = True
 
 # =============================
-# Static Files
+# Static Files Configuration
 # =============================
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / "vcfviewer" / "static"]
@@ -116,7 +160,7 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 AUTH_USER_MODEL = 'members.MemberAccount'
 
 # =============================
-# Authentication URLs
+# Authentication Redirects
 # =============================
 LOGIN_URL = 'members:login'
 ADMIN_LOGIN_URL = 'customadmin:login'
@@ -124,7 +168,7 @@ LOGIN_REDIRECT_URL = 'members:dashboard'
 ADMIN_LOGIN_REDIRECT_URL = 'customadmin:dashboard'
 
 # =============================
-# Logging
+# Logging Configuration
 # =============================
 LOGGING = {
     'version': 1,
