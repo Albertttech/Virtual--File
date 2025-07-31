@@ -2,6 +2,7 @@ modules = ["web", "python-3.12"]
 
 [nix]
 channel = "stable-25_05"
+packages = ["cacert", "freetype", "glibcLocales", "lcms2", "libimagequant", "libjpeg", "libtiff", "libwebp", "libxcrypt", "openjpeg", "pgadmin4", "tcl", "tk", "zlib"]
 
 [[ports]]
 localPort = 8000
