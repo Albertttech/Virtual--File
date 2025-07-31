@@ -29,4 +29,3 @@ tzdata==2025.2
 urllib3==2.5.0
 vobject==0.9.9
 whitenoise==6.9.0
---upgrade-strategy eager
