@@ -46,7 +46,7 @@ class AuthMiddleware:
                 
         return self.get_response(request)
 
-# Commenting out AuthEmailMiddleware temporarily to debug the issue
+# Temporarily disable authentication email check
 # class AuthEmailMiddleware:
 #     def __init__(self, get_response):
 #         self.get_response = get_response

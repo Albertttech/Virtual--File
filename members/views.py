@@ -39,12 +39,28 @@ def forgot_password(request):
 def reset_password(request):
     username = request.GET.get('username', '')  # Get username from query params for GET request
     
+    if not username:
+        messages.error(request, 'Username is required')
+        return redirect('members:forgot_password')
+        
+    # Check if user exists before showing the form
+    User = get_user_model()
+    try:
+        user = User.objects.get(username=username)
+    except User.DoesNotExist:
+        messages.error(request, 'User not found')
+        return redirect('members:forgot_password')
+    
     if request.method == 'POST':
         username = request.POST.get('username', '')
         new_password = request.POST.get('new_password', '')
+        confirm_password = request.POST.get('confirm_password', '')
         
-        if username and new_password:
-            User = get_user_model()
+        if not all([username, new_password, confirm_password]):
+            messages.error(request, 'All fields are required')
+        elif new_password != confirm_password:
+            messages.error(request, 'Passwords do not match')
+        else:
             try:
                 user = User.objects.get(username=username)
                 user.set_password(new_password)  # Using set_password instead of make_password

@@ -7,6 +7,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import logout
 
+# Temporarily disable authentication email check
 def member_required(view_func):
     @wraps(view_func)
     def _wrapped_view(request, *args, **kwargs):
@@ -18,20 +19,7 @@ def member_required(view_func):
             messages.error(request, "Staff members must use the admin interface.")
             return redirect('customadmin:login')
 
-        # Force database query to get latest authentication_email status
-        from members.models import MemberAccount
-        user = MemberAccount.objects.filter(id=request.user.id).first()
-        if not user or not user.authentication_email:
-            # Only allow access to settings and logout
-            allowed_paths = [
-                '/members/settings/',
-                '/members/logout/',
-                '/members/ajax/update-auth-email/'
-            ]
-            if not any(request.path.startswith(path) for path in allowed_paths):
-                messages.warning(request, "Authentication email required. Please set it in settings to continue.")
-                return redirect('members:member_settings')
-                
+        # Skipping authentication email check for now
         return view_func(request, *args, **kwargs)
     return _wrapped_view
 

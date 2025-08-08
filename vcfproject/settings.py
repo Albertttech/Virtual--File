@@ -128,8 +128,6 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'vcfproject.middleware.AuthMiddleware',
-    # 'vcfproject.middleware.AuthEmailMiddleware',
-    'members.middleware.MembersAuthEmailMiddleware',
 ]
 
 # =============================
