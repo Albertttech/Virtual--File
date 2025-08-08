@@ -14,7 +14,7 @@ idna==3.10
 packaging==25.0
 paystackapi==2.1.3
 pillow==11.3.0
-psycopg2-binary==2.9.9
+psycopg==3.1.18
 pypaystack2==2.0.3
 python-dateutil==2.9.0.post0
 python-decouple==3.8
