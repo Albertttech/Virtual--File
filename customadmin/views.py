@@ -6,6 +6,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponseForbidden
 from .forms import VCFFileForm
 from .models import VCFFile
+from members.models import MemberAccount
 from functools import wraps
 import json
 import os
@@ -52,7 +53,6 @@ def logout_view(request):
 def dashboard_view(request):
     """Admin dashboard view"""
     # Import MemberAccount model
-    from members.models import MemberAccount
     active_users = MemberAccount.objects.count()
     total_vcf_files = VCFFile.objects.filter(hidden=False).count()
     total_subscription_vcf = VCFFile.objects.filter(vcf_type='premium', hidden=False).count()

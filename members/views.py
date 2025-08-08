@@ -1,10 +1,10 @@
-
 import os
 import uuid
 import requests
 import hmac
 import hashlib
 import json
+import logging
 
 from django.conf import settings
 from django.shortcuts import render, redirect, get_object_or_404
@@ -16,9 +16,11 @@ from django.contrib import messages
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.hashers import make_password
+from django.db import models, IntegrityError
 
-from .models import VCFFile, UserPurchase
-from .forms import MemberRegisterForm, MemberLoginForm
+from .models import VCFFile, UserPurchase, MemberAccount, EmailVerificationOTP
+from .forms import MemberRegisterForm, MemberLoginForm, AuthenticationEmailForm, UpdateAuthEmailForm, VerifyEmailOTPForm
 from common.decorators import member_required
 from customadmin.models import Contact
 from django.contrib.auth.views import PasswordResetView
@@ -29,6 +31,30 @@ class MemberPasswordResetView(PasswordResetView):
     subject_template_name = 'members/password_reset_subject.txt'
     success_url = '/members/password-reset/done/'
     # Optionally override form_valid to add custom logic/messagess
+
+def forgot_password(request):
+    username = request.GET.get('username', '')
+    return render(request, 'members/forgot_password.html', {'username': username})
+
+def reset_password(request):
+    username = request.GET.get('username', '')  # Get username from query params for GET request
+    
+    if request.method == 'POST':
+        username = request.POST.get('username', '')
+        new_password = request.POST.get('new_password', '')
+        
+        if username and new_password:
+            User = get_user_model()
+            try:
+                user = User.objects.get(username=username)
+                user.set_password(new_password)  # Using set_password instead of make_password
+                user.save()
+                messages.success(request, 'Password reset successful. Please log in.')
+                return redirect('members:login')
+            except User.DoesNotExist:
+                messages.error(request, 'User not found.')
+    
+    return render(request, 'members/reset_password.html', {'username': username})
 
 def get_paystack_credentials():
     """Safe method to get Paystack credentials with multiple fallbacks"""
@@ -490,7 +516,11 @@ def member_register(request):
         form = MemberRegisterForm(request.POST)
         if form.is_valid():
             user = form.save(commit=False)
-            user.username = f"{form.cleaned_data['country_code']}{form.cleaned_data['mobile_number']}"
+            mobile = form.cleaned_data['mobile_number']
+            country_code = form.cleaned_data['country_code']
+            phone_number = f"{country_code}{mobile}"
+            user.username = phone_number
+            user.phone_number = phone_number
             user.is_staff = False
             user.save()
             login(request, user)
@@ -503,9 +533,15 @@ def member_register(request):
 
 def member_login(request):
     if request.user.is_authenticated:
-        if not request.user.is_staff:
+        if request.user.is_staff:
+            logout(request)
+        else:
+            # Force database query to check auth email
+            user = MemberAccount.objects.get(id=request.user.id)
+            if not user.authentication_email:
+                messages.warning(request, "Authentication email required. Please set it in settings to continue.")
+                return redirect('members:member_settings')
             return redirect('members:dashboard')
-        logout(request)
 
     error = None
     if request.method == 'POST':
@@ -517,6 +553,10 @@ def member_login(request):
             else:
                 login(request, user)
                 messages.success(request, "Login successful!")
+                # Force check auth email after login
+                if not user.authentication_email:
+                    messages.warning(request, "Authentication email required. Please set it in settings to continue.")
+                    return redirect('members:member_settings')
                 return redirect('members:dashboard')
         else:
             error = "Invalid credentials."
@@ -715,7 +755,6 @@ def join_free_vcf(request, vcf_id):
 @require_POST
 def ajax_join_vcf(request, vcf_id):
     from customadmin.models import Contact
-    from .models import MemberProfile
     vcf = get_object_or_404(VCFFile, id=vcf_id)
     user = request.user
     # Get profile info
@@ -737,8 +776,18 @@ def ajax_join_vcf(request, vcf_id):
 
 
 # Member settings page
-@member_required
+@login_required  # Use login_required instead of member_required to prevent redirect loops
 def member_settings(request):
+    # Check if user is staff and redirect if needed
+    if request.user.is_staff:
+        logout(request)
+        messages.error(request, "Staff members must use the admin interface.")
+        return redirect('customadmin:login')
+        
+    # Add a warning message if authentication email is not set
+    if not request.user.authentication_email:
+        messages.warning(request, "Please set your authentication email to continue using the platform.")
+    
     password_error = None
     password_success = None
     if request.method == 'POST' and 'old_password' in request.POST:
@@ -849,3 +898,136 @@ def ajax_update_vcf_member(request, vcf_id):
         return JsonResponse({'success': True})
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)})
+
+# AJAX: Update authentication email
+@member_required
+@require_POST
+def ajax_update_auth_email(request):
+    try:
+        data = json.loads(request.body)
+        auth_email = data.get('auth_email', '').strip()
+        if not auth_email:
+            return JsonResponse({'success': False, 'error': 'Authentication email cannot be empty.'})
+        
+        request.user.authentication_email = auth_email
+        request.user.save()
+        return JsonResponse({'success': True})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
+    
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
+from django.conf import settings
+
+@member_required
+def update_authentication_email(request):
+    print("\n=== Starting Email Update Process ===")
+    
+    if request.method == 'POST':
+        print("Processing POST request")
+        form = UpdateAuthEmailForm(request.POST)
+        if form.is_valid():
+            print("Form is valid")
+            new_email = form.cleaned_data['new_email']
+            print(f"New email: {new_email}")
+            
+            try:
+                # Create OTP record
+                otp_record = EmailVerificationOTP.objects.create(
+                    user=request.user,
+                    email=new_email
+                )
+                print(f"Created OTP record with code: {otp_record.otp_code}")
+                
+                # Send OTP email
+                context = {
+                    'otp_code': otp_record.otp_code
+                }
+                email_text = render_to_string('members/email/email_verification_otp.txt', context)
+                
+                try:
+                    print("Attempting to send email...")
+                    send_mail(
+                        'Email Verification Code',
+                        email_text,
+                        settings.DEFAULT_FROM_EMAIL,
+                        [new_email],
+                        fail_silently=False,
+                    )
+                    print("Email sent successfully")
+                    
+                    # Store the new email in session for verification
+                    request.session['pending_email'] = new_email
+                    print("Email stored in session")
+                    
+                    messages.success(request, "Verification code sent to your email.")
+                    return redirect('members:verify_email')
+                    
+                except Exception as e:
+                    print(f"Email sending failed: {str(e)}")
+                    messages.error(request, "Failed to send verification code. Please try again.")
+                    otp_record.delete()
+                    
+            except Exception as e:
+                print(f"Error creating OTP record: {str(e)}")
+                messages.error(request, "An error occurred. Please try again.")
+        else:
+            print(f"Form errors: {form.errors}")
+    else:
+        print("Processing GET request")
+        initial_email = request.GET.get('auth_email', '')
+        print(f"Initial email from GET: {initial_email}")
+        form = UpdateAuthEmailForm(initial={
+            'current_email': request.user.authentication_email or '',
+            'new_email': initial_email
+        })
+    
+    return render(request, 'members/update_auth_email.html', {'form': form})
+
+@member_required
+def verify_email(request):
+    pending_email = request.session.get('pending_email')
+    if not pending_email:
+        messages.error(request, "No email verification in progress.")
+        return redirect('members:member_settings')
+    
+    if request.method == 'POST':
+        form = VerifyEmailOTPForm(request.POST)
+        if form.is_valid():
+            otp_code = form.cleaned_data['otp_code']
+            
+            # Get latest unused OTP for this user and email
+            otp_record = EmailVerificationOTP.objects.filter(
+                user=request.user,
+                email=pending_email,
+                is_used=False
+            ).order_by('-created_at').first()
+            
+            if otp_record and otp_record.is_valid():
+                if otp_record.otp_code == otp_code:
+                    # Update user's authentication email
+                    request.user.authentication_email = pending_email
+                    request.user.save()
+                    
+                    # Mark OTP as used
+                    otp_record.is_used = True
+                    otp_record.save()
+                    
+                    # Clear session
+                    del request.session['pending_email']
+                    
+                    messages.success(request, "Email updated successfully!")
+                    return redirect('members:member_settings')
+                else:
+                    messages.error(request, "Invalid verification code.")
+            else:
+                messages.error(request, "Verification code has expired. Please try again.")
+                return redirect('members:update_authentication_email')
+    else:
+        form = VerifyEmailOTPForm()
+    
+    return render(request, 'members/verify_email.html', {
+        'form': form,
+        'new_email': pending_email
+    })

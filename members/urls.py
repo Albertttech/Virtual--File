@@ -2,7 +2,7 @@ from django.urls import path
 
 from . import views
 from . import views_contact_growth
-from .views import MemberPasswordResetView
+from .views import MemberPasswordResetView, forgot_password, reset_password
 from django.contrib.auth.views import PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView
 
 app_name = 'members'
@@ -35,4 +35,9 @@ urlpatterns = [
     path('check-access/<int:vcf_id>/', views.check_vcf_access, name='check-access'),
     path('payment-complete/', views.payment_complete, name='payment-complete'),
     path('', views.member_login),  # Redirect root to login
+    path('forgot-password/', forgot_password, name='forgot_password'),
+    path('reset-password/', reset_password, name='reset_password'),
+    path('ajax/update-auth-email/', views.ajax_update_auth_email, name='ajax_update_auth_email'),
+    path('update-auth-email/', views.update_authentication_email, name='update_auth_email'),
+    path('verify-email/', views.verify_email, name='verify_email'),
 ]
