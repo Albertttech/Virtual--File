@@ -37,7 +37,5 @@ urlpatterns = [
     path('', views.member_login),  # Redirect root to login
     path('forgot-password/', forgot_password, name='forgot_password'),
     path('reset-password/', reset_password, name='reset_password'),
-    path('ajax/update-auth-email/', views.ajax_update_auth_email, name='ajax_update_auth_email'),
-    path('update-auth-email/', views.update_authentication_email, name='update_auth_email'),
-    path('verify-email/', views.verify_email, name='verify_email'),
+    path('auth_email/', views.auth_email, name='auth_email'),
 ]

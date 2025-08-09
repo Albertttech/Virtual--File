@@ -1,30 +1,8 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from .models import MemberAccount, MemberProfile, EmailVerificationOTP
+from .models import MemberAccount, MemberProfile
 import json
 import re
-
-class UpdateAuthEmailForm(forms.Form):
-    auth_email = forms.EmailField(widget=forms.EmailInput(attrs={
-        'class': 'bg-slate-800 text-white rounded-lg px-4 py-2 w-full',
-        'placeholder': 'Enter authentication email'
-    }))
-
-class VerifyEmailOTPForm(forms.Form):
-    otp_code = forms.CharField(
-        max_length=6,
-        min_length=6,
-        widget=forms.TextInput(attrs={
-            'class': 'bg-slate-800 text-white rounded-lg px-4 py-2 w-full',
-            'placeholder': 'Enter 6-digit code'
-        })
-    )
-
-    def clean_otp_code(self):
-        otp = self.cleaned_data['otp_code']
-        if not otp.isdigit():
-            raise forms.ValidationError("OTP must contain only digits")
-        return otp
 
 class MemberRegisterForm(UserCreationForm):
     # Load and sort country codes
@@ -125,18 +103,4 @@ class MemberProfileForm(forms.ModelForm):
     class Meta:
         model = MemberProfile
         fields = ('first_name', 'last_name', 'email', 'contact_name', 'profile_picture')
-
-class AuthenticationEmailForm(forms.ModelForm):
-    class Meta:
-        model = MemberAccount
-        fields = ['authentication_email']
-        widgets = {
-            'authentication_email': forms.EmailInput(attrs={
-                'class': 'form-control',
-                'placeholder': 'Enter your authentication email',
-            }),
-        }
-        labels = {
-            'authentication_email': 'Authentication Email',
-        }
 

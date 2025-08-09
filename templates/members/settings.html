@@ -225,11 +225,33 @@
   <!-- File Setting Section -->
   <div class="bg-slate-900/80 rounded-xl shadow-lg p-8">
     <h2 class="text-xl font-semibold mb-6 text-blue-300">Account Settings</h2>
-    <form method="get" action="{% url 'members:update_auth_email' %}" class="flex flex-col md:flex-row md:items-center md:gap-4 mb-4">
-      <label for="auth_email_input" class="w-32 text-blue-200 font-medium">Auth Email:</label>
-      <input type="text" id="auth_email_input" name="auth_email" placeholder="Enter authentication email" class="flex-1 bg-slate-800 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400" />
-      <button type="submit" class="ml-2 px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700 transition">Enter</button>
+    
+  <!-- Auth Email Section -->
+  <div class="bg-slate-900/80 rounded-xl shadow-lg p-8 mb-8">
+    <h2 class="text-xl font-semibold mb-6 text-blue-300">Authentication Email</h2>
+    <form method="post" action="{% url 'members:auth_email' %}" id="authEmailForm" autocomplete="off">
+      {% csrf_token %}
+      <div class="flex flex-col md:flex-row md:items-center md:gap-4 mb-4">
+        <label for="auth_email" class="w-32 text-blue-200 font-medium">Authentication Email:</label>
+        <input type="email" id="auth_email_input" name="auth_email" value="{% if request.user.profile and request.user.profile.auth_email %}{{ request.user.profile.auth_email }}{% else %}{{ request.user.email }}{% endif %}" class="flex-1 bg-slate-800 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400" required />
+        <button type="button" id="auth_email_btn" class="ml-2 px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700 transition">Authenticate</button>
+      </div>
     </form>
+    <p id="auth_email_error" class="text-red-500 text-sm mt-2 hidden">Please enter a valid email address.</p>
+    <script>
+      document.getElementById('auth_email_btn').addEventListener('click', function() {
+        const emailInput = document.getElementById('auth_email_input');
+        const errorMessage = document.getElementById('auth_email_error');
+        if (emailInput.checkValidity()) {
+          const emailValue = emailInput.value;
+          errorMessage.classList.add('hidden');
+          window.location.href = `{% url 'members:auth_email' %}?email=${encodeURIComponent(emailValue)}`;
+        } else {
+          errorMessage.classList.remove('hidden');
+        }
+      });
+    </script>
+  </div>
     <div class="flex flex-col md:flex-row md:items-center md:gap-4 mb-4">
       <label for="reset_password_btn" class="w-32 text-blue-200 font-medium">Password Reset:</label>
       <button type="button" id="reset_password_btn" class="ml-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition">Reset Password</button>

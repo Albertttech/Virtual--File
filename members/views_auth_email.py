@@ -25,97 +25,65 @@ from common.decorators import member_required
 from customadmin.models import Contact
 
 @login_required
-def update_auth_email(request):
-    print('DEBUG: Entered update_auth_email view')
-    print(f'DEBUG: Request method: {request.method}')
-    if request.method == 'POST':
-        print(f'DEBUG: POST data: {request.POST}')
-        # For now, just render the update_auth_email.html page
-        return render(request, 'members/update_auth_email.html')
-    return render(request, 'members/update_auth_email.html')
+def member_settings(request):
+    return render(request, 'members/member_settings.html')
 
 @login_required
-def verify_email_otp(request):
-    new_email = request.session.get('new_auth_email')
-    if not new_email:
-        messages.error(request, 'Email verification session expired. Please try again.')
+def update_password(request):
+    if request.method == 'POST':
+        current_password = request.POST.get('current_password')
+        new_password = request.POST.get('new_password')
+        confirm_password = request.POST.get('confirm_password')
+        
+        if new_password != confirm_password:
+            messages.error(request, 'New password and confirm password do not match.')
+            return redirect('members:member_settings')
+        
+        user = request.user
+        if not user.check_password(current_password):
+            messages.error(request, 'Current password is incorrect.')
+            return redirect('members:member_settings')
+        
+        # Update password
+        user.password = make_password(new_password)
+        user.save()
+        
+        messages.success(request, 'Password updated successfully!')
         return redirect('members:member_settings')
     
-    if request.method == 'POST':
-        form = VerifyEmailOTPForm(request.POST)
-        if form.is_valid():
-            otp_code = form.cleaned_data['otp_code']
-            try:
-                # Verify OTP
-                otp = EmailVerificationOTP.objects.get(
-                    user=request.user,
-                    new_email=new_email,
-                    is_used=False
-                )
-                
-                if otp.is_valid() and otp.code == otp_code:
-                    # Update email
-                    request.user.authentication_email = new_email
-                    request.user.save()
-                    
-                    # Mark OTP as used
-                    otp.is_used = True
-                    otp.save()
-                    
-                    # Clear session
-                    del request.session['new_auth_email']
-                    
-                    messages.success(request, 'Email updated successfully!')
-                    return redirect('members:member_settings')
-                else:
-                    messages.error(request, 'Invalid or expired verification code.')
-            except EmailVerificationOTP.DoesNotExist:
-                messages.error(request, 'Verification code not found or expired.')
-    else:
-        form = VerifyEmailOTPForm()
-    
-    return render(request, 'members/update_auth_email.html', {
-        'form': form,
-        'new_email': new_email
-    })
+    return render(request, 'members/update_password.html')
 
 @login_required
-def resend_otp(request):
-    new_email = request.GET.get('email') or request.session.get('new_auth_email')
-    if not new_email:
-        messages.error(request, 'Email not found. Please try again.')
-        return redirect('members:member_settings')
+def purchase_history(request):
+    purchases = UserPurchase.objects.filter(user=request.user).order_by('-date_purchased')
+    return render(request, 'members/purchase_history.html', {'purchases': purchases})
+
+@login_required
+def download_vcf(request, file_id):
+    vcf_file = get_object_or_404(VCFFile, id=file_id, user=request.user)
+    file_path = vcf_file.file.path
     
-    # Generate and save new OTP
-    otp = EmailVerificationOTP.objects.create_otp(
-        user=request.user,
-        new_email=new_email
-    )
+    if not os.path.exists(file_path):
+        raise Http404("File does not exist.")
     
-    # Send OTP email
-    subject = 'Email Verification Code'
-    message = f'Your verification code is: {otp.code}\nThis code will expire in 5 minutes.'
-    try:
-        send_mail(
-            subject,
-            message,
-            settings.DEFAULT_FROM_EMAIL,
-            [new_email],
-            fail_silently=False,
+    response = FileResponse(open(file_path, 'rb'), content_type='text/vcard')
+    response['Content-Disposition'] = f'attachment; filename="{os.path.basename(file_path)}"'
+    return response
+
+@login_required
+def contact_support(request):
+    if request.method == 'POST':
+        subject = request.POST.get('subject')
+        message = request.POST.get('message')
+        
+        # Here you can add logic to save the message to the database or send an email
+        Contact.objects.create(
+            user=request.user,
+            subject=subject,
+            message=message
         )
-        request.session['new_auth_email'] = new_email
-        messages.success(request, 'New verification code sent!')
-    except Exception as e:
-        logging.error(f"Failed to send OTP email: {str(e)}")
-        messages.error(request, 'Failed to send verification code. Please try again.')
+        
+        messages.success(request, 'Your message has been sent to support.')
+        return redirect('members:member_settings')
     
-    return redirect('members:verify_email_otp')
-
-@csrf_exempt
-def stub_auth_email(request):
-    if request.method == 'POST':
-        return JsonResponse({
-            'success': True,
-            'redirect_url': '/settings/'
-        })
-    return JsonResponse({'success': False, 'error': 'Invalid request'}, status=400)
+    return render(request, 'members/contact_support.html')

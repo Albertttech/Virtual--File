@@ -59,6 +59,7 @@ class MemberAccount(AbstractBaseUser, PermissionsMixin):
     is_verified = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
+    is_email_authenticated = models.BooleanField(default=False)
     authentication_email = models.EmailField(max_length=255, blank=True, null=True)
 
     objects = MemberAccountManager()
