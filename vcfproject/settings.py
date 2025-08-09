@@ -191,9 +191,8 @@ USE_TZ = True
 # Static Files Configuration
 # =============================
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [BASE_DIR / "vcfviewer" / "static"]
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATICFILES_DIRS = [BASE_DIR / 'static']  # App-level & global static files
+STATIC_ROOT = BASE_DIR / 'staticfiles'    # Collected static for production
 
 # =============================
 # Custom User Model

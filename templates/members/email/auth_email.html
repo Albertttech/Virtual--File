@@ -1,5 +1,6 @@
 {% extends 'customadmin/base.html' %}
 {% load custom_filters %}
+{% load static %}
 {% block title %}Update Authentication Email{% endblock %}
 
 {% block content %}
@@ -17,8 +18,21 @@
     {% endwith %}
     <form method="POST" autocomplete="off" class="mt-6">
       {% csrf_token %}
-      <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">Update Email</button>
+      <button id="send-code-btn" type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">Send Code</button>
+
+      <div class="flex justify-center mt-6 gap-4">
+        {% for i in "123" %}
+        <input type="text" maxlength="1" placeholder="X" class="w-12 h-12 text-center text-lg font-bold bg-slate-800 text-white rounded-lg border border-blue-700 focus:ring-2 focus:ring-blue-400 outline-none" />
+        {% endfor %}
+        <span class="text-blue-400 text-lg font-bold">-</span>
+        {% for i in "456" %}
+        <input type="text" maxlength="1" placeholder="X" class="w-12 h-12 text-center text-lg font-bold bg-slate-800 text-white rounded-lg border border-blue-700 focus:ring-2 focus:ring-blue-400 outline-none" />
+        {% endfor %}
+      </div>
     </form>
   </div>
 </div>
+
+<script src="{% static 'members/email_auth.js' %}"></script>
 {% endblock %}
+<script src="{% static 'members/email_auth.js' %}"></script>

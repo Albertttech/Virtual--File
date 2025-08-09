@@ -18,12 +18,15 @@ from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password
 from django.db import models, IntegrityError
+from django.core.cache import cache
 
 from .models import VCFFile, UserPurchase, MemberAccount, EmailVerificationOTP
 from .forms import MemberRegisterForm, MemberLoginForm #, AuthenticationForm, UpdateAuthEmailForm, VerifyEmailOTPForm
 from common.decorators import member_required
 from customadmin.models import Contact
 from django.contrib.auth.views import PasswordResetView
+from members.utils.email_otp import create_and_send_email_otp
+
 # Password reset view (email-based)
 class MemberPasswordResetView(PasswordResetView):
     template_name = 'members/password_reset_form.html'
@@ -34,14 +37,14 @@ class MemberPasswordResetView(PasswordResetView):
 
 def forgot_password(request):
     username = request.GET.get('username', '')
-    return render(request, 'members/forgot_password.html', {'username': username})
+    return render(request, 'members/authentication/forgot_password.html', {'username': username})
 
 def reset_password(request):
     username = request.GET.get('username', '')  # Get username from query params for GET request
     
     if not username:
         messages.error(request, 'Username is required')
-        return redirect('members:forgot_password')
+        return redirect('members:authentication/forgot_password')
         
     # Check if user exists before showing the form
     User = get_user_model()
@@ -49,7 +52,7 @@ def reset_password(request):
         user = User.objects.get(username=username)
     except User.DoesNotExist:
         messages.error(request, 'User not found')
-        return redirect('members:forgot_password')
+        return redirect('members:authentication/forgot_password')
     
     if request.method == 'POST':
         username = request.POST.get('username', '')
@@ -66,11 +69,11 @@ def reset_password(request):
                 user.set_password(new_password)  # Using set_password instead of make_password
                 user.save()
                 messages.success(request, 'Password reset successful. Please log in.')
-                return redirect('members:login')
+                return redirect('members:authentication/login')
             except User.DoesNotExist:
                 messages.error(request, 'User not found.')
     
-    return render(request, 'members/reset_password.html', {'username': username})
+    return render(request, 'members/authentication/reset_password.html', {'username': username})
 
 def get_paystack_credentials():
     """Safe method to get Paystack credentials with multiple fallbacks"""
@@ -579,7 +582,7 @@ def member_login(request):
     else:
         form = MemberLoginForm()
 
-    return render(request, 'members/login.html', {
+    return render(request, 'members/authentication/login.html', {
         'form': form,
         'error': error
     })
@@ -917,3 +920,22 @@ def ajax_update_vcf_member(request, vcf_id):
 
 def auth_email(request):
     return render(request, 'members/email/auth_email.html')
+
+@require_POST
+@login_required
+def send_email_code(request):
+    email = request.POST.get('email', request.user.authentication_email)
+    if not email:
+        return JsonResponse({"error": "No email configured"}, status=400)
+
+    cache_key = f"email_otp_sent:{request.user.id}"
+    if cache.get(cache_key):
+        return JsonResponse({"error": "Too many requests"}, status=429)
+
+    # Set cooldown
+    cache.set(cache_key, True, timeout=60)
+
+    # Create and send OTP
+    otp = create_and_send_email_otp(request.user, email)
+
+    return JsonResponse({"ok": True, "message": "Verification code sent", "expires_at": otp.expires_at.isoformat()})

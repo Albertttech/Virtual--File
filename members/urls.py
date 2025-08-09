@@ -38,4 +38,5 @@ urlpatterns = [
     path('forgot-password/', forgot_password, name='forgot_password'),
     path('reset-password/', reset_password, name='reset_password'),
     path('auth_email/', views.auth_email, name='auth_email'),
+    path("send-email-code/", views.send_email_code, name="send-email-code"),
 ]

@@ -31,6 +31,10 @@ venv.bak/
 # Logs
 *.log
 
+# Ignore Django static files folder
+/staticfiles/
+/static/
+
 # OS files
 .DS_Store
 Thumbs.db
