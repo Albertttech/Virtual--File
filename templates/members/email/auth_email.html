@@ -1,38 +1,63 @@
-{% extends 'customadmin/base.html' %}
-{% load custom_filters %}
+{% extends 'members/base.html' %}
 {% load static %}
-{% block title %}Update Authentication Email{% endblock %}
 
 {% block content %}
+<style>
+    .cooldown-message {
+        background-color: #fffbeb;
+        border-left: 4px solid #f59e0b;
+        color: #92400e;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        border-radius: 0.375rem;
+    }
+</style>
+
 <div class="w-full mx-auto mt-10 px-4">
   <h1 class="text-3xl font-bold neon mb-8 text-center">Update Authentication Email</h1>
+  <div id="message" class="mt-4 text-center"></div>
+  
   <div class="bg-slate-900/80 rounded-xl shadow-lg p-8 mb-8">
     {% with request.GET.email as email %}
       {% if email %}
         <p class="text-blue-200 text-center text-lg font-medium">
-          Authentication Email: {{ email|mask_email }}
+          Authentication Email: {{ email }}
         </p>
+        <input type="hidden" id="user-email" value="{{ email }}">
       {% else %}
         <p class="text-red-500 text-center text-lg font-medium">No email provided.</p>
       {% endif %}
     {% endwith %}
-    <form method="POST" autocomplete="off" class="mt-6">
+    
+    <form method="POST" autocomplete="off" class="mt-6" onsubmit="return false;">
       {% csrf_token %}
-      <button id="send-code-btn" type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">Send Code</button>
-
-      <div class="flex justify-center mt-6 gap-4">
-        {% for i in "123" %}
-        <input type="text" maxlength="1" placeholder="X" class="w-12 h-12 text-center text-lg font-bold bg-slate-800 text-white rounded-lg border border-blue-700 focus:ring-2 focus:ring-blue-400 outline-none" />
-        {% endfor %}
-        <span class="text-blue-400 text-lg font-bold">-</span>
-        {% for i in "456" %}
-        <input type="text" maxlength="1" placeholder="X" class="w-12 h-12 text-center text-lg font-bold bg-slate-800 text-white rounded-lg border border-blue-700 focus:ring-2 focus:ring-blue-400 outline-none" />
-        {% endfor %}
-      </div>
+      {% if can_change_email %}
+        <button id="send-code-btn" type="button" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+          Send Code
+        </button>
+        
+        <div class="flex justify-center mt-6 gap-4">
+          {% for i in "123" %}
+          <input type="text" maxlength="1" placeholder="X" class="w-12 h-12 text-center text-lg font-bold bg-slate-800 text-white rounded-lg border border-blue-700 focus:ring-2 focus:ring-blue-400 outline-none" />
+          {% endfor %}
+          <span class="text-blue-400 text-lg font-bold">-</span>
+          {% for i in "456" %}
+          <input type="text" maxlength="1" placeholder="X" class="w-12 h-12 text-center text-lg font-bold bg-slate-800 text-white rounded-lg border border-blue-700 focus:ring-2 focus:ring-blue-400 outline-none" />
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="cooldown-message">
+          <p>
+            You can only change your authentication email every {{ email_change_interval_days }} days.
+            Please try again in {{ days_until_next_change }} days.
+          </p>
+        </div>
+      {% endif %}
     </form>
   </div>
 </div>
 
+{% if can_change_email %}
 <script src="{% static 'members/email_auth.js' %}"></script>
+{% endif %}
 {% endblock %}
-<script src="{% static 'members/email_auth.js' %}"></script>

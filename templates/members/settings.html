@@ -1,4 +1,5 @@
 {% extends 'members/base.html' %}
+{% load static %}
 {% block title %}Settings{% endblock %}
 {% block content %}
 <style>
@@ -227,31 +228,90 @@
     <h2 class="text-xl font-semibold mb-6 text-blue-300">Account Settings</h2>
     
   <!-- Auth Email Section -->
-  <div class="bg-slate-900/80 rounded-xl shadow-lg p-8 mb-8">
-    <h2 class="text-xl font-semibold mb-6 text-blue-300">Authentication Email</h2>
-    <form method="post" action="{% url 'members:auth_email' %}" id="authEmailForm" autocomplete="off">
-      {% csrf_token %}
-      <div class="flex flex-col md:flex-row md:items-center md:gap-4 mb-4">
-        <label for="auth_email" class="w-32 text-blue-200 font-medium">Authentication Email:</label>
-        <input type="email" id="auth_email_input" name="auth_email" value="{% if request.user.profile and request.user.profile.auth_email %}{{ request.user.profile.auth_email }}{% else %}{{ request.user.email }}{% endif %}" class="flex-1 bg-slate-800 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400" required />
-        <button type="button" id="auth_email_btn" class="ml-2 px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700 transition">Authenticate</button>
+<!-- Auth Email Section -->
+<div class="bg-slate-900/80 rounded-xl shadow-lg p-8 mb-8">
+  <h2 class="text-xl font-semibold mb-6 text-blue-300">Authentication Email</h2>
+  <div class="flex flex-col md:flex-row md:items-center md:gap-4 mb-4">
+    <label for="auth_email" class="w-32 text-blue-200 font-medium">Authentication Email:</label>
+    <div class="flex-1 flex items-center gap-2">
+      <input type="email" id="auth_email_input" name="auth_email" 
+             value="{{ request.user.authentication_email|default:'' }}" 
+             class="w-full bg-slate-800 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400" 
+             {% if request.user.authentication_email %}readonly{% endif %} />
+      <div id="auth_email_buttons" class="flex gap-2">
+        {% if not request.user.authentication_email %}
+          <button type="button" class="auth-btn auth-authenticate px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700 transition">
+            Authenticate
+          </button>
+        {% else %}
+          <button type="button" class="auth-btn auth-edit px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700 transition">
+            Edit
+          </button>
+        {% endif %}
       </div>
-    </form>
-    <p id="auth_email_error" class="text-red-500 text-sm mt-2 hidden">Please enter a valid email address.</p>
-    <script>
-      document.getElementById('auth_email_btn').addEventListener('click', function() {
-        const emailInput = document.getElementById('auth_email_input');
-        const errorMessage = document.getElementById('auth_email_error');
-        if (emailInput.checkValidity()) {
-          const emailValue = emailInput.value;
-          errorMessage.classList.add('hidden');
-          window.location.href = `{% url 'members:auth_email' %}?email=${encodeURIComponent(emailValue)}`;
-        } else {
-          errorMessage.classList.remove('hidden');
-        }
-      });
-    </script>
+    </div>
   </div>
+  <p id="auth_email_error" class="text-red-500 text-sm mt-2 hidden">Please enter a valid email address.</p>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const authEmailInput = document.getElementById('auth_email_input');
+  const authEmailButtons = document.getElementById('auth_email_buttons');
+  const authEmailError = document.getElementById('auth_email_error');
+  const originalEmail = authEmailInput.value;
+
+  // Use event delegation for all button clicks
+  authEmailButtons.addEventListener('click', function(e) {
+    if (e.target.classList.contains('auth-edit')) {
+      handleEditClick();
+    } 
+    else if (e.target.classList.contains('auth-cancel')) {
+      handleCancelClick();
+    }
+    else if (e.target.classList.contains('auth-authenticate')) {
+      handleAuthenticateClick();
+    }
+  });
+
+  function handleEditClick() {
+    authEmailInput.readOnly = false;
+    authEmailInput.focus();
+    
+    // Replace edit button with cancel and authenticate buttons
+    authEmailButtons.innerHTML = `
+      <button type="button" class="auth-btn auth-cancel px-3 py-1 bg-gray-600 text-white text-xs rounded hover:bg-gray-700 transition">
+        Cancel
+      </button>
+      <button type="button" class="auth-btn auth-authenticate px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700 transition">
+        Authenticate
+      </button>
+    `;
+  }
+
+  function handleCancelClick() {
+    authEmailInput.readOnly = true;
+    authEmailInput.value = originalEmail;
+    
+    // Restore edit button
+    authEmailButtons.innerHTML = `
+      <button type="button" class="auth-btn auth-edit px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700 transition">
+        Edit
+      </button>
+    `;
+  }
+
+  function handleAuthenticateClick() {
+    if (authEmailInput.checkValidity()) {
+      const emailValue = authEmailInput.value;
+      authEmailError.classList.add('hidden');
+      window.location.href = `{% url 'members:auth_email' %}?email=${encodeURIComponent(emailValue)}`;
+    } else {
+      authEmailError.classList.remove('hidden');
+    }
+  }
+});
+</script>
     <div class="flex flex-col md:flex-row md:items-center md:gap-4 mb-4">
       <label for="reset_password_btn" class="w-32 text-blue-200 font-medium">Password Reset:</label>
       <button type="button" id="reset_password_btn" class="ml-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition">Reset Password</button>

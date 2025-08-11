@@ -27,6 +27,14 @@ from customadmin.models import Contact
 from django.contrib.auth.views import PasswordResetView
 from members.utils.email_otp import create_and_send_email_otp
 
+
+from django.core.mail import send_mail
+import random  # For generating random numbers
+from django.utils import timezone  # For working with timezones
+from django.views.decorators.http import require_http_methods
+from django.db import transaction
+from datetime import timedelta
+
 # Password reset view (email-based)
 class MemberPasswordResetView(PasswordResetView):
     template_name = 'members/password_reset_form.html'
@@ -548,7 +556,7 @@ def member_register(request):
     else:
         form = MemberRegisterForm()
     
-    return render(request, 'members/register.html', {'form': form})
+    return render(request, 'members/authentication/register.html', {'form': form})
 
 def member_login(request):
     if request.user.is_authenticated:
@@ -918,24 +926,139 @@ def ajax_update_vcf_member(request, vcf_id):
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)})
 
+@login_required
+@require_http_methods(["GET", "POST"])
 def auth_email(request):
-    return render(request, 'members/email/auth_email.html')
+    email = request.GET.get('email', '').strip()
+    can_change_email = True
+    days_until_next_change = 0
+    email_change_interval_days = getattr(settings, 'AUTH_EMAIL_CHANGE_INTERVAL', 30)
+    
+    if request.user.is_authenticated:
+        # Check if user has changed email recently
+        if hasattr(request.user, 'auth_email_last_changed') and request.user.auth_email_last_changed:
+            change_interval = timedelta(days=email_change_interval_days)
+            next_change_allowed = request.user.auth_email_last_changed + change_interval
+            
+            if timezone.now() < next_change_allowed:
+                can_change_email = False
+                days_until_next_change = (next_change_allowed - timezone.now()).days
+    
+    return render(request, 'members/email/auth_email.html', {
+        'email': email,
+        'can_change_email': can_change_email,
+        'email_change_interval_days': email_change_interval_days,
+        'days_until_next_change': days_until_next_change
+    })
+    email = request.GET.get('email', '').strip()
+    can_change = True
+    remaining_days = 0
+    
+    if request.user.is_authenticated and request.user.auth_email_last_changed:
+        change_interval = timedelta(days=getattr(settings, 'AUTH_EMAIL_CHANGE_INTERVAL', 30))
+        next_change = request.user.auth_email_last_changed + change_interval
+        
+        if timezone.now() < next_change:
+            can_change = False
+            remaining_days = (next_change - timezone.now()).days
+    
+    return render(request, 'members/email/auth_email.html', {
+        'email': email,
+        'can_change_email': can_change,
+        'remaining_days': remaining_days
+    })
 
 @require_POST
 @login_required
 def send_email_code(request):
-    email = request.POST.get('email', request.user.authentication_email)
-    if not email:
-        return JsonResponse({"error": "No email configured"}, status=400)
+    try:
+        data = json.loads(request.body)
+        email = data.get('email')
+        
+        if not email:
+            return JsonResponse({"error": "Email is required"}, status=400)
 
-    cache_key = f"email_otp_sent:{request.user.id}"
-    if cache.get(cache_key):
-        return JsonResponse({"error": "Too many requests"}, status=429)
+        # Rate limiting for code requests (60 seconds cooldown)
+        cache_key = f"email_otp_sent:{request.user.id}"
+        if cache.get(cache_key):
+            return JsonResponse({"error": "Please wait before requesting another code"}, status=429)
 
-    # Set cooldown
-    cache.set(cache_key, True, timeout=60)
+        # Set cooldown
+        cache.set(cache_key, True, timeout=60)
 
-    # Create and send OTP
-    otp = create_and_send_email_otp(request.user, email)
+        # Create and send OTP
+        EmailVerificationOTP.objects.filter(
+            user=request.user,
+            email=email,
+            is_used=False
+        ).update(is_used=True)
+        
+        code = str(random.randint(100000, 999999))
+        otp = EmailVerificationOTP.objects.create(
+            user=request.user,
+            email=email,
+            code=code,
+            expires_at=timezone.now() + timedelta(minutes=15)
+        )
+        
+        send_mail(
+            'Your Verification Code',
+            f'Your verification code is: {code}',
+            settings.DEFAULT_FROM_EMAIL,
+            [email],
+            fail_silently=False,
+        )
+        
+        return JsonResponse({
+            "ok": True, 
+            "message": f"Verification code sent to {email}"
+        })
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
+    
+@require_POST
+@login_required
+def verify_email_code(request):
+    try:
+        data = json.loads(request.body)
+        email = data.get('email', '').lower().strip()
+        code = data.get('code', '').strip()
+        
+        if not email or not code:
+            return JsonResponse({"success": False, "error": "Email and code are required"}, status=400)
+        
+        otp = EmailVerificationOTP.objects.filter(
+            user=request.user,
+            email=email,
+            code=code,
+            is_used=False,
+            expires_at__gt=timezone.now()
+        ).order_by('-created_at').first()
 
-    return JsonResponse({"ok": True, "message": "Verification code sent", "expires_at": otp.expires_at.isoformat()})
+        if not otp:
+            return JsonResponse({"success": False, "error": "Invalid or expired code"}, status=400)
+
+        otp.is_used = True
+        otp.save()
+
+        user = request.user
+        user.authentication_email = email
+        user.is_email_authenticated = True
+        user.auth_email_last_changed = timezone.now()
+        user.save(update_fields=['authentication_email', 'is_email_authenticated', 'auth_email_last_changed'])
+        
+        return JsonResponse({
+            "success": True,
+            "message": "Email verified and saved successfully!",
+            "redirect_url": reverse('members:dashboard')
+        })
+    except Exception as e:
+        return JsonResponse({"success": False, "error": str(e)}, status=500)
+
+@require_POST
+@login_required
+def refresh_session(request):
+    """Force session refresh after email update"""
+    from django.contrib.auth import update_session_auth_hash
+    update_session_auth_hash(request, request.user)
+    return JsonResponse({"status": "ok"})

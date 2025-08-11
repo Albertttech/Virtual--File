@@ -90,12 +90,19 @@ EMAIL_HOST_USER = config('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default=EMAIL_HOST_USER)
 
+# =================================================
+# Time Interval for Member Auth Email Change
+# =================================================
+AUTH_EMAIL_CHANGE_INTERVAL = int(os.getenv('AUTH_EMAIL_CHANGE_INTERVAL', 30)) 
+
 # =============================
 # Superuser Credentials (For Django Admin)
 # =============================
 SUPERUSER_USERNAME = config('SUPERUSER_USERNAME')
 SUPERUSER_PASSWORD = config('SUPERUSER_PASSWORD')
 SUPERUSER_EMAIL = config('SUPERUSER_EMAIL')
+
+
 
 # =============================
 # Installed Applications

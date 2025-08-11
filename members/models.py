@@ -25,6 +25,10 @@ class MemberAccountManager(BaseUserManager):
             **extra_fields
         )
         user.set_password(password)
+        
+        # Set initial auth_email_last_changed to allow immediate email change
+        user.auth_email_last_changed = timezone.now() - timedelta(days=getattr(settings, 'AUTH_EMAIL_CHANGE_INTERVAL', 30))
+        
         user.save(using=self._db)
         return user
 
@@ -36,18 +40,12 @@ class MemberAccountManager(BaseUserManager):
 
 class MemberAccount(AbstractBaseUser, PermissionsMixin):
     username = models.CharField(max_length=150, unique=True)
-
-    # Allow mobile number to be saved separately
     mobile_number = models.CharField(
         max_length=11,
         unique=True,
         help_text="Local number only, without country code (8-11 digits)."
     )
-
     country_code = models.CharField(max_length=5)
-
-    # phone_number should store country_code + mobile_number.
-    # Ensure max_length is large enough and enforce uniqueness.
     phone_number = models.CharField(
         max_length=20,
         unique=True,
@@ -55,13 +53,23 @@ class MemberAccount(AbstractBaseUser, PermissionsMixin):
         blank=True,
         null=True
     )
-
     is_verified = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_email_authenticated = models.BooleanField(default=False)
-    authentication_email = models.EmailField(max_length=255, blank=True, null=True)
-
+    authentication_email = models.EmailField(
+        max_length=255,
+        unique=True,
+        blank=True,
+        null=True,
+        verbose_name="Authentication Email"
+    )
+    
+    auth_email_last_changed = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name="Last Authentication Email Change"
+    )
     objects = MemberAccountManager()
 
     USERNAME_FIELD = 'phone_number'
@@ -87,7 +95,7 @@ class MemberAccount(AbstractBaseUser, PermissionsMixin):
             return self.username
 
     def clean(self):
-        # Validate mobile number: digits only, 8–11 digits
+        # Validate mobile number
         if not self.mobile_number or not self.mobile_number.isdigit():
             raise ValidationError({'mobile_number': 'Mobile number must contain only digits.'})
         if not (8 <= len(self.mobile_number) <= 11):
@@ -95,11 +103,15 @@ class MemberAccount(AbstractBaseUser, PermissionsMixin):
         if not self.country_code:
             raise ValidationError({'country_code': 'Country code is required.'})
 
-        # Store full phone number in E.164 style: +<country_code><mobile_number>
+        # Store full phone number
         self.phone_number = f"{self.country_code}{self.mobile_number}"
 
+        # Normalize authentication email
+        if self.authentication_email:
+            self.authentication_email = self.authentication_email.lower().strip()
+
     def save(self, *args, **kwargs):
-        self.full_clean()  # Triggers clean()
+        self.full_clean()
         super().save(*args, **kwargs)
 
 
@@ -155,47 +167,25 @@ class UserPurchase(models.Model):
         return f"{self.user} - {self.vcf_file} (${self.amount_paid})"
 
 
-class EmailVerificationOTPManager(models.Manager):
-    def create_otp(self, user, email):
-        """Create and return a new OTP for the given user and email."""
-        otp = self.model(
-            user=user,
-            email=email,
-            otp_code=''.join(random.choices(string.digits, k=6)),
-            expires_at=timezone.now() + timedelta(minutes=5)
-        )
-        otp.save(using=self._db)
-        return otp
-
-
 class EmailVerificationOTP(models.Model):
-    user = models.ForeignKey(
-        MemberAccount,
-        on_delete=models.CASCADE,
-        related_name='email_otps'
-    )
-    email = models.EmailField(max_length=255)
-    otp_code = models.CharField(max_length=6)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    email = models.EmailField()
+    code = models.CharField(max_length=6)
     created_at = models.DateTimeField(auto_now_add=True)
     expires_at = models.DateTimeField()
     is_used = models.BooleanField(default=False)
-
-    objects = EmailVerificationOTPManager()
+    
+    objects = models.Manager()
+    
+    def is_valid(self):
+        return not self.is_used and timezone.now() < self.expires_at
+    
+    class Meta:
+        verbose_name = "Email Verification OTP"
+        verbose_name_plural = "Email Verification OTPs"
+        ordering = ['-created_at']
 
     def save(self, *args, **kwargs):
-        if not self.otp_code:
-            # Generate 6-digit OTP
-            self.otp_code = ''.join(random.choices(string.digits, k=6))
-        if not self.expires_at:
-            # Set expiry to 5 minutes from creation
-            self.expires_at = timezone.now() + timedelta(minutes=5)
+        # Normalize email before saving
+        self.email = self.email.lower().strip()
         super().save(*args, **kwargs)
-
-    def is_valid(self):
-        return (
-            not self.is_used and 
-            timezone.now() <= self.expires_at
-        )
-
-    class Meta:
-        ordering = ['-created_at']
