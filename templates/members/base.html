@@ -66,13 +66,15 @@
     .sortable th { cursor: pointer; }
     .sortable th:hover { color: #6dd5ed; }
     
-    /* Tape Message Styles */
+    /* Updated Tape Message Styles */
     .message-tape {
       position: fixed;
       top: 4rem;
-      left: 0;
-      right: 0;
+      left: 50%;
+      transform: translateX(-50%) translateY(-100%);
       height: 2.5rem;
+      width: 25%;
+      min-width: 300px;
       background: linear-gradient(90deg, #ff9800 0%, #ffc107 100%);
       color: #000;
       display: flex;
@@ -81,18 +83,21 @@
       overflow: hidden;
       z-index: 999;
       box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-      transform: translateY(-100%);
       transition: transform 0.3s ease-out;
+      border-radius: 0 0 0.5rem 0.5rem;
     }
     
     .message-tape.visible {
-      transform: translateY(0);
+      transform: translateX(-50%) translateY(0);
     }
     
     .message-tape-content {
       display: flex;
       white-space: nowrap;
       animation: scrollTape 20s linear infinite;
+      width: 100%;
+      text-align: center;
+      padding: 0 2rem;
     }
     
     @keyframes scrollTape {
@@ -108,8 +113,17 @@
       color: #000;
     }
     
+    .message-tape-trigger {
+      font-style: italic;
+      color: #333;
+      margin-right: 0.5rem;
+      font-weight: 600;
+    }
+    
     @media (max-width: 768px) {
       .message-tape {
+        width: 90%;
+        min-width: auto;
         top: 4rem;
         height: auto;
         min-height: 2.5rem;
@@ -119,6 +133,7 @@
       .message-tape-content {
         white-space: normal;
         animation: none;
+        padding: 0;
       }
     }
   </style>
@@ -128,7 +143,6 @@
 
   <!-- Sidebar -->
   <aside id="sidebar" class="glass fixed inset-y-0 left-0 z-30 w-64 max-w-full h-screen transform transition-transform duration-300 -translate-x-full md:fixed md:top-0 md:left-0 md:h-screen md:z-40 md:translate-x-0 md:static md:transform-none md:flex md:flex-col shadow-xl">
-    <!-- Sidebar content remains the same -->
     <div class="flex items-center h-16 px-6 border-b border-blue-800">
       <span class="text-2xl font-bold tracking-wide neon">VCF Member</span>
     </div>
@@ -180,14 +194,17 @@
     </div>
   </header>
 
-  <!-- Message Tape -->
+  <!-- Updated Message Tape -->
   {% if messages %}
   <div id="messageTape" class="message-tape">
     <div class="message-tape-content">
       {% for message in messages %}
         {% if 'auto-dismiss' in message.tags %}
-          <span class="mx-4 font-medium">{{ message }}</span>
-          <span class="mx-4">•</span>
+          {% if message.extra_tags %}
+            <span class="message-tape-trigger">{{ message.extra_tags }}:</span>
+          {% endif %}
+          <span class="font-medium">{{ message }}</span>
+          {% if not forloop.last %}<span class="mx-2">•</span>{% endif %}
         {% endif %}
       {% endfor %}
     </div>
@@ -231,14 +248,30 @@
         
         // Auto-dismiss after 5 seconds
         setTimeout(() => {
-          messageTape.style.transition = 'transform 0.5s ease-out';
-          messageTape.style.transform = 'translateY(-100%)';
+          messageTape.style.transition = 'transform 0.1s ease-out';
+          messageTape.style.transform = 'translateX(-50%) translateY(-100%)';
           
           // Remove after animation completes
           setTimeout(() => {
             messageTape.remove();
           }, 500);
-        }, 5000); // 5 seconds display time
+        }, 15000); // 15 seconds display time
+
+        // Pause animation on hover
+        messageTape.addEventListener('mouseenter', () => {
+          const content = messageTape.querySelector('.message-tape-content');
+          if (content) {
+            content.style.animationPlayState = 'paused';
+          }
+        });
+        
+        // Resume animation when mouse leaves
+        messageTape.addEventListener('mouseleave', () => {
+          const content = messageTape.querySelector('.message-tape-content');
+          if (content) {
+            content.style.animationPlayState = 'running';
+          }
+        });
       }
     });
   </script>

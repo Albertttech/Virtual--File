@@ -8,6 +8,7 @@ __pycache__/
 .idea/
 
 # Virtual Environments
+mvenv/
 venv/
 env/
 ENV/

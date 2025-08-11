@@ -1,6 +1,6 @@
 # members/middleware.py
 from django.shortcuts import redirect
-from django.urls import reverse
+from django.urls import reverse, resolve
 from django.contrib import messages
 
 

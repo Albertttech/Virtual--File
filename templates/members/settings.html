@@ -3,6 +3,103 @@
 {% block title %}Settings{% endblock %}
 {% block content %}
 <style>
+/* Mobile responsiveness adjustments */
+@media (max-width: 768px) {
+  .tab-bar {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding: 0.5rem 1rem;
+    gap: 0.75rem;
+    scrollbar-width: thin;
+  }
+  .tab-bar::-webkit-scrollbar {
+    height: 4px;
+  }
+  .tab-bar::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.3);
+    border-radius: 2px;
+  }
+  .tab-button {
+    flex: 0 0 auto;
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem;
+  }
+
+  /* Form labels stack above inputs */
+  .flex.md\:flex-row {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 0.5rem !important;
+  }
+  .w-32 {
+    width: 100% !important;
+    text-align: left;
+  }
+  input, select, textarea {
+    width: 100% !important;
+  }
+
+  /* Reduce padding for card sections */
+  .bg-slate-900\/80 {
+    padding: 1rem !important;
+  }
+
+  /* Ensure modals scale properly */
+  .max-w-md {
+    max-width: 90% !important;
+  }
+}
+/* Mobile responsiveness adjustments */
+@media (max-width: 768px) {
+  /* Make tab bar scrollable */
+  .tab-bar {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding: 0.5rem 1rem;
+    gap: 0.75rem;
+    scrollbar-width: thin;
+  }
+  .tab-bar::-webkit-scrollbar {
+    height: 4px;
+  }
+  .tab-bar::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.3);
+    border-radius: 2px;
+  }
+  .tab-button {
+    flex: 0 0 auto;
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem;
+  }
+
+  /* Stack form labels and inputs vertically */
+  .flex.md\:flex-row {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 0.5rem !important;
+  }
+  .w-32 {
+    width: 100% !important;
+    text-align: left;
+  }
+  input, select, textarea {
+    width: 100% !important;
+  }
+
+  /* Reduce card padding */
+  .bg-slate-900\/80 {
+    padding: 1rem !important;
+  }
+
+  /* Ensure modals fit smaller screens */
+  .max-w-md {
+    max-width: 90% !important;
+  }
+}
+</style>
+
+<style>
+  
   .tab-bar {
     background: linear-gradient(90deg, #232946 0%, #6dd5ed 100%);
     border-radius: 2rem;
@@ -236,7 +333,7 @@
       <input type="email" id="auth_email_input" name="auth_email" 
              value="{{ request.user.authentication_email|default:'' }}" 
              class="w-full bg-slate-800 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400" 
-             {% if request.user.authentication_email %}readonly{% endif %} />
+             {% if request.user.authentication_email %}readonly{% endif %} re/>
       <div id="auth_email_buttons" class="flex gap-2">
         {% if not request.user.authentication_email %}
           <button type="button" class="auth-btn auth-authenticate px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700 transition">

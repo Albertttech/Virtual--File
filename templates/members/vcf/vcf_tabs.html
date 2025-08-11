@@ -1,331 +1,696 @@
 {% extends 'members/base.html' %}
 {% block title %}VCF Tabs{% endblock %}
 {% block content %}
+
 <style>
-  .tab-bar {
-    background: linear-gradient(90deg, #232946 0%, #6dd5ed 100%);
-    border-radius: 2rem;
-    box-shadow: 0 4px 24px #6dd5ed33, 0 0 8px #e11d7433;
-    padding: 0.5rem;
-    margin-bottom: 2rem;
-    display: flex;
-    justify-content: center;
-    gap: 1.5rem;
-    max-width: 90%;
-    margin-left: auto;
-    margin-right: auto;
-  }
-  /* Mobile tab bar styles */
-  @media (max-width: 640px) {
-    .tab-bar {
-      flex-direction: column;
-      gap: 0.5rem;
-      padding: 0.5rem 0.5rem;
-      border-radius: 1rem;
-      box-shadow: 0 2px 8px #6dd5ed33;
-      max-width: 100%;
-    }
-    .tab-button {
-      width: 100%;
-      padding: 0.7rem 0.5rem;
-      font-size: 1rem;
-      border-radius: 1rem;
-      margin-bottom: 0.2rem;
-      box-shadow: 0 1px 4px #2193b033;
-    }
-    .tab-button span {
-      font-size: 1rem;
-    }
-  }
-  .tab-button {
-    font-size: 1.1rem;
-    font-weight: 600;
-    padding: 0.75rem 2.5rem;
-    border-radius: 2rem;
-    background: rgba(30,41,59,0.85);
-    color: #fff;
-    border: none;
-    box-shadow: 0 2px 8px #2193b033;
-    transition: all 0.2s cubic-bezier(.4,2,.3,1);
-    cursor: pointer;
-    outline: none;
-    letter-spacing: 0.02em;
+  /* =================== */
+  /* GLOBAL STYLES */
+  /* =================== */
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #0f172a;
+    color: #e2e8f0;
   }
 
-  .tab-button.active, .tab-button:focus {
-    background: linear-gradient(90deg, #6dd5ed 0%, #e11d74 100%);
-    color: #fff;
-    box-shadow: 0 0 16px #6dd5edcc, 0 0 8px #e11d74cc;
-    transform: scale(1.07);
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 16px;
+  }
+
+  h1, h2, h3 {
+    margin: 0;
+    line-height: 1.3;
+  }
+
+  /* =================== */
+  /* HEADER */
+  /* =================== */
+
+  .vcf-header {
+    text-align: center;
+    padding: 24px 0 16px;
+  }
+
+  .vcf-header h1 {
+    font-size: 28px;
+    font-weight: 800;
+    background: linear-gradient(90deg, #6dd5ed, #e11d74);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 8px;
+  }
+
+  .vcf-header p {
+    color: #94a3b8;
+    font-size: 14px;
+    max-width: 400px;
+    margin: 0 auto;
+  }
+
+  /* =================== */
+  /* TAB NAVIGATION */
+  /* =================== */
+
+  .tab-scroll-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 8px;
+    margin-bottom: 28px;
+  }
+
+  .tab-scroll-container::-webkit-scrollbar {
+    display: none;
+  }
+
+  .tab-bar {
+    display: inline-flex;
+    background: rgba(30, 41, 59, 0.8);
+    border-radius: 2rem;
+    padding: 0.5rem;
+    box-shadow: 0 4px 24px rgba(109, 213, 237, 0.2);
+    min-width: max-content;
+    gap: 0.75rem;
+  }
+
+  .tab-button {
+    font-size: 15px;
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+    border-radius: 2rem;
+    background: transparent;
+    color: #94a3b8;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    white-space: nowrap;
+    letter-spacing: -0.01em;
+    min-width: 100px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  .tab-button i {
+    font-size: 18px;
+    margin-bottom: 4px;
+  }
+
+  .tab-button.active,
+  .tab-button:focus {
+    background: linear-gradient(90deg, #6dd5ed, #e11d74);
+    color: white;
+    box-shadow: 0 0 16px rgba(109, 213, 237, 0.4);
+    transform: scale(1.05);
+  }
+
+  .tab-button.active::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #6dd5ed;
   }
 
   .tab-button:not(.active):hover {
-    background: #334155;
     color: #6dd5ed;
-    box-shadow: 0 0 8px #6dd5ed77;
+    background: rgba(109, 213, 237, 0.1);
   }
-  .tab-button span {
-    display: block;
-    line-height: 1.1;
-  }
+
+  /* =================== */
+  /* TAB CONTENT */
+  /* =================== */
+
   .tab-content {
-    animation: fadeInTab 0.5s cubic-bezier(.4,2,.3,1);
-    background: rgba(30,41,59,0.7);
+    background: rgba(30, 41, 59, 0.7);
     border-radius: 1.5rem;
-    box-shadow: 0 8px 32px rgba(31,38,135,0.37), 0 0 24px #2193b0a0;
-    padding: 2.5rem 2rem;
-    margin-bottom: 2.5rem;
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.3), 0 0 24px rgba(33, 147, 176, 0.2);
+    animation: fadeIn 0.5s ease-out;
+    border: 1px solid rgba(109, 213, 237, 0.15);
   }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* =================== */
+  /* SUB-HEADERS */
+  /* =================== */
+
+  .tab-subheader {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(109, 213, 237, 0.2);
+  }
+
+  .tab-subheader svg {
+    width: 20px;
+    height: 20px;
+    color: #6dd5ed;
+  }
+
+  .tab-subheader h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #6dd5ed;
+  }
+
+  /* =================== */
+  /* VCF CARD */
+  /* =================== */
+
   .vcf-card {
-    background: rgba(30,41,59,0.5);
+    background: rgba(30, 41, 59, 0.5);
     border-radius: 1rem;
-    padding: 1.5rem;
+    padding: 18px;
     transition: all 0.3s ease;
-    border: 1px solid rgba(109,213,237,0.2);
+    border: 1px solid rgba(109, 213, 237, 0.2);
+    position: relative;
+    overflow: hidden;
   }
+
+  .vcf-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, #6dd5ed, #e11d74);
+    opacity: 0.3;
+  }
+
   .vcf-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 10px 25px rgba(109,213,237,0.2);
-    border-color: rgba(109,213,237,0.4);
+    box-shadow: 0 10px 25px rgba(109, 213, 237, 0.2);
+    border-color: rgba(109, 213, 237, 0.4);
   }
-  .purchased-badge {
-    background: rgba(16,185,129,0.2);
+
+  .vcf-card h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: white;
+    margin-bottom: 12px;
+  }
+
+  .vcf-details {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+    margin-bottom: 16px;
+  }
+
+  .vcf-contacts {
+    color: #6dd5ed;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .vcf-price {
     color: #10b981;
-    border: 1px solid rgba(16,185,129,0.4);
+    font-weight: 600;
+    background: rgba(16, 185, 129, 0.15);
+    padding: 4px 10px;
+    border-radius: 20px;
   }
-  @keyframes fadeInTab {
-    from { opacity: 0; transform: translateY(30px); }
-    to { opacity: 1; transform: none; }
+
+  /* =================== */
+  /* LIST ITEMS */
+  /* =================== */
+
+  .vcf-list-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 0;
+    border-bottom: 1px solid rgba(109, 213, 237, 0.1);
+  }
+
+  .vcf-list-item:last-child {
+    border-bottom: none;
+  }
+
+  .vcf-list-info {
+    flex: 1;
+  }
+
+  .vcf-list-name {
+    font-weight: 600;
+    color: white;
+    font-size: 15px;
+    margin-bottom: 4px;
+  }
+
+  .vcf-list-contacts {
+    font-size: 13px;
+    color: #6dd5ed;
+  }
+
+  .vcf-list-actions {
+    display: flex;
+    gap: 8px;
+  }
+
+  .vcf-list-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(109, 213, 237, 0.1);
+    color: #6dd5ed;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .vcf-list-btn:hover {
+    background: rgba(109, 213, 237, 0.2);
+  }
+
+  /* =================== */
+  /* DROPDOWN MENU */
+  /* =================== */
+
+  .dropdown-menu {
+    position: absolute;
+    right: 0;
+    top: 40px;
+    z-index: 10;
+    background: #1e293b;
+    border: 1px solid rgba(109, 213, 237, 0.3);
+    border-radius: 12px;
+    padding: 8px 0;
+    min-width: 160px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.2s ease;
+  }
+
+  .dropdown-menu.visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  .dropdown-item {
+    display: block;
+    padding: 10px 16px;
+    color: #e2e8f0;
+    font-size: 14px;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+
+  .dropdown-item:hover {
+    background: rgba(109, 213, 237, 0.15);
+  }
+
+  /* =================== */
+  /* EMPTY STATE */
+  /* =================== */
+
+  .empty-state {
+    text-align: center;
+    padding: 32px 0;
+    color: #94a3b8;
+  }
+
+  .empty-state svg {
+    width: 48px;
+    height: 48px;
+    margin: 0 auto 16px;
+    color: rgba(109, 213, 237, 0.3);
+  }
+
+  .empty-state p {
+    font-size: 15px;
+  }
+
+  /* =================== */
+  /* BUTTONS */
+  /* =================== */
+
+  .btn {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    border-radius: 12px;
+    font-weight: 600;
+    text-align: center;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 15px;
+    background: linear-gradient(90deg, #6dd5ed, #e11d74);
+    color: white;
+    box-shadow: 0 4px 15px rgba(109, 213, 237, 0.3);
+  }
+
+  .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(109, 213, 237, 0.4);
+  }
+
+  /* =================== */
+  /* RESPONSIVE LAYOUTS */
+  /* =================== */
+
+  @media (min-width: 640px) {
+    .tab-scroll-container {
+      overflow-x: visible;
+    }
+    .tab-bar {
+      display: flex;
+      justify-content: center;
+      min-width: auto;
+      width: 100%;
+    }
+    .tab-button {
+      min-width: 120px;
+      flex-direction: row;
+      gap: 8px;
+    }
+    .tab-button i {
+      margin-bottom: 0;
+    }
+  }
+
+  @media (min-width: 768px) {
+    .container {
+      padding: 0 32px;
+    }
+    .vcf-header h1 {
+      font-size: 32px;
+    }
+    .tab-content {
+      padding: 32px;
+    }
+    .vcf-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .vcf-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    .flex-col-md {
+      flex-direction: column;
+    }
+    .myvcf-split {
+      display: flex;
+      gap: 32px;
+    }
+  }
+
+  /* Utility: Hidden class */
+  .hidden {
+    display: none !important;
   }
 </style>
 
-<div class="w-full max-w-6xl mx-auto mt-10 px-4">
-  <h1 class="text-3xl font-bold neon mb-8 text-center">VCF Files Collection</h1>
-  
-  <div class="tab-bar">
-    <button onclick="showTab('myvcf')" id="tab-myvcf" class="tab-button"><span>My VCFs</span></button>
-    <button onclick="showTab('free')" id="tab-free" class="tab-button"><span>Free VCFs</span></button>
-    <button onclick="showTab('premium')" id="tab-premium" class="tab-button"><span>Premium VCFs</span></button>
-    <button onclick="showTab('demo')" id="tab-demo" class="tab-button"><span>Demo VCFs</span></button>
+<!-- Load Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<div class="container">
+  <div class="vcf-header">
+    <h1>VCF Files Collection</h1>
+    <p>Manage your contact files across multiple categories</p>
   </div>
+
+  <!-- Tab Navigation -->
+  <div class="tab-scroll-container">
+    <div class="tab-bar">
+      <button onclick="showTab('myvcf')" id="tab-myvcf" class="tab-button active">
+        <i class="fas fa-user-circle"></i>
+        <span>My VCFs</span>
+      </button>
+      <button onclick="showTab('free')" id="tab-free" class="tab-button">
+        <i class="fas fa-gift"></i>
+        <span>Free</span>
+      </button>
+      <button onclick="showTab('premium')" id="tab-premium" class="tab-button">
+        <i class="fas fa-crown"></i>
+        <span>Premium</span>
+      </button>
+      <button onclick="showTab('demo')" id="tab-demo" class="tab-button">
+        <i class="fas fa-file-alt"></i>
+        <span>Demo</span>
+      </button>
+    </div>
+  </div>
+
   <!-- My VCFs Tab -->
-  <div id="tab-content-myvcf" class="tab-content hidden">
-    <div class="flex flex-col md:flex-row gap-8">
-      <!-- Left: Premium VCFs Subscribed -->
-      <div class="flex-1">
-         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-        </svg>
-        <h3 class="text-lg font-semibold mb-4 text-green-300">Premium VCFs</h3>
-        <div>
-          {% if my_premium_vcfs %}
-            <ul class="divide-y divide-blue-900/40">
-              {% for vcf in my_premium_vcfs %}
-              <li class="flex items-center justify-between py-3 group hover:bg-blue-900/10 rounded-lg px-2 relative">
-                <div class="flex flex-col">
-                  <span class="font-semibold text-base text-white">{{ vcf.name }}</span>
-                  <span class="text-xs text-blue-300 mt-1">
+  <div id="tab-content-myvcf" class="tab-content">
+    <div class="myvcf-split">
+      <!-- Premium VCFs -->
+      <div style="flex: 1;">
+        <div class="tab-subheader">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 5.143L13 24l-2.286-6.857L5 12l5.714-5.143L13 3z" />
+          </svg>
+          <h3>Premium VCFs</h3>
+        </div>
+        {% if my_premium_vcfs %}
+          <div class="vcf-list">
+            {% for vcf in my_premium_vcfs %}
+              <div class="vcf-list-item">
+                <div class="vcf-list-info">
+                  <div class="vcf-list-name">{{ vcf.name }}</div>
+                  <div class="vcf-list-contacts">
                     {% if vcf.unlimited_contacts %}
                       Unlimited contacts
                     {% else %}
                       {{ vcf.max_contacts|default:"0" }} contacts
                     {% endif %}
-                  </span>
+                  </div>
                 </div>
-                <button class="ml-2 p-2 rounded-full hover:bg-blue-900/20 focus:outline-none relative" onclick="toggleDropdown(this)">
-                  <svg class="w-5 h-5 text-blue-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <circle cx="12" cy="5" r="1.5"/>
-                    <circle cx="12" cy="12" r="1.5"/>
-                    <circle cx="12" cy="19" r="1.5"/>
-                  </svg>
-                </button>
-                <div class="dropdown-menu absolute right-0 top-10 z-10 bg-slate-800 border border-blue-900 rounded-lg shadow-lg py-2 w-40 hidden">
-                  <a href="{% url 'members:download-vcf' vcf.id %}" class="block px-4 py-2 text-sm text-blue-200 hover:bg-blue-900/30">Download</a>
-                  <a href="{% url 'members:vcf_file_detail' vcf.id %}" class="block px-4 py-2 text-sm text-blue-200 hover:bg-blue-900/30">View Details</a>
-                  <a href="#" class="block px-4 py-2 text-sm text-red-400 hover:bg-red-900/30">Remove</a>
+                <div class="vcf-list-actions">
+                  <button class="vcf-list-btn" onclick="toggleDropdown(this)">
+                    <i class="fas fa-ellipsis-v"></i>
+                  </button>
+                  <div class="dropdown-menu hidden">
+                    <a href="{% url 'members:download-vcf' vcf.id %}" class="dropdown-item">
+                      <i class="fas fa-download mr-2"></i> Download
+                    </a>
+                    <a href="{% url 'members:vcf_file_detail' vcf.id %}" class="dropdown-item">
+                      <i class="fas fa-info-circle mr-2"></i> View Details
+                    </a>
+                    <a href="#" class="dropdown-item text-red-400">
+                      <i class="fas fa-trash-alt mr-2"></i> Remove
+                    </a>
+                  </div>
                 </div>
-              </li>
-              {% endfor %}
-            </ul>
-          {% else %}
-            <div class="text-center py-8 text-blue-300">
-              <svg class="w-8 h-8 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-              </svg>
-              <p>No premium VCF subscriptions yet.</p>
-            </div>
-          {% endif %}
-        </div>
-      </div>
-<script>
-function toggleDropdown(btn) {
-  const menu = btn.parentElement.querySelector('.dropdown-menu');
-  document.querySelectorAll('.dropdown-menu').forEach(m => {
-    if (m !== menu) m.classList.add('hidden');
-  });
-  menu.classList.toggle('hidden');
-  // Close dropdown on outside click
-  document.addEventListener('click', function handler(e) {
-    if (!btn.contains(e.target) && !menu.contains(e.target)) {
-      menu.classList.add('hidden');
-      document.removeEventListener('click', handler);
-    }
-  });
-}
-</script>
-      <!-- Right: Free VCFs (Demo/Empty for now) -->
-      <div class="flex-1">
-        <h3 class="text-lg font-semibold mb-4 text-blue-300">Free VCFs</h3>
-        {% if my_free_vcfs %}
-          <ul class="divide-y divide-blue-900/40">
-            {% for vcf in my_free_vcfs %}
-            <li class="flex items-center justify-between py-3 group hover:bg-blue-900/10 rounded-lg px-2 relative">
-              <div class="flex flex-col">
-                <span class="font-semibold text-base text-white">{{ vcf.name }}</span>
-                <span class="text-xs text-blue-300 mt-1">
-                  {% if vcf.unlimited_contacts %}
-                    Unlimited contacts
-                  {% else %}
-                    {{ vcf.max_contacts|default:"0" }} contacts
-                  {% endif %}
-                </span>
               </div>
-              <a href="{% url 'members:download-vcf' vcf.id %}" class="ml-2 p-2 rounded-full hover:bg-blue-900/20 focus:outline-none relative">
-                <svg class="w-5 h-5 text-blue-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                </svg>
-                <span class="sr-only">Download</span>
-              </a>
-            </li>
             {% endfor %}
-          </ul>
+          </div>
         {% else %}
-          <div class="text-center py-8 text-blue-300 opacity-60">
-            <svg class="w-8 h-8 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          <div class="empty-state">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 5.143L13 24l-2.286-6.857L5 12l5.714-5.143L13 3z" />
             </svg>
-            <p>No joined free VCFs yet.</p>
+            <p>No premium VCF subscriptions yet</p>
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- Free VCFs -->
+      <div style="flex: 1;">
+        <div class="tab-subheader">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <h3>Free VCFs</h3>
+        </div>
+        {% if my_free_vcfs %}
+          <div class="vcf-list">
+            {% for vcf in my_free_vcfs %}
+              <div class="vcf-list-item">
+                <div class="vcf-list-info">
+                  <div class="vcf-list-name">{{ vcf.name }}</div>
+                  <div class="vcf-list-contacts">
+                    {% if vcf.unlimited_contacts %}
+                      Unlimited contacts
+                    {% else %}
+                      {{ vcf.max_contacts|default:"0" }} contacts
+                    {% endif %}
+                  </div>
+                </div>
+                <div class="vcf-list-actions">
+                  <a href="{% url 'members:download-vcf' vcf.id %}" class="vcf-list-btn">
+                    <i class="fas fa-download"></i>
+                  </a>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="empty-state">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <p>No joined free VCFs yet</p>
           </div>
         {% endif %}
       </div>
     </div>
   </div>
-  <!-- Demo VCFs Tab -->
-  <div id="tab-content-demo" class="tab-content hidden">
-    <h2 class="text-xl font-semibold mb-6 text-blue-300 flex items-center">
-      <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-      </svg>
-      Demo VCF Files
-    </h2>
-    <div class="text-center py-8 text-blue-300">
-      <svg class="w-12 h-12 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-      </svg>
-      <p>No demo VCF files available at the moment</p>
-    </div>
-  </div>
 
   <!-- Free VCFs Tab -->
-  <div id="tab-content-free" class="tab-content">
-    <h2 class="text-xl font-semibold mb-6 text-blue-300 flex items-center">
-      <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+  <div id="tab-content-free" class="tab-content hidden">
+    <div class="tab-subheader">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
       </svg>
-      Free VCF Files
-    </h2>
-    
+      <h3>Free VCF Files</h3>
+    </div>
     {% if free_vcfs %}
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {% for vcf in free_vcfs %}
-      <div class="vcf-card">
-        <h3 class="font-bold text-lg mb-2">{{ vcf.name }}</h3>
-        <div class="flex justify-between text-sm mb-4">
-          <span class="text-blue-300">
-            {% if vcf.unlimited_contacts %}
-              Unlimited contacts
-            {% else %}
-              {{ vcf.max_contacts|default:"0" }} contacts
-            {% endif %}
-          </span>
-        </div>
-        <form method="post" action="{% url 'members:join_free_vcf' vcf.id %}" style="margin:0;">
-          {% csrf_token %}
-          <button type="submit" class="glass-btn w-full text-center py-2 inline-block bg-blue-600/80 hover:bg-blue-700/80">Join</button>
-        </form>
+      <div class="vcf-grid">
+        {% for vcf in free_vcfs %}
+          <div class="vcf-card">
+            <h3>{{ vcf.name }}</h3>
+            <div class="vcf-details">
+              <div class="vcf-contacts">
+                <i class="fas fa-users"></i>
+                {% if vcf.unlimited_contacts %}
+                  Unlimited contacts
+                {% else %}
+                  {{ vcf.max_contacts|default:"0" }} contacts
+                {% endif %}
+              </div>
+            </div>
+            <form method="post" action="{% url 'members:join_free_vcf' vcf.id %}" style="margin:0;">
+              {% csrf_token %}
+              <button type="submit" class="btn">
+                <i class="fas fa-plus-circle mr-2"></i> Join Free
+              </button>
+            </form>
+          </div>
+        {% endfor %}
       </div>
-      {% endfor %}
-    </div>
     {% else %}
-    <div class="text-center py-8 text-blue-300">
-      <svg class="w-12 h-12 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-      </svg>
-      <p>No free VCF files available at the moment</p>
-    </div>
+      <div class="empty-state">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <p>No free VCF files available at the moment</p>
+      </div>
     {% endif %}
   </div>
 
   <!-- Premium VCFs Tab -->
   <div id="tab-content-premium" class="tab-content hidden">
-    <h2 class="text-xl font-semibold mb-6 text-blue-300 flex items-center">
-      <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+    <div class="tab-subheader">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 5.143L13 24l-2.286-6.857L5 12l5.714-5.143L13 3z" />
       </svg>
-      Premium VCF Files
-    </h2>
-    
+      <h3>Premium VCF Files</h3>
+    </div>
     {% if premium_vcfs %}
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {% for vcf in premium_vcfs %}
-        {% if vcf.id not in purchased_ids %}
-        <div class="vcf-card">
-          <div class="flex justify-between items-start mb-2">
-            <h3 class="font-bold text-lg">{{ vcf.name }}</h3>
-          </div>
-          <div class="flex justify-between text-sm mb-4">
-            <span class="text-blue-300">
-              {% if vcf.unlimited_contacts %}
-                Unlimited contacts
-              {% else %}
-                {{ vcf.max_contacts|default:"0" }} contacts
-              {% endif %}
-            </span>
-            <span class="text-green-400 font-medium">₦{{ vcf.subscription_price }}</span>
-          </div>
-          <a href="{% url 'members:subscribe_vcf' vcf.id %}" 
-             class="glass-btn w-full text-center py-2 inline-block bg-gradient-to-r from-blue-500 to-purple-600">
-             Subscribe Now
-          </a>
-        </div>
-        {% endif %}
-      {% endfor %}
-    </div>
+      <div class="vcf-grid">
+        {% for vcf in premium_vcfs %}
+          {% if vcf.id not in purchased_ids %}
+            <div class="vcf-card">
+              <h3>{{ vcf.name }}</h3>
+              <div class="vcf-details">
+                <div class="vcf-contacts">
+                  <i class="fas fa-users"></i>
+                  {% if vcf.unlimited_contacts %}
+                    Unlimited contacts
+                  {% else %}
+                    {{ vcf.max_contacts|default:"0" }} contacts
+                  {% endif %}
+                </div>
+                <div class="vcf-price">₦{{ vcf.subscription_price }}</div>
+              </div>
+              <a href="{% url 'members:subscribe_vcf' vcf.id %}" class="btn">
+                <i class="fas fa-shopping-cart mr-2"></i> Subscribe Now
+              </a>
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
     {% else %}
-    <div class="text-center py-8 text-blue-300">
-      <svg class="w-12 h-12 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-      </svg>
-      <p>No premium VCF files available at the moment</p>
-    </div>
+      <div class="empty-state">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 5.143L13 24l-2.286-6.857L5 12l5.714-5.143L13 3z" />
+        </svg>
+        <p>No premium VCF files available at the moment</p>
+      </div>
     {% endif %}
+  </div>
+
+  <!-- Demo VCFs Tab -->
+  <div id="tab-content-demo" class="tab-content hidden">
+    <div class="tab-subheader">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+      </svg>
+      <h3>Demo VCF Files</h3>
+    </div>
+    <div class="empty-state">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+      </svg>
+      <p>No demo VCF files available at the moment</p>
+    </div>
   </div>
 </div>
 
+<!-- JavaScript -->
 <script>
+  function showTab(tab) {
+    ['myvcf', 'free', 'premium', 'demo'].forEach(t => {
+      document.getElementById(`tab-content-${t}`).classList.add('hidden');
+      document.getElementById(`tab-${t}`).classList.remove('active');
+    });
+    document.getElementById(`tab-content-${tab}`).classList.remove('hidden');
+    document.getElementById(`tab-${tab}`).classList.add('active');
+  }
 
-function showTab(tab) {
-  const tabs = ['myvcf', 'free', 'premium', 'demo'];
-  tabs.forEach(t => {
-    document.getElementById(`tab-content-${t}`).classList.add('hidden');
-    document.getElementById(`tab-${t}`).classList.remove('active');
+  function toggleDropdown(btn) {
+    const menu = btn.nextElementSibling;
+    document.querySelectorAll('.dropdown-menu').forEach(m => {
+      if (m !== menu) m.classList.add('hidden');
+    });
+    menu.classList.toggle('hidden');
+    menu.classList.toggle('visible');
+
+    document.addEventListener('click', function handler(e) {
+      if (!btn.contains(e.target) && !menu.contains(e.target)) {
+        menu.classList.add('hidden');
+        menu.classList.remove('visible');
+        document.removeEventListener('click', handler);
+      }
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    showTab('myvcf');
   });
-  document.getElementById(`tab-content-${tab}`).classList.remove('hidden');
-  document.getElementById(`tab-${tab}`).classList.add('active');
-}
-
-document.addEventListener("DOMContentLoaded", () => {
-  showTab('myvcf');
-});
 </script>
+
 {% endblock %}

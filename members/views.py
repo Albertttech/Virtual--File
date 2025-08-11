@@ -5,46 +5,121 @@ import hmac
 import hashlib
 import json
 import logging
+import random
+from datetime import timedelta
 
 from django.conf import settings
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import get_user_model, authenticate, login, logout, update_session_auth_hash
 from django.http import FileResponse, Http404, JsonResponse, HttpResponse
 from django.urls import reverse
-from django.db import IntegrityError
+from django.db import IntegrityError, models
 from django.contrib import messages
 from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_POST, require_http_methods
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password
-from django.db import models, IntegrityError
 from django.core.cache import cache
+from django.core.mail import send_mail
+from django.utils import timezone
+from django.db import transaction
+from django.contrib.auth.views import PasswordResetView
 
 from .models import VCFFile, UserPurchase, MemberAccount, EmailVerificationOTP
-from .forms import MemberRegisterForm, MemberLoginForm #, AuthenticationForm, UpdateAuthEmailForm, VerifyEmailOTPForm
+from .forms import MemberRegisterForm, MemberLoginForm
 from common.decorators import member_required
 from customadmin.models import Contact
-from django.contrib.auth.views import PasswordResetView
 from members.utils.email_otp import create_and_send_email_otp
-
-
-from django.core.mail import send_mail
-import random  # For generating random numbers
-from django.utils import timezone  # For working with timezones
-from django.views.decorators.http import require_http_methods
-from django.db import transaction
-from datetime import timedelta
-
-
 from .middleware import auth_email_required
 
+# =================================================================
+# Categories in this file:
+# 1. Authentication Views (Login, Register, Password Reset)
+# 2. Payment & Subscription Views (Paystack Integration)
+# 3. VCF File Management Views
+# 4. User Profile & Settings Views
+# 5. Email Authentication Views
+# 6. Helper Functions
+# =================================================================
+
 # Password reset view (email-based)
+# =================================================================
+# 1. Authentication Views
+# =================================================================
+
+def member_register(request):
+    if request.user.is_authenticated:
+        if request.user.is_staff:
+            logout(request)
+        else:
+            return redirect('members:dashboard')
+
+    if request.method == 'POST':
+        form = MemberRegisterForm(request.POST)
+        if form.is_valid():
+            user = form.save(commit=False)
+            mobile = form.cleaned_data['mobile_number']
+            country_code = form.cleaned_data['country_code']
+            phone_number = f"{country_code}{mobile}"
+            user.username = phone_number
+            user.phone_number = phone_number
+            user.is_staff = False
+            user.save()
+            login(request, user)
+            messages.success(request, "Registration successful! You are now logged in.")
+            return redirect('members:dashboard')
+    else:
+        form = MemberRegisterForm()
+    
+    return render(request, 'members/authentication/register.html', {'form': form})
+
+def member_login(request):
+    if request.user.is_authenticated:
+        if request.user.is_staff:
+            logout(request)
+        else:
+            # Force database query to check auth email
+            user = MemberAccount.objects.get(id=request.user.id)
+            if not user.authentication_email:
+                messages.warning(request, "Authentication email required. Please set it in settings to continue.")
+                return redirect('members:member_settings')
+            return redirect('members:dashboard')
+
+    error = None
+    if request.method == 'POST':
+        form = MemberLoginForm(request, data=request.POST)
+        if form.is_valid():
+            user = form.get_user()
+            if user.is_staff:
+                error = "Admins cannot log in here. Please use the admin portal."
+            else:
+                login(request, user)
+                messages.success(request, "Login successful!")
+                # Force check auth email after login
+                if not user.authentication_email:
+                    messages.warning(request, "Authentication email required. Please set it in settings to continue.")
+                    return redirect('members:member_settings')
+                return redirect('members:dashboard')
+        else:
+            error = "Invalid credentials."
+    else:
+        form = MemberLoginForm()
+
+    return render(request, 'members/authentication/login.html', {
+        'form': form,
+        'error': error
+    })
+
+def member_logout(request):
+    logout(request)
+    messages.success(request, "You have been logged out successfully.")
+    return redirect('members:login')
+
 class MemberPasswordResetView(PasswordResetView):
     template_name = 'members/password_reset_form.html'
     email_template_name = 'members/password_reset_email.html'
     subject_template_name = 'members/password_reset_subject.txt'
     success_url = '/members/password-reset/done/'
-    # Optionally override form_valid to add custom logic/messagess
 
 def forgot_password(request):
     username = request.GET.get('username', '')
@@ -85,6 +160,10 @@ def reset_password(request):
                 messages.error(request, 'User not found.')
     
     return render(request, 'members/authentication/reset_password.html', {'username': username})
+
+# =================================================================
+# 2. Payment & Subscription Views (Paystack Integration)
+# =================================================================
 
 @auth_email_required
 def get_paystack_credentials():
@@ -447,6 +526,10 @@ def check_purchases(request):
         })
     return JsonResponse({'purchases': response}, safe=False)
     
+# =================================================================
+# 3. VCF File Management Views
+# =================================================================
+
 @member_required
 def download_vcf(request, vcf_id):
     vcf = get_object_or_404(VCFFile, id=vcf_id)
@@ -760,7 +843,10 @@ def vcf_file_detail(request, vcf_id):
         'user': user
     })
 
-# Helper: get joined free VCF ids for user
+# =================================================================
+# 6. Helper Functions
+# =================================================================
+
 def get_joined_free_vcf_ids(user):
     if not user.is_authenticated:
         return []
@@ -812,7 +898,10 @@ def ajax_join_vcf(request, vcf_id):
     return JsonResponse({'success': True, 'contact': {'name': contact.name, 'phone': contact.phone, 'email': getattr(contact, 'email', '')}})
 
 
-# Member settings page
+# =================================================================
+# 4. User Profile & Settings Views
+# =================================================================
+
 @login_required  # Use login_required instead of member_required to prevent redirect loops
 def member_settings(request):
     # Check if user is staff and redirect if needed
@@ -935,6 +1024,10 @@ def ajax_update_vcf_member(request, vcf_id):
         return JsonResponse({'success': True})
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)})
+
+# =================================================================
+# 5. Email Authentication Views
+# =================================================================
 
 @login_required
 @require_http_methods(["GET", "POST"])

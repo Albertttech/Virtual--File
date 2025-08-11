@@ -22,3 +22,11 @@ def mask_email(email):
         return email
     local, domain = email.split('@', 1)
     return f"{local[:4]}{'x' * 8}@{domain}"
+
+from django import template
+
+register = template.Library()
+
+@register.filter
+def split(value, arg):
+    return value.split(arg)
