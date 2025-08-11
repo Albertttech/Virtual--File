@@ -35,6 +35,9 @@ from django.views.decorators.http import require_http_methods
 from django.db import transaction
 from datetime import timedelta
 
+
+from .middleware import auth_email_required
+
 # Password reset view (email-based)
 class MemberPasswordResetView(PasswordResetView):
     template_name = 'members/password_reset_form.html'
@@ -83,6 +86,7 @@ def reset_password(request):
     
     return render(request, 'members/authentication/reset_password.html', {'username': username})
 
+@auth_email_required
 def get_paystack_credentials():
     """Safe method to get Paystack credentials with multiple fallbacks"""
     if settings.TEST_MODE:
@@ -135,6 +139,7 @@ def test_paystack_connection(request):
         return JsonResponse({'error': str(e)}, status=500)
 
 @member_required
+@auth_email_required
 def test_payment(request, vcf_id):
     if not settings.TEST_MODE:
         raise Http404("Test mode only available when TEST_MODE=True")
@@ -190,7 +195,9 @@ def paystack_webhook(request):
             
         return HttpResponse(status=200)
     return HttpResponse(status=405)
+
 @member_required
+@auth_email_required
 def initiate_payment(request, vcf_id):
     credentials = get_paystack_credentials()
     vcf = get_object_or_404(VCFFile, id=vcf_id, vcf_type='premium', hidden=False)
@@ -490,6 +497,8 @@ def subscribe_vcf(request, vcf_id):
         'has_access': has_access
     })
 
+@member_required
+@auth_email_required
 def vcf_tabs(request):
     # Get joined free VCFs for user
     joined_free_ids = get_joined_free_vcf_ids(request.user)
@@ -523,7 +532,7 @@ def vcf_tabs(request):
     # Debug output
     print(f"User {request.user} purchased IDs: {purchased_ids}")
 
-    return render(request, 'members/vcf_tabs.html', {
+    return render(request, 'members/vcf/vcf_tabs.html', {
         'free_vcfs': free_vcfs,
         'premium_vcfs': premium_vcfs,
         'purchased_ids': purchased_ids,
@@ -641,6 +650,7 @@ def ajax_change_password(request):
         return JsonResponse({'success': False, 'error': f'Unexpected error: {str(e)}'})
 
 @member_required
+@auth_email_required
 def member_dashboard(request):
     # For pie chart: user premium, user free, user demo VCF counts
     user_premium_count = 0

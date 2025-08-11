@@ -228,7 +228,6 @@
     <h2 class="text-xl font-semibold mb-6 text-blue-300">Account Settings</h2>
     
   <!-- Auth Email Section -->
-<!-- Auth Email Section -->
 <div class="bg-slate-900/80 rounded-xl shadow-lg p-8 mb-8">
   <h2 class="text-xl font-semibold mb-6 text-blue-300">Authentication Email</h2>
   <div class="flex flex-col md:flex-row md:items-center md:gap-4 mb-4">
@@ -261,6 +260,25 @@ document.addEventListener('DOMContentLoaded', function() {
   const authEmailError = document.getElementById('auth_email_error');
   const originalEmail = authEmailInput.value;
 
+  // Function to encrypt email for display
+  function encryptEmail(email) {
+    if (!email) return '';
+    const [localPart, domainPart] = email.split('@');
+    if (!localPart || !domainPart) return email;
+    
+    const visibleLocal = localPart.slice(0, 3);
+    const domainParts = domainPart.split('.');
+    const domainExt = domainParts.pop();
+    const domainName = domainParts.join('.');
+    
+    return `${visibleLocal}********@*****.${domainExt}`;
+  }
+
+  // Set initial display value
+  if (originalEmail) {
+    authEmailInput.value = encryptEmail(originalEmail);
+  }
+
   // Use event delegation for all button clicks
   authEmailButtons.addEventListener('click', function(e) {
     if (e.target.classList.contains('auth-edit')) {
@@ -276,6 +294,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   function handleEditClick() {
     authEmailInput.readOnly = false;
+    authEmailInput.value = originalEmail; // Show full email when editing
     authEmailInput.focus();
     
     // Replace edit button with cancel and authenticate buttons
@@ -291,7 +310,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   function handleCancelClick() {
     authEmailInput.readOnly = true;
-    authEmailInput.value = originalEmail;
+    authEmailInput.value = encryptEmail(originalEmail); // Show encrypted email again
     
     // Restore edit button
     authEmailButtons.innerHTML = `
