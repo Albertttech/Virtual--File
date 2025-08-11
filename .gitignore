@@ -39,10 +39,12 @@ venv.bak/
 .DS_Store
 Thumbs.db
 
-# Frontend builds (ignore node_modules and dist)
-/frontend/node_modules/
-/frontend/dist/
+# Ignore entire current React frontend
+/frontend/
+
+# Ignore experimental or extra frontend folders
 /create-react-app-main/
+/frontend-vite/
 /frontend-vite/node_modules/
 /frontend-vite/dist/
 
