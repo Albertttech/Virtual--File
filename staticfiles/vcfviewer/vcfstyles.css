@@ -1,0 +1,295 @@
+/* Fonts & Reset */
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+    font-family: 'Space Grotesk', sans-serif;
+    background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+    background-size: 300% 300%;
+    animation: bgShift 15s ease infinite;
+    color: #f5f5f5;
+}
+
+/* Background Animation */
+@keyframes bgShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* Glass Container */
+.container {
+    max-width: 900px;
+    margin: 60px auto;
+    padding: 50px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 20px;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    animation: fadeInUp 0.9s ease-out;
+}
+
+/* Header Styling */
+h1 {
+    font-size: 38px;
+    font-weight: 700;
+    margin-bottom: 6px;
+    color: #ffffff;
+}
+
+h2 {
+    font-size: 22px;
+    color: #c3c3c3;
+    margin: 30px 0 20px;
+}
+
+/* Contact List Cards */
+ul {
+    list-style: none;
+    margin-top: 10px;
+    padding-left: 0;
+    display: grid;
+    gap: 16px;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+li {
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 15px;
+    padding: 18px 20px;
+    font-size: 16px;
+    font-weight: 500;
+    box-shadow: 0 5px 18px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+    border-left: 3px solid #8e44ad;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+li:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: scale(1.015);
+    border-color: #e67e22;
+}
+
+/* Button – Futuristic Disabled */
+button {
+    margin-top: 35px;
+    background: linear-gradient(135deg, #8e44ad, #3498db);
+    border: none;
+    padding: 14px 30px;
+    font-size: 15px;
+    font-weight: 600;
+    color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 0 12px rgba(142, 68, 173, 0.5);
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+/* Link Back */
+a {
+    margin-top: 35px;
+    display: inline-block;
+    color: #6dd5ed;
+    font-weight: 600;
+    text-decoration: none;
+    border-bottom: 2px solid transparent;
+    transition: 0.3s ease;
+}
+
+a:hover {
+    border-color: #6dd5ed;
+    color: #fff;
+}
+
+/* Animation Entrance */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Mobile */
+@media screen and (max-width: 600px) {
+    .container {
+        padding: 25px;
+    }
+
+    h1 {
+        font-size: 26px;
+    }
+
+    li {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    button {
+        width: 100%;
+    }
+}
+
+
+
+
+/* ⚡️ Energy-Bar Container */
+.energy-bar-container {
+    position: relative;
+    width: 100%;
+    height: 32px;
+    background: rgba(255, 255, 255, 0.07);
+    border-radius: 20px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 0 12px rgba(255, 255, 255, 0.05),
+                inset 0 0 5px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
+}
+
+/* 🌈 The Glowing, Charging Fill */
+.energy-bar-fill {
+    height: 100%;
+    width: var(--progress, 0%);
+    background: linear-gradient(270deg, #00ffe7, #3a9efd, #bc4ed8, #00ffe7);
+    background-size: 400% 400%;
+    animation: energyFlow 4s ease infinite, energyCharge 1s ease-out forwards;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    box-shadow: 0 0 16px rgba(0, 255, 255, 0.4),
+                0 0 30px rgba(100, 149, 237, 0.3);
+    transition: width 0.5s ease-in-out;
+}
+
+/* 🧪 Animated Gradient Glow Movement */
+@keyframes energyFlow {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* 🧪 Initial Fill Animation */
+@keyframes energyCharge {
+    from { width: 0; }
+    to { width: var(--progress); }
+}
+
+/* ✨ Inner Text */
+.energy-bar-fill .progress-text {
+    color: #ffffff;
+    font-weight: bold;
+    font-size: 14px;
+    letter-spacing: 0.5px;
+    text-shadow: 0 0 6px rgba(0, 255, 255, 0.6);
+}
+
+
+/* Fancy movement in gradient */
+@keyframes gradientFlow {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* Optional entry animation */
+@keyframes fillIn {
+    from { width: 0; }
+    to { width: var(--progress, 100%); }
+}
+
+
+/* 💠 Form Styling */
+form {
+    margin-top: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+}
+
+/* Label Styling (if Django renders them) */
+form label {
+    font-weight: 600;
+    color: #ddd;
+    margin-bottom: 6px;
+    display: block;
+}
+
+/* Input / Text Field / Select Styling */
+form input[type="text"],
+form input[type="tel"],
+form input[type="email"],
+form input[type="number"],
+form select,
+form textarea {
+    padding: 14px 16px;
+    border: none;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.08);
+    color: #f9f9f9;
+    font-size: 16px;
+    font-family: inherit;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.3),
+                0 0 8px rgba(255,255,255,0.05);
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+    width: 100%;
+}
+
+form input:focus,
+form textarea:focus,
+form select:focus {
+    outline: none;
+    background: rgba(255, 255, 255, 0.12);
+    box-shadow: 0 0 8px rgba(100, 255, 218, 0.4);
+}
+
+/* Submit Button */
+form button[type="submit"] {
+    background: linear-gradient(135deg, #00c9ff, #92fe9d);
+    padding: 14px 30px;
+    font-size: 16px;
+    font-weight: 600;
+    border: none;
+    border-radius: 12px;
+    color: #000;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 12px rgba(0, 255, 200, 0.4);
+    opacity: 1;
+}
+
+form button[type="submit"]:hover {
+    transform: scale(1.03);
+    box-shadow: 0 0 20px rgba(0, 255, 200, 0.6);
+}
+
+/* Error and success messages */
+form p {
+    margin: 0;
+    font-size: 15px;
+}
+
+form p[style*="color: red"] {
+    color: #ff6b6b !important;
+}
+
+form p[style*="color: green"] {
+    color: #2ecc71 !important;
+}
