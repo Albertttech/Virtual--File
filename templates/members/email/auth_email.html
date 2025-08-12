@@ -1,5 +1,6 @@
 {% extends 'members/base.html' %}
 {% load static %}
+{% load custom_filters %}  {# Make sure this line is present #}
 
 {% block content %}
 <style>
@@ -27,35 +28,17 @@
 </style>
 
 <div class="w-full mx-auto mt-10 px-4">
-  <!-- Add Back Button Here -->
-  <a href="{% url 'members:member_settings' %}" class="back-button">
-    ← Back to Settings
-  </a>
-  
+    
   <h1 class="text-3xl font-bold neon mb-8 text-center">Update Authentication Email</h1>
   <div id="message" class="mt-4 text-center"></div>
   
   <div class="bg-slate-900/80 rounded-xl shadow-lg p-8 mb-8">
     {% with request.GET.email as email %}
       {% if email %}
-        {% with email.split="@") as email_parts %}
-          {% with email_parts.0 as local_part %}
-            {% with email_parts.1 as domain_part %}
-              {% with local_part|slice:":3" as visible_local %}
-                {% with domain_part.split(".") as domain_parts %}
-                  {% with domain_parts|first as domain_name %}
-                    {% with domain_parts|last as domain_ext %}
-                      <p class="text-blue-200 text-center text-lg font-medium">
-                        Authentication Email: {{ visible_local }}********@*****.{{ domain_ext }}
-                      </p>
-                      <input type="hidden" id="user-email" value="{{ email }}">
-                    {% endwith %}
-                  {% endwith %}
-                {% endwith %}
-              {% endwith %}
-            {% endwith %}
-          {% endwith %}
-        {% endwith %}
+        <p class="text-blue-200 text-center text-lg font-medium">
+          Authentication Email: {{ email|mask_email }}
+        </p>
+        <input type="hidden" id="user-email" value="{{ email }}">
       {% else %}
         <p class="text-red-500 text-center text-lg font-medium">No email provided.</p>
       {% endif %}
@@ -86,10 +69,14 @@
         </div>
       {% endif %}
     </form>
+<a href="{% url 'members:member_settings' %}" class="back-button">
+    ← Back to Settings
+  </a>
   </div>
 </div>
 
 {% if can_change_email %}
 <script src="{% static 'members/email_auth.js' %}"></script>
 {% endif %}
+
 {% endblock %}

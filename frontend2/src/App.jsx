@@ -1,49 +1,21 @@
-// frontend2/src/App.jsx
-import { useState, useEffect } from 'react';
-import './App.css';
-
-function App() {
-  const [message, setMessage] = useState('Loading...');
-  const [error, setError] = useState(null);
-  const [status, setStatus] = useState('');
-
-  useEffect(() => {
-    fetch('/api/test/')
-      .then(response => {
-        setStatus(`Status: ${response.status} ${response.statusText}`);
-        const contentType = response.headers.get('content-type');
-        if (contentType && contentType.includes('application/json')) {
-          return response.json();
-        }
-        return response.text();
-      })
-      .then(data => {
-        if (typeof data === 'object' && data.message) {
-          setMessage(data.message);
-          console.log('✅ Success:', data);
-        } else {
-          setMessage(`Received: ${data}`);
-        }
-        setError(null);
-      })
-      .catch(err => {
-        console.error('❌ Fetch error:', err);
-        setError(err.message);
-        setMessage('Failed to connect to Django');
-      });
-  }, []);
-
+// src/App.jsx
+import { Routes, Route } from 'react-router-dom';
+import AdminLayout from './components/AdminLayout';
+import AdminDashboard from './pages/admin/AdminDashboard';
+import AllVcfList from './pages/admin/AllVcfList';
+import CreateVcfForm from './pages/admin/CreateVcfForm';
+import VcfVault from './pages/admin/VcfVault';
+export default function App() {
   return (
-    <div className="App">
-      <h1>Django + Vite React</h1>
-      <div>
-        <h2>Backend Connection Test</h2>
-        <p><strong>Message:</strong> {message}</p>
-        <p><strong>{status}</strong></p>
-        {error && <p style={{ color: 'red' }}><strong>Error:</strong> {error}</p>}
-      </div>
-    </div>
+    <Routes>
+      <Route path="/admin" element={<AdminLayout />}>
+        <Route index element={<AdminDashboard />} />
+        <Route path="dashboard" element={<AdminDashboard />} />
+        <Route path="vcfs" element={<AllVcfList />} />
+        <Route path="create" element={<CreateVcfForm />} />
+        <Route path="vault" element={<VcfVault />} />
+      </Route>
+      <Route path="*" element={<div className="p-6">Not Found</div>} />
+    </Routes>
   );
 }
-
-export default App;

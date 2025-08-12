@@ -834,7 +834,7 @@ def vcf_file_detail(request, vcf_id):
     number = user.mobile_number if hasattr(user, 'mobile_number') else user.username
     main_email = profile.email if profile and profile.email else user.email
     joined = any((c['phone'] == number or c['name'] == profile_name) for c in contacts)
-    return render(request, 'members/vcf_file_detail.html', {
+    return render(request, 'members/vcf/vcf_file_detail.html', {
         'vcf': vcf,
         'contacts': contacts,
         'joined': joined,
