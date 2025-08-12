@@ -1,0 +1,123 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="apple-touch-icon" sizes="76x76" href="{% static 'assets/img/apple-icon.png' %}" />
+    <link rel="icon" type="image/png" href="{% static 'assets/img/favicon.png' %}" />
+    <title>{% block title %}Argon Dashboard 2 Tailwind by Creative Tim{% endblock %}</title>
+    <!-- Fonts and icons -->
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- Nucleo Icons -->
+    <link href="{% static 'assets/css/nucleo-icons.css' %}" rel="stylesheet" />
+    <link href="{% static 'assets/css/nucleo-svg.css' %}" rel="stylesheet" />
+    <!-- Main Styling -->
+    <link href="{% static 'assets/css/argon-dashboard-tailwind.css' %}?v=1.0.1" rel="stylesheet" />
+    {% block extra_styles %}{% endblock %}
+  </head>
+
+  <body class="m-0 font-sans antialiased font-normal bg-white text-start text-base leading-default text-slate-500">
+    <!-- Navbar -->
+    <nav class="absolute top-0 z-30 flex flex-wrap items-center justify-between w-full px-4 py-2 mt-6 mb-4 shadow-none lg:flex-nowrap lg:justify-start">
+      <div class="container flex items-center justify-between py-0 flex-wrap-inherit">
+        <a class="py-1.75 ml-4 mr-4 font-bold text-white text-sm whitespace-nowrap lg:ml-0" href="{% url 'members:dashboard' %}"> 
+          VCF Manager
+        </a>
+        <button navbar-trigger class="px-3 py-1 ml-2 leading-none transition-all ease-in-out bg-transparent border border-transparent border-solid rounded-lg shadow-none cursor-pointer text-lg lg:hidden" type="button" aria-controls="navigation" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="inline-block mt-2 align-middle bg-center bg-no-repeat bg-cover w-6 h-6 bg-none">
+            <span bar1 class="w-5.5 rounded-xs duration-350 relative my-0 mx-auto block h-px bg-white transition-all"></span>
+            <span bar2 class="w-5.5 rounded-xs mt-1.75 duration-350 relative my-0 mx-auto block h-px bg-white transition-all"></span>
+            <span bar3 class="w-5.5 rounded-xs mt-1.75 duration-350 relative my-0 mx-auto block h-px bg-white transition-all"></span>
+          </span>
+        </button>
+        <div navbar-menu class="items-center flex-grow transition-all ease duration-350 lg-max:bg-white lg-max:max-h-0 lg-max:overflow-hidden basis-full rounded-2xl lg:flex lg:basis-auto">
+          <ul class="flex flex-col pl-0 mx-auto mb-0 list-none lg-max:py-2 lg:flex-row xl:ml-auto">
+            <li>
+              <a class="flex items-center px-4 py-2 mr-2 font-normal text-white transition-all ease-in-out duration-250 lg-max:opacity-0 lg-max:text-slate-700 text-sm lg:px-2 lg:hover:text-white/75" aria-current="page" href="{% url 'members:dashboard' %}">
+                Dashboard
+              </a>
+            </li>
+            <li>
+              <a class="block px-4 py-2 mr-2 font-normal text-white transition-all ease-in-out duration-250 lg-max:opacity-0 lg-max:text-slate-700 text-sm lg:px-2 lg:hover:text-white/75" href="#">
+                Profile
+              </a>
+            </li>
+            <li>
+              <a class="block px-4 py-2 mr-2 font-normal text-white transition-all ease-in-out duration-250 lg-max:opacity-0 lg-max:text-slate-700 text-sm lg:px-2 lg:hover:text-white/75" href="#">
+                Sign Up
+              </a>
+            </li>
+            <li>
+              <a class="block px-4 py-2 mr-2 font-normal text-white transition-all ease-in-out duration-250 lg-max:opacity-0 lg-max:text-slate-700 text-sm lg:px-2 lg:hover:text-white/75" href="{% url 'members:login' %}">
+                Sign In
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <main class="mt-0 transition-all duration-200 ease-in-out">
+      {% block content %}
+      <!-- Content will go here in child templates -->
+      {% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="py-12">
+      <div class="container">
+        <div class="flex flex-wrap -mx-3">
+          <div class="flex-shrink-0 w-full max-w-full mx-auto mb-6 text-center lg:flex-0 lg:w-8/12">
+            <a href="javascript:;" target="_blank" class="mb-2 mr-4 text-slate-400 sm:mb-0 xl:mr-12"> Company </a>
+            <a href="javascript:;" target="_blank" class="mb-2 mr-4 text-slate-400 sm:mb-0 xl:mr-12"> About Us </a>
+            <a href="javascript:;" target="_blank" class="mb-2 mr-4 text-slate-400 sm:mb-0 xl:mr-12"> Team </a>
+            <a href="javascript:;" target="_blank" class="mb-2 mr-4 text-slate-400 sm:mb-0 xl:mr-12"> Products </a>
+            <a href="javascript:;" target="_blank" class="mb-2 mr-4 text-slate-400 sm:mb-0 xl:mr-12"> Blog </a>
+            <a href="javascript:;" target="_blank" class="mb-2 mr-4 text-slate-400 sm:mb-0 xl:mr-12"> Pricing </a>
+          </div>
+          <div class="flex-shrink-0 w-full max-w-full mx-auto mt-2 mb-6 text-center lg:flex-0 lg:w-8/12">
+            <a href="javascript:;" target="_blank" class="mr-6 text-slate-400">
+              <span class="text-lg fab fa-dribbble"></span>
+            </a>
+            <a href="javascript:;" target="_blank" class="mr-6 text-slate-400">
+              <span class="text-lg fab fa-twitter"></span>
+            </a>
+            <a href="javascript:;" target="_blank" class="mr-6 text-slate-400">
+              <span class="text-lg fab fa-instagram"></span>
+            </a>
+            <a href="javascript:;" target="_blank" class="mr-6 text-slate-400">
+              <span class="text-lg fab fa-pinterest"></span>
+            </a>
+            <a href="javascript:;" target="_blank" class="mr-6 text-slate-400">
+              <span class="text-lg fab fa-github"></span>
+            </a>
+          </div>
+        </div>
+        <div class="flex flex-wrap -mx-3">
+          <div class="w-8/12 max-w-full px-3 mx-auto mt-1 text-center flex-0">
+            <p class="mb-0 text-slate-400">
+              Copyright ©
+              <script>
+                document.write(new Date().getFullYear());
+              </script>
+              Argon Dashboard 2 by Creative Tim.
+            </p>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- plugin for scrollbar  -->
+    <script src="{% static 'assets/js/perfect-scrollbar.js' %}"></script>
+    <!-- main script file  -->
+    <script src="{% static 'assets/js/argon-dashboard-tailwind.js' %}?v=1.0.1"></script>
+    
+    {% block extra_scripts %}
+    <!-- Additional scripts can go here -->
+    {% endblock %}
+  </body>
+</html>

@@ -113,8 +113,8 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'django.contrib.staticfiles',
-
+    'django.contrib.staticfiles',  
+        
     'django_extensions',
     'paystackapi',
     'vcfviewer',
@@ -136,6 +136,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'vcfproject.middleware.AuthMiddleware', 
+    
 ]
 
 # =============================
@@ -198,10 +199,15 @@ USE_TZ = True
 # =============================
 # Static Files Configuration
 # =============================
+# Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [BASE_DIR / 'static']  # App-level & global static files
-STATIC_ROOT = BASE_DIR / 'staticfiles'    # Collected static for production
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
+# For Whitenoise compression and caching
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 # =============================
 # Custom User Model
 # =============================

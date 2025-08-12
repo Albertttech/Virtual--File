@@ -48,6 +48,7 @@ Thumbs.db
 /frontend-vite/
 /frontend-vite/node_modules/
 /frontend-vite/dist/
+/build/
 
 # Any random temp or backup files
 *.tmp

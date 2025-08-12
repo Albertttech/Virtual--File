@@ -1,103 +1,135 @@
-{% extends 'members/base.html' %}
-{% block title %}Register{% endblock %}
-{% block content %}
-<div class="glass p-8 w-full max-w-md mx-auto mt-[5rem] responsive-card">
-  <h2 class="text-2xl font-bold neon mb-6 text-center">Member Registration</h2>
-  <form method="post" class="space-y-6">
-    {% csrf_token %}
-    {{ form.non_field_errors }}
+{% extends 'members/authentication/authbase.html' %}
+{% load static %}
 
-    <div class="flex items-end gap-2">
-      <div class="flex-1 max-w-[25%]">
-        <label for="id_country_code" class="block mb-1 text-sm font-medium">Country Code</label>
-        <div class="relative">
-          <select id="id_country_code" name="country_code" class="country-code-select w-full bg-gray-800 text-white px-3 py-2 rounded border border-gray-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-500">
-            {% for code, name in form.country_code.field.choices %}
-              {% if name %}
-                {% with code_part=code name_part=name|cut:code %}
-                  <option value="{{ code }}" {% if form.country_code.value == code %}selected{% endif %}>
-                    {{ code_part }}&nbsp;&nbsp;&nbsp;&nbsp;{{ name_part }}
-                  </option>
-                {% endwith %}
-              {% else %}
-                <option value="{{ code }}" {% if form.country_code.value == code %}selected{% endif %}>{{ code }}</option>
-              {% endif %}
-            {% endfor %}
-          </select>
-          {% if form.country_code.errors %}
-            <div class="text-red-400 text-xs mt-1">{{ form.country_code.errors.0 }}</div>
-          {% endif %}
+{% block title %}Sign Up - Argon Dashboard{% endblock %}
+
+{% block extra_styles %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+{% endblock %}
+
+{% block content %}
+<section class="min-h-screen">
+  <div class="bg-top relative flex items-start pt-12 pb-56 m-4 overflow-hidden bg-cover min-h-50-screen rounded-xl bg-[url('https://raw.githubusercontent.com/creativetimofficial/public-assets/master/argon-dashboard-pro/assets/img/signup-cover.jpg')]">
+    <span class="absolute top-0 left-0 w-full h-full bg-center bg-cover bg-gradient-to-tl from-zinc-800 to-zinc-700 opacity-60"></span>
+    <div class="container z-10">
+      <div class="flex flex-wrap justify-center -mx-3">
+        <div class="w-full max-w-full px-3 mx-auto mt-0 text-center lg:flex-0 shrink-0 lg:w-5/12">
+          <h1 class="mt-12 mb-2 text-white">Welcome!</h1>
+          <p class="text-white">Create your account to get started.</p>
         </div>
       </div>
-      <div class="flex-1 w-full">
-        <label for="id_mobile_number" class="block mb-1 text-sm font-medium">Mobile Number</label>
-        <input type="text" name="mobile_number" id="id_mobile_number" 
-               class="w-full bg-gray-800 text-white px-3 py-2 rounded border border-gray-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
-               value="{{ form.mobile_number.value|default_if_none:'' }}">
-        {% if form.mobile_number.errors %}
-          <div class="text-red-400 text-xs mt-1">{{ form.mobile_number.errors.0 }}</div>
-        {% endif %}
+    </div>
+  </div>
+  <div class="container">
+    <div class="flex flex-wrap -mx-3 -mt-48 md:-mt-56 lg:-mt-48">
+      <div class="w-full max-w-full px-3 mx-auto mt-0 md:flex-0 shrink-0 md:w-7/12 lg:w-5/12 xl:w-4/12">
+        <div class="relative z-0 flex flex-col min-w-0 break-words bg-white border-0 shadow-xl rounded-2xl bg-clip-border">
+          <div class="p-6 mb-0 text-center bg-white border-b-0 rounded-t-2xl">
+            <h5>Register</h5>
+          </div>
+          
+          <div class="flex-auto p-6">
+            <form method="post" role="form text-left">
+              {% csrf_token %}
+              {{ form.non_field_errors }}
+
+              <!-- Phone Number Field -->
+              <div class="mb-4">
+                <div class="flex items-end gap-2">
+                  <div class="flex-1 max-w-[25%]">
+                    <label for="id_country_code" class="block mb-1 text-sm font-medium">Country Code</label>
+                    <div class="relative">
+                      <select id="id_country_code" name="country_code" class="country-code-select w-full bg-white text-gray-700 px-3 py-2 rounded border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-500">
+                        {% for code, name in form.country_code.field.choices %}
+                          {% if name %}
+                            {% with code_part=code name_part=name|cut:code %}
+                              <option value="{{ code }}" {% if form.country_code.value == code %}selected{% endif %}>
+                                {{ code_part }}&nbsp;&nbsp;&nbsp;&nbsp;{{ name_part }}
+                              </option>
+                            {% endwith %}
+                          {% else %}
+                            <option value="{{ code }}" {% if form.country_code.value == code %}selected{% endif %}>{{ code }}</option>
+                          {% endif %}
+                        {% endfor %}
+                      </select>
+                      {% if form.country_code.errors %}
+                        <div class="text-red-400 text-xs mt-1">{{ form.country_code.errors.0 }}</div>
+                      {% endif %}
+                    </div>
+                  </div>
+                  <div class="flex-1 w-full">
+                    <label for="id_mobile_number" class="block mb-1 text-sm font-medium">Mobile Number</label>
+                    <input type="text" name="mobile_number" id="id_mobile_number" 
+                           class="w-full bg-white text-gray-700 px-3 py-2 rounded border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
+                           value="{{ form.mobile_number.value|default_if_none:'' }}">
+                    {% if form.mobile_number.errors %}
+                      <div class="text-red-400 text-xs mt-1">{{ form.mobile_number.errors.0 }}</div>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+
+              <!-- Password Field -->
+              <div class="mb-4">
+                <label for="id_password1" class="block mb-1 text-sm font-medium">Password</label>
+                <input type="password" name="password1" id="id_password1" 
+                       class="w-full bg-white text-gray-700 px-3 py-2 rounded border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-500">
+                {% if form.password1.errors %}
+                  <div class="text-red-400 text-xs mt-1">{{ form.password1.errors.0 }}</div>
+                {% endif %}
+              </div>
+
+              <!-- Confirm Password Field -->
+              <div class="mb-4">
+                <label for="id_password2" class="block mb-1 text-sm font-medium">Confirm Password</label>
+                <input type="password" name="password2" id="id_password2" 
+                       class="w-full bg-white text-gray-700 px-3 py-2 rounded border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-500">
+                {% if form.password2.errors %}
+                  <div class="text-red-400 text-xs mt-1">{{ form.password2.errors.0 }}</div>
+                {% endif %}
+              </div>
+
+              <div class="text-center">
+                <button type="submit" class="inline-block w-full px-5 py-2.5 mt-6 mb-2 font-bold text-center text-white align-middle transition-all bg-transparent border-0 rounded-lg cursor-pointer active:opacity-85 hover:-translate-y-px hover:shadow-xs leading-normal text-sm ease-in tracking-tight-rem shadow-md bg-150 bg-x-25 bg-gradient-to-tl from-zinc-800 to-zinc-700 hover:border-slate-700 hover:bg-slate-700 hover:text-white">
+                  Register
+                </button>
+              </div>
+              
+              <p class="mt-4 mb-0 leading-normal text-sm">
+                Already have an account? 
+                <a href="{% url 'members:login' %}" class="font-bold text-slate-700">Sign in</a>
+              </p>
+            </form>
+          </div>
+        </div>
       </div>
     </div>
+  </div>
+</section>
 
-    <div>
-      <label for="id_password1" class="block mb-1 text-sm font-medium">Password</label>
-      <input type="password" name="password1" id="id_password1" 
-             class="w-full bg-gray-800 text-white px-3 py-2 rounded border border-gray-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-500">
-      {% if form.password1.errors %}
-        <div class="text-red-400 text-xs mt-1">{{ form.password1.errors.0 }}</div>
-      {% endif %}
-    </div>
-
-    <div>
-      <label for="id_password2" class="block mb-1 text-sm font-medium">Confirm Password</label>
-      <input type="password" name="password2" id="id_password2" 
-             class="w-full bg-gray-800 text-white px-3 py-2 rounded border border-gray-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-500">
-      {% if form.password2.errors %}
-        <div class="text-red-400 text-xs mt-1">{{ form.password2.errors.0 }}</div>
-      {% endif %}
-    </div>
-
-    <button type="submit" class="w-full glass-btn mt-4 py-2 px-4 bg-blue-600 hover:bg-blue-700 rounded-md transition duration-200">Register</button>
+<script>
+  // Mobile number formatting
+  document.addEventListener('DOMContentLoaded', function() {
+    const mobileInput = document.getElementById('id_mobile_number');
+    if (mobileInput) {
+      mobileInput.addEventListener('input', function(e) {
+        this.value = this.value.replace(/[^0-9]/g, '');
+      });
+    }
     
-    <p class="text-xs text-center mt-4">
-      Already have an account?
-      <a href="{% url 'members:login' %}" class="text-blue-400 hover:underline">Sign in</a>
-    </p>
-  </form>
-</div>
+    // Force proper styling for country code select
+    const select = document.getElementById('id_country_code');
+    if (select) {
+      const options = select.options;
+      for (let i = 0; i < options.length; i++) {
+        options[i].style.color = 'black';
+        options[i].style.backgroundColor = 'white';
+      }
+    }
+  });
+</script>
 
 <style>
-  /* Base select styling - works for closed state */
-  .country-code-select {
-    width: 100%;
-    background-color: rgba(31, 41, 55, 0.8);
-    border: 1px solid rgba(75, 85, 99, 0.8);
-    color: white;
-    padding: 0.5rem;
-    border-radius: 0.25rem;
-    appearance: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-  }
-
-  /* For dropdown options - works in most modern browsers */
-  .country-code-select option {
-    color: black !important;
-    background: white !important;
-  }
-
-  /* Firefox specific fixes */
-  @-moz-document url-prefix() {
-    .country-code-select {
-      color: black;
-      background-color: white;
-    }
-    .country-code-select option {
-      color: black !important;
-    }
-  }
-
   /* Mobile responsiveness */
   @media (max-width: 640px) {
     .flex.items-end.gap-2 {
@@ -110,32 +142,4 @@
     }
   }
 </style>
-
-<script>
-  // Force proper styling for all browsers
-  document.addEventListener('DOMContentLoaded', function() {
-    const select = document.getElementById('id_country_code');
-    
-    // Double enforcement for problematic browsers
-    if (select) {
-      const options = select.options;
-      for (let i = 0; i < options.length; i++) {
-        options[i].style.color = 'black';
-        options[i].style.backgroundColor = 'white';
-      }
-      
-      // Clone and replace to force repaint
-      const newSelect = select.cloneNode(true);
-      select.parentNode.replaceChild(newSelect, select);
-    }
-    
-    // Mobile number formatting example
-    const mobileInput = document.getElementById('id_mobile_number');
-    if (mobileInput) {
-      mobileInput.addEventListener('input', function(e) {
-        this.value = this.value.replace(/[^0-9]/g, '');
-      });
-    }
-  });
-</script>
 {% endblock %}
