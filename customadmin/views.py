@@ -23,25 +23,31 @@ def admin_required(view_func):
 
 def login_view(request):
     """
-    Handle admin authentication with hardcoded credentials (no database)
+    Handle admin authentication with encoded credentials from .env
     """
+    logger.info("Login view accessed")
+    logger.debug(f"Session state: {request.session.items()}")
+
     # If already logged in, redirect to dashboard
     if request.session.get('is_admin'):
+        logger.info("Redirecting to dashboard from login view")
         return redirect('customadmin:dashboard')
 
     error = None
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
-        ADMIN_CREDENTIALS = {
-            'admin': 'admin123',
-        }
-        if username in ADMIN_CREDENTIALS and password == ADMIN_CREDENTIALS[username]:
+        ADMIN_USERNAME = config('ADMIN_USERNAME')
+        ADMIN_PASSWORD = config('ADMIN_PASSWORD')
+
+        if username == ADMIN_USERNAME and password == ADMIN_PASSWORD:
             request.session['is_admin'] = True
             request.session.save()  # Explicit save
+            logger.info("Admin successfully logged in")
             return redirect('customadmin:dashboard')
         else:
             error = "Invalid login credentials."
+            logger.warning("Invalid login attempt")
     return render(request, 'customadmin/admin_login.html', {'error': error})
 
 def logout_view(request):
@@ -52,11 +58,15 @@ def logout_view(request):
 @admin_required
 def dashboard_view(request):
     """Admin dashboard view"""
+    logger.info("Dashboard view accessed")
+    logger.debug(f"Session state: {request.session.items()}")
+
     # Import MemberAccount model
     active_users = MemberAccount.objects.count()
     total_vcf_files = VCFFile.objects.filter(hidden=False).count()
     total_subscription_vcf = VCFFile.objects.filter(vcf_type='premium', hidden=False).count()
     total_free_vcf = VCFFile.objects.filter(vcf_type='free', hidden=False).count()
+    logger.info("Dashboard data fetched successfully")
     return render(request, 'customadmin/dashboard.html', {
         'active_users': active_users,
         'total_vcf_files': total_vcf_files,

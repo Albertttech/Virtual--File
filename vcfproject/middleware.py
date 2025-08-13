@@ -43,7 +43,8 @@ class AuthMiddleware:
 
         # Admin path checks
         if request.path.startswith('/admin/'):
-            if not (request.user.is_authenticated and request.user.is_staff):
+            # Check for session-based admin auth instead of Django user auth
+            if not request.session.get('is_admin'):
                 if current_url_name not in self.admin_exempt_urls:
                     return redirect(settings.ADMIN_LOGIN_URL)
             return None

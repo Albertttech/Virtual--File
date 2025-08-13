@@ -1,603 +1,534 @@
 {% extends 'members/base.html' %}
 {% load static %}
-{% block title %}Settings{% endblock %}
+
+{% block breadcrumb_page %}Profile{% endblock %}
+{% block breadcrumb_page2 %}Profile{% endblock %}
+{% block navbar %}{% endblock %}
+
 {% block content %}
-<style>
-/* Mobile responsiveness adjustments */
-@media (max-width: 768px) {
-  .tab-bar {
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    padding: 0.5rem 1rem;
-    gap: 0.75rem;
-    scrollbar-width: thin;
-  }
-  .tab-bar::-webkit-scrollbar {
-    height: 4px;
-  }
-  .tab-bar::-webkit-scrollbar-thumb {
-    background: rgba(255,255,255,0.3);
-    border-radius: 2px;
-  }
-  .tab-button {
-    flex: 0 0 auto;
-    font-size: 0.9rem;
-    padding: 0.5rem 1rem;
-  }
-
-  /* Form labels stack above inputs */
-  .flex.md\:flex-row {
-    flex-direction: column !important;
-    align-items: flex-start !important;
-    gap: 0.5rem !important;
-  }
-  .w-32 {
-    width: 100% !important;
-    text-align: left;
-  }
-  input, select, textarea {
-    width: 100% !important;
-  }
-
-  /* Reduce padding for card sections */
-  .bg-slate-900\/80 {
-    padding: 1rem !important;
-  }
-
-  /* Ensure modals scale properly */
-  .max-w-md {
-    max-width: 90% !important;
-  }
-}
-/* Mobile responsiveness adjustments */
-@media (max-width: 768px) {
-  /* Make tab bar scrollable */
-  .tab-bar {
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    padding: 0.5rem 1rem;
-    gap: 0.75rem;
-    scrollbar-width: thin;
-  }
-  .tab-bar::-webkit-scrollbar {
-    height: 4px;
-  }
-  .tab-bar::-webkit-scrollbar-thumb {
-    background: rgba(255,255,255,0.3);
-    border-radius: 2px;
-  }
-  .tab-button {
-    flex: 0 0 auto;
-    font-size: 0.9rem;
-    padding: 0.5rem 1rem;
-  }
-
-  /* Stack form labels and inputs vertically */
-  .flex.md\:flex-row {
-    flex-direction: column !important;
-    align-items: flex-start !important;
-    gap: 0.5rem !important;
-  }
-  .w-32 {
-    width: 100% !important;
-    text-align: left;
-  }
-  input, select, textarea {
-    width: 100% !important;
-  }
-
-  /* Reduce card padding */
-  .bg-slate-900\/80 {
-    padding: 1rem !important;
-  }
-
-  /* Ensure modals fit smaller screens */
-  .max-w-md {
-    max-width: 90% !important;
-  }
-}
-</style>
-
-<style>
-  
-  .tab-bar {
-    background: linear-gradient(90deg, #232946 0%, #6dd5ed 100%);
-    border-radius: 2rem;
-    box-shadow: 0 4px 24px #6dd5ed33, 0 0 8px #e11d7433;
-    padding: 0.5rem;
-    margin-bottom: 2rem;
-    display: flex;
-    justify-content: center;
-    gap: 1.5rem;
-    max-width: 90%;
-    margin-left: auto;
-    margin-right: auto;
-  }
-  .tab-button {
-    font-size: 1.1rem;
-    font-weight: 600;
-    padding: 0.75rem 2.5rem;
-    border-radius: 2rem;
-    background: rgba(30,41,59,0.85);
-    color: #fff;
-    border: none;
-    box-shadow: 0 2px 8px #2193b033;
-    transition: all 0.2s cubic-bezier(.4,2,.3,1);
-    cursor: pointer;
-    outline: none;
-    letter-spacing: 0.02em;
-  }
-  .tab-button.active, .tab-button:focus {
-    background: linear-gradient(90deg, #6dd5ed 0%, #e11d74 100%);
-    color: #fff;
-    box-shadow: 0 0 16px #6dd5edcc, 0 0 8px #e11d74cc;
-    transform: scale(1.07);
-  }
-  .tab-button:not(.active):hover {
-    background: #334155;
-    color: #6dd5ed;
-    box-shadow: 0 0 8px #6dd5ed77;
-  }
-  .tab-button span {
-    display: block;
-    line-height: 1.1;
-  }
-</style>
-<div class="w-full mx-auto mt-10 px-4">
-  <h1 class="text-3xl font-bold neon mb-8 text-center">Settings</h1>
-  <!-- Profile Section -->
-  <div class="bg-slate-900/80 rounded-xl shadow-lg p-8 mb-8">
-    <h2 class="text-xl font-semibold mb-6 text-blue-300">Profile</h2>
-    <div class="space-y-4">
-      <form method="post" action="" autocomplete="off">
-        {% csrf_token %}
-        <div class="flex flex-col md:flex-row md:items-center md:gap-4 mb-4">
-          <label for="profile_name" class="w-32 text-blue-200 font-medium">Profile Name:</label>
-          <input type="text" id="profile_name_input" name="profile_name" value="{% if request.user.profile %}{{ request.user.profile.profile_name }}{% else %}{% endif %}" placeholder="Enter your name" class="flex-1 bg-slate-800 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400" readonly />
-          <button type="button" id="profile_name_btn" class="ml-2 px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700 transition">Edit</button>
+{% csrf_token %}
+<div class="relative w-full mx-auto mt-60">
+  <div class="relative flex flex-col flex-auto min-w-0 p-4 mx-6 overflow-hidden break-words bg-white border-0 dark:bg-slate-850 dark:shadow-dark-xl shadow-3xl rounded-2xl bg-clip-border">
+    <div class="flex flex-wrap -mx-3">
+      <div class="flex-none w-auto max-w-full px-3">
+        <div class="relative inline-flex items-center justify-center text-white transition-all duration-200 ease-in-out text-base h-19 w-19 rounded-xl">
+          <img src="{% static 'assets/img/team-1.jpg' %}" alt="profile_image" class="w-full shadow-2xl rounded-xl" />
         </div>
-        <div class="flex flex-col md:flex-row md:items-center md:gap-4 mb-4">
-          <label for="name" class="w-32 text-blue-200 font-medium">Contact:</label>
-          <input type="text" id="name" name="name" value="{{ request.user.get_full_name|default:request.user.username }}" class="flex-1 bg-slate-800 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400" readonly />
+      </div>
+      <div class="flex-none w-auto max-w-full px-3 my-auto">
+        <div class="h-full">
+          <h5 class="mb-1 dark:text-white">Sayo Kravits</h5>
+          <p class="mb-0 font-semibold leading-normal dark:text-white dark:opacity-60 text-sm">Public Relations</p>
         </div>
-        <div class="flex flex-col md:flex-row md:items-center md:gap-4 mb-4">
-          <label for="email" class="w-32 text-blue-200 font-medium">Email:</label>
-          <input type="email" id="email_input" name="email" value="{% if request.user.profile and request.user.profile.email %}{{ request.user.profile.email }}{% else %}{{ request.user.email }}{% endif %}" class="flex-1 bg-slate-800 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400" readonly />
-          <button type="button" id="email_btn" class="ml-2 px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700 transition">Edit</button>
+      </div>
+      <div class="w-full max-w-full px-3 mx-auto mt-4 sm:my-auto sm:mr-0 md:w-1/2 md:flex-none lg:w-4/12">
+        <div class="relative right-0">
+          <ul class="relative flex flex-wrap p-1 list-none bg-gray-50 rounded-xl" nav-pills role="tablist">
+            <li class="z-30 flex-auto text-center">
+              <a id="app-tab" class="z-30 flex items-center justify-center w-full px-0 py-1 mb-0 transition-all ease-in-out border-0 rounded-lg bg-inherit text-slate-700 active" nav-link href="#app-content" role="tab" aria-selected="true">
+                <i class="ni ni-app"></i>
+                <span class="ml-2">App</span>
+              </a>
+            </li>
+            <li class="z-30 flex-auto text-center">
+              <a id="messages-tab" class="z-30 flex items-center justify-center w-full px-0 py-1 mb-0 transition-all ease-in-out border-0 rounded-lg bg-inherit text-slate-700" nav-link href="#messages-content" role="tab" aria-selected="false">
+                <i class="ni ni-email-83"></i>
+                <span class="ml-2">Messages</span>
+              </a>
+            </li>
+            <li class="z-30 flex-auto text-center">
+              <a id="settings-tab" class="z-30 flex items-center justify-center w-full px-0 py-1 mb-0 transition-colors ease-in-out border-0 rounded-lg bg-inherit text-slate-700" nav-link href="#settings-content" role="tab" aria-selected="false">
+                <i class="ni ni-settings-gear-65"></i>
+                <span class="ml-2">Settings</span>
+              </a>
+            </li>
+          </ul>
         </div>
-        <!-- AJAX Save/Edit logic will be handled by JavaScript below -->
-      </form>
-      <script>
-        function toggleEdit(inputId, btnId, url, field) {
-          const input = document.getElementById(inputId);
-          const btn = document.getElementById(btnId);
-          let editing = false;
-          btn.addEventListener('click', function() {
-            if (!editing) {
-              input.readOnly = false;
-              input.focus();
-              btn.textContent = 'Save';
-              editing = true;
-            } else {
-              // Save via AJAX
-              const value = input.value;
-              btn.disabled = true;
-              fetch(url, {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                  'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
-                },
-                body: JSON.stringify({ [field]: value })
-              })
-              .then(r => r.json())
-              .then(data => {
-                if (data.success) {
-                  input.readOnly = true;
-                  btn.textContent = 'Edit';
-                  editing = false;
-                } else {
-                  alert(data.error || 'Save failed');
-                }
-              })
-              .catch(() => alert('Save failed'))
-              .finally(() => { btn.disabled = false; });
-            }
-          });
-        }
-        document.addEventListener('DOMContentLoaded', function() {
-          toggleEdit('profile_name_input', 'profile_name_btn', '{% url "members:ajax_update_profile_name" %}', 'profile_name');
-          toggleEdit('email_input', 'email_btn', '{% url "members:ajax_update_email" %}', 'email');
-        });
-      </script>
-      </form>
-      <div class="flex flex-col md:flex-row md:items-center md:gap-4 mb-2">
-        <label class="w-32 text-blue-200 font-medium">Demo:</label>
-        <span class="text-blue-400">Coming soon...</span>
       </div>
     </div>
   </div>
-  <!-- File Setting Section -->
-  <!-- Radio Section -->
-  <div class="bg-slate-900/80 rounded-xl shadow-lg p-8 mb-8">
-    <h2 class="text-xl font-semibold mb-6 text-blue-300">Box Options</h2>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <div class="flex items-center space-x-2 mb-4 md:mb-0">
-        <input id="box1" name="box-group" type="checkbox" class="accent-blue-500 w-5 h-5 rounded border-2 border-blue-400 focus:ring-2 focus:ring-blue-400" />
-        <label for="box1" class="text-blue-200">Demo 1</label>
+</div>
+
+<!-- Tab Contents -->
+<div class="w-full p-6 mx-auto">
+  <!-- App Content -->
+  <div id="app-content" class="tab-content active">
+    <div class="flex flex-wrap -mx-3">
+      <div class="w-full max-w-full px-3 shrink-0 md:w-8/12 md:flex-0">
+        <div class="relative flex flex-col min-w-0 break-words bg-white border-0 shadow-xl dark:bg-slate-850 dark:shadow-dark-xl rounded-2xl bg-clip-border">
+          <div class="border-black/12.5 rounded-t-2xl border-b-0 border-solid p-6 pb-0">
+            <div class="flex items-center">
+              <p class="mb-0 dark:text-white/80">Edit Profile</p>
+              <button type="button" class="inline-block px-8 py-2 mb-4 ml-auto font-bold leading-normal text-center text-white align-middle transition-all ease-in bg-blue-500 border-0 rounded-lg shadow-md cursor-pointer text-xs tracking-tight-rem hover:shadow-xs hover:-translate-y-px active:opacity-85">Settings</button>
+            </div>
+          </div>
+          <div class="flex-auto p-6">
+            <p class="leading-normal uppercase dark:text-white dark:opacity-60 text-sm">App Information</p>
+            <div class="flex flex-wrap -mx-3">
+              <div class="w-full max-w-full px-3 shrink-0 md:w-6/12 md:flex-0">
+                <div class="mb-4">
+                  <label for="username" class="inline-block mb-2 ml-1 font-bold text-xs text-slate-700 dark:text-white/80">Username</label>
+                  <input type="text" name="username" value="lucky.jesse" class="focus:shadow-primary-outline dark:bg-slate-850 dark:text-white text-sm leading-5.6 ease block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding px-3 py-2 font-normal text-gray-700 outline-none transition-all placeholder:text-gray-500 focus:border-blue-500 focus:outline-none" />
+                </div>
+              </div>
+              <div class="w-full max-w-full px-3 shrink-0 md:w-6/12 md:flex-0">
+                <div class="mb-4">
+                  <label for="email" class="inline-block mb-2 ml-1 font-bold text-xs text-slate-700 dark:text-white/80">Email address</label>
+                  <input type="email" name="email" value="jesse@example.com" class="focus:shadow-primary-outline dark:bg-slate-850 dark:text-white text-sm leading-5.6 ease block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding px-3 py-2 font-normal text-gray-700 outline-none transition-all placeholder:text-gray-500 focus:border-blue-500 focus:outline-none" />
+                </div>
+              </div>
+              <div class="w-full max-w-full px-3 shrink-0 md:w-6/12 md:flex-0">
+                <div class="mb-4">
+                  <label for="first name" class="inline-block mb-2 ml-1 font-bold text-xs text-slate-700 dark:text-white/80">First name</label>
+                  <input type="text" name="first name" value="Jesse" class="focus:shadow-primary-outline dark:bg-slate-850 dark:text-white text-sm leading-5.6 ease block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding px-3 py-2 font-normal text-gray-700 outline-none transition-all placeholder:text-gray-500 focus:border-blue-500 focus:outline-none" />
+                </div>
+              </div>
+              <div class="w-full max-w-full px-3 shrink-0 md:w-6/12 md:flex-0">
+                <div class="mb-4">
+                  <label for="last name" class="inline-block mb-2 ml-1 font-bold text-xs text-slate-700 dark:text-white/80">Last name</label>
+                  <input type="text" name="last name" value="Lucky" class="focus:shadow-primary-outline dark:bg-slate-850 dark:text-white text-sm leading-5.6 ease block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding px-3 py-2 font-normal text-gray-700 outline-none transition-all placeholder:text-gray-500 focus:border-blue-500 focus:outline-none" />
+                </div>
+              </div>
+            </div>
+            <hr class="h-px mx-0 my-4 bg-transparent border-0 opacity-25 bg-gradient-to-r from-transparent via-black/40 to-transparent dark:bg-gradient-to-r dark:from-transparent dark:via-white dark:to-transparent " />
+            
+            <p class="leading-normal uppercase dark:text-white dark:opacity-60 text-sm">Contact Information</p>
+            <div class="flex flex-wrap -mx-3">
+              <div class="w-full max-w-full px-3 shrink-0 md:w-full md:flex-0">
+                <div class="mb-4">
+                  <label for="address" class="inline-block mb-2 ml-1 font-bold text-xs text-slate-700 dark:text-white/80">Address</label>
+                  <input type="text" name="address" value="Bld Mihail Kogalniceanu, nr. 8 Bl 1, Sc 1, Ap 09" class="focus:shadow-primary-outline dark:bg-slate-850 dark:text-white text-sm leading-5.6 ease block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding px-3 py-2 font-normal text-gray-700 outline-none transition-all placeholder:text-gray-500 focus:border-blue-500 focus:outline-none" />
+                </div>
+              </div>
+              <div class="w-full max-w-full px-3 shrink-0 md:w-4/12 md:flex-0">
+                <div class="mb-4">
+                  <label for="city" class="inline-block mb-2 ml-1 font-bold text-xs text-slate-700 dark:text-white/80">City</label>
+                  <input type="text" name="city" value="New York" class="focus:shadow-primary-outline dark:bg-slate-850 dark:text-white text-sm leading-5.6 ease block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding px-3 py-2 font-normal text-gray-700 outline-none transition-all placeholder:text-gray-500 focus:border-blue-500 focus:outline-none" />
+                </div>
+              </div>
+              <div class="w-full max-w-full px-3 shrink-0 md:w-4/12 md:flex-0">
+                <div class="mb-4">
+                  <label for="country" class="inline-block mb-2 ml-1 font-bold text-xs text-slate-700 dark:text-white/80">Country</label>
+                  <input type="text" name="country" value="United States" class="focus:shadow-primary-outline dark:bg-slate-850 dark:text-white text-sm leading-5.6 ease block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding px-3 py-2 font-normal text-gray-700 outline-none transition-all placeholder:text-gray-500 focus:border-blue-500 focus:outline-none" />
+                </div>
+              </div>
+              <div class="w-full max-w-full px-3 shrink-0 md:w-4/12 md:flex-0">
+                <div class="mb-4">
+                  <label for="postal code" class="inline-block mb-2 ml-1 font-bold text-xs text-slate-700 dark:text-white/80">Postal code</label>
+                  <input type="text" name="postal code" value="437300" class="focus:shadow-primary-outline dark:bg-slate-850 dark:text-white text-sm leading-5.6 ease block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding px-3 py-2 font-normal text-gray-700 outline-none transition-all placeholder:text-gray-500 focus:border-blue-500 focus:outline-none" />
+                </div>
+              </div>
+            </div>
+            <hr class="h-px mx-0 my-4 bg-transparent border-0 opacity-25 bg-gradient-to-r from-transparent via-black/40 to-transparent dark:bg-gradient-to-r dark:from-transparent dark:via-white dark:to-transparent " />
+
+            <p class="leading-normal uppercase dark:text-white dark:opacity-60 text-sm">About me</p>
+            <div class="flex flex-wrap -mx-3">
+              <div class="w-full max-w-full px-3 shrink-0 md:w-full md:flex-0">
+                <div class="mb-4">
+                  <label for="about me" class="inline-block mb-2 ml-1 font-bold text-xs text-slate-700 dark:text-white/80">About me</label>
+                  <input type="text" name="about me" value="A beautiful Dashboard for Bootstrap 5. It is Free and Open Source." class="focus:shadow-primary-outline dark:bg-slate-850 dark:text-white text-sm leading-5.6 ease block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding px-3 py-2 font-normal text-gray-700 outline-none transition-all placeholder:text-gray-500 focus:border-blue-500 focus:outline-none" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="flex items-center space-x-2 mb-4 md:mb-0">
-        <input id="box2" name="box-group" type="checkbox" class="accent-blue-500 w-5 h-5 rounded border-2 border-blue-400 focus:ring-2 focus:ring-blue-400" />
-        <label for="box2" class="text-blue-200">Demo 2</label>
-      </div>
-      <div class="flex items-center space-x-2 mb-4 md:mb-0">
-        <input id="box3" name="box-group" type="checkbox" class="accent-blue-500 w-5 h-5 rounded border-2 border-blue-400 focus:ring-2 focus:ring-blue-400" />
-        <label for="box3" class="text-blue-200">Demo 3</label>
-      </div>
-      <div class="flex items-center space-x-2">
-        <input id="box4" name="box-group" type="checkbox" class="accent-blue-500 w-5 h-5 rounded border-2 border-blue-400 focus:ring-2 focus:ring-blue-400" {% if request.user.profile and request.user.profile.include_email_in_vcf %}checked{% endif %}/>
-        <label for="box4" class="text-blue-200">Auto include my <br>email in all my New VCF</label>
-      </div>
-      <div class="flex items-center space-x-2">
-        <input id="box5" name="box-group" type="checkbox" class="accent-blue-500 w-5 h-5 rounded border-2 border-blue-400 focus:ring-2 focus:ring-blue-400" />
-        <label for="box5" class="text-blue-200">Email for New VCF File (when created)</label>
-      </div>
-      <div class="flex items-center space-x-2">
-        <input id="box6" name="box-group" type="checkbox" class="accent-blue-500 w-5 h-5 rounded border-2 border-blue-400 focus:ring-2 focus:ring-blue-400" />
-        <label for="box6" class="text-blue-200">Update me when my premium file are updated</label>
+      <div class="w-full max-w-full px-3 mt-6 shrink-0 md:w-4/12 md:flex-0 md:mt-0">
+        <div class="relative flex flex-col min-w-0 break-words bg-white border-0 shadow-xl dark:bg-slate-850 dark:shadow-dark-xl rounded-2xl bg-clip-border">
+          <img class="w-full rounded-t-2xl" src="{% static 'assets/img/bg-profile.jpg' %}" alt="profile cover image">
+          <div class="flex flex-wrap justify-center -mx-3">
+            <div class="w-4/12 max-w-full px-3 flex-0 ">
+              <div class="mb-6 -mt-6 lg:mb-0 lg:-mt-16">
+                <a href="javascript:;">
+                  <img class="h-auto max-w-full border-2 border-white border-solid rounded-circle" src="{% static 'assets/img/team-2.jpg' %}" alt="profile image">
+                </a>
+              </div>
+            </div>
+          </div>
+          <div class="border-black/12.5 rounded-t-2xl p-6 text-center pt-0 pb-6 lg:pt-2 lg:pb-4">
+            <div class="flex justify-between">
+              <button type="button" class="hidden px-8 py-2 font-bold leading-normal text-center text-white align-middle transition-all ease-in border-0 rounded-lg shadow-md cursor-pointer text-xs bg-cyan-500 lg:block tracking-tight-rem hover:shadow-xs hover:-translate-y-px active:opacity-85">Connect</button>
+              <button type="button" class="block px-8 py-2 font-bold leading-normal text-center text-white align-middle transition-all ease-in border-0 rounded-lg shadow-md cursor-pointer text-xs bg-cyan-500 lg:hidden tracking-tight-rem hover:shadow-xs hover:-translate-y-px active:opacity-85">
+                <i class="ni ni-collection text-2.8"></i>
+              </button>
+              <button type="button" class="hidden px-8 py-2 font-bold leading-normal text-center text-white align-middle transition-all ease-in border-0 rounded-lg shadow-md cursor-pointer text-xs bg-slate-700 lg:block tracking-tight-rem hover:shadow-xs hover:-translate-y-px active:opacity-85">Message</button>
+              <button type="button" class="block px-8 py-2 font-bold leading-normal text-center text-white align-middle transition-all ease-in border-0 rounded-lg shadow-md cursor-pointer text-xs bg-slate-700 lg:hidden tracking-tight-rem hover:shadow-xs hover:-translate-y-px active:opacity-85">
+                <i class="ni ni-email-83 text-2.8"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="flex-auto p-6 pt-0">
+            <div class="flex flex-wrap -mx-3">
+              <div class="w-full max-w-full px-3 flex-1-0">
+                <div class="flex justify-center">
+                  <div class="grid text-center">
+                    <span class="font-bold dark:text-white text-lg">22</span>
+                    <span class="leading-normal dark:text-white text-sm opacity-80">Friends</span>
+                  </div>
+                  <div class="grid mx-6 text-center">
+                    <span class="font-bold dark:text-white text-lg">10</span>
+                    <span class="leading-normal dark:text-white text-sm opacity-80">Photos</span>
+                  </div>
+                  <div class="grid text-center">
+                    <span class="font-bold dark:text-white text-lg">89</span>
+                    <span class="leading-normal dark:text-white text-sm opacity-80">Comments</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="mt-6 text-center">
+              <h5 class="dark:text-white ">
+                {{ request.user.profile.first_name|default:'first_name' }} {{ request.user.profile.last_name|default:'last_name' }}
+                <span class="font-light">, 35</span>
+              </h5>
+              <div class="mb-2 font-semibold leading-relaxed text-base dark:text-white/80 text-slate-700">
+                <i class="mr-2 dark:text-white ni ni-pin-3"></i>
+                Bucharest, {{ country_name|default:'' }}
+              </div>
+              <div class="mt-6 mb-2 font-semibold leading-relaxed text-base dark:text-white/80 text-slate-700">
+                <i class="mr-2 dark:text-white ni ni-briefcase-24"></i>
+                Solution Manager - Creative Tim Officer
+              </div>
+              <div class="dark:text-white/80">
+                <i class="mr-2 dark:text-white ni ni-hat-3"></i>
+                University of Computer Science
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-    <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        const box4 = document.getElementById('box4');
-        box4.addEventListener('change', function() {
-          fetch('{% url "members:ajax_update_include_email" %}', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'X-CSRFToken': '{{ csrf_token }}'
-            },
-            body: JSON.stringify({ include_email_in_vcf: box4.checked })
-          })
-          .then(r => r.json())
-          .then(data => {
-            if (!data.success) {
-              alert(data.error || 'Could not update email preference');
-            }
-          })
-          .catch(() => alert('Could not update email preference'));
-        });
-        // Demo 5: Email for Free & Premium VCF File (when created)
-        const box5 = document.getElementById('box5');
-        box5.addEventListener('change', function() {
-          // TODO: Implement backend logic for demo 5
-          // Example: fetch('/your-endpoint/', { method: 'POST', body: JSON.stringify({ email_for_creation: box5.checked }) })
-        });
-        // Demo 6: My Premium VCF Contact Update
-        const box6 = document.getElementById('box6');
-        box6.addEventListener('change', function() {
-          // TODO: Implement backend logic for demo 6
-          // Example: fetch('/your-endpoint/', { method: 'POST', body: JSON.stringify({ premium_contact_update: box6.checked }) })
-        });
-      });
-                // Password edit/save logic
-          const passwordInput = document.getElementById('password_input');
-          const passwordBtn = document.getElementById('password_btn');
-          let passwordEditing = false;
-          passwordBtn.addEventListener('click', function() {
-            if (!passwordEditing) {
-              passwordInput.readOnly = false;
-              passwordInput.focus();
-              passwordBtn.textContent = 'Save';
-              passwordEditing = true;
-            } else {
-              // Save via AJAX (implement backend logic as needed)
-              const value = passwordInput.value;
-              passwordBtn.disabled = true;
-              fetch('/members/ajax/update-password/', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                  'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
-                },
-                body: JSON.stringify({ password: value })
-              })
-              .then(r => r.json())
-              .then(data => {
-                if (data.success) {
-                  passwordInput.readOnly = true;
-                  passwordBtn.textContent = 'Edit';
-                  passwordEditing = false;
-                  passwordInput.value = '';
-                  alert('Password updated!');
-                } else {
-                  alert(data.error || 'Save failed');
-                }
-              })
-              .catch(() => alert('Save failed'))
-              .finally(() => { passwordBtn.disabled = false; });
-            }
-          });
-    </script>
   </div>
-  <!-- File Setting Section -->
-  <div class="bg-slate-900/80 rounded-xl shadow-lg p-8">
-    <h2 class="text-xl font-semibold mb-6 text-blue-300">Account Settings</h2>
-    
-  <!-- Auth Email Section -->
-<div class="bg-slate-900/80 rounded-xl shadow-lg p-8 mb-8">
-  <h2 class="text-xl font-semibold mb-6 text-blue-300">Authentication Email</h2>
-  <div class="flex flex-col md:flex-row md:items-center md:gap-4 mb-4">
-    <label for="auth_email" class="w-32 text-blue-200 font-medium">Authentication Email:</label>
-    <div class="flex-1 flex items-center gap-2">
-      <input type="email" id="auth_email_input" name="auth_email" 
-             value="{{ request.user.authentication_email|default:'' }}" 
-             class="w-full bg-slate-800 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400" 
-             {% if request.user.authentication_email %}readonly{% endif %} re/>
-      <div id="auth_email_buttons" class="flex gap-2">
-        {% if not request.user.authentication_email %}
-          <button type="button" class="auth-btn auth-authenticate px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700 transition">
-            Authenticate
-          </button>
-        {% else %}
-          <button type="button" class="auth-btn auth-edit px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700 transition">
-            Edit
-          </button>
-        {% endif %}
+
+  <!-- Messages Content -->
+  <div id="messages-content" class="tab-content">
+    <div class="relative flex flex-col min-w-0 break-words bg-white border-0 shadow-xl dark:bg-slate-850 dark:shadow-dark-xl rounded-2xl bg-clip-border">
+      <div class="border-black/12.5 rounded-t-2xl border-b-0 border-solid p-6 pb-0">
+        <div class="flex items-center">
+          <p class="mb-0 dark:text-white/80">Messages</p>
+        </div>
+      </div>
+      <div class="flex-auto p-6">
+        <div class="flex flex-wrap -mx-3">
+          <div class="w-full max-w-full px-3 shrink-0 md:w-full md:flex-0">
+            <div class="mb-4">
+              <div class="p-4 mb-4 text-sm text-blue-800 rounded-lg bg-blue-50 dark:bg-gray-800 dark:text-blue-400" role="alert">
+                <span class="font-medium">New message!</span> You have 3 unread messages in your inbox.
+              </div>
+              <div class="space-y-4">
+                <div class="p-4 border rounded-lg dark:border-gray-700">
+                  <div class="flex items-center mb-3">
+                    <img class="w-10 h-10 rounded-full" src="{% static 'assets/img/team-1.jpg' %}" alt="User">
+                    <div class="ml-3">
+                      <h5 class="text-sm font-semibold dark:text-white">Sarah Johnson</h5>
+                      <p class="text-xs text-gray-500 dark:text-gray-400">10 min ago</p>
+                    </div>
+                  </div>
+                  <p class="text-sm text-gray-600 dark:text-gray-300">Hey there! Just wanted to check in and see how the project is coming along. Let me know if you need any help!</p>
+                </div>
+                <div class="p-4 border rounded-lg dark:border-gray-700">
+                  <div class="flex items-center mb-3">
+                    <img class="w-10 h-10 rounded-full" src="{% static 'assets/img/team-2.jpg' %}" alt="User">
+                    <div class="ml-3">
+                      <h5 class="text-sm font-semibold dark:text-white">Michael Chen</h5>
+                      <p class="text-xs text-gray-500 dark:text-gray-400">2 hours ago</p>
+                    </div>
+                  </div>
+                  <p class="text-sm text-gray-600 dark:text-gray-300">The meeting has been rescheduled to tomorrow at 2 PM. Please confirm your availability.</p>
+                </div>
+                <div class="p-4 border rounded-lg dark:border-gray-700">
+                  <div class="flex items-center mb-3">
+                    <img class="w-10 h-10 rounded-full" src="{% static 'assets/img/team-3.jpg' %}" alt="User">
+                    <div class="ml-3">
+                      <h5 class="text-sm font-semibold dark:text-white">Team Updates</h5>
+                      <p class="text-xs text-gray-500 dark:text-gray-400">Yesterday</p>
+                    </div>
+                  </div>
+                  <p class="text-sm text-gray-600 dark:text-gray-300">Weekly team update: We've completed 85% of the Q2 goals. Great job everyone!</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
-  <p id="auth_email_error" class="text-red-500 text-sm mt-2 hidden">Please enter a valid email address.</p>
+
+  <!-- Settings Content -->
+  <div id="settings-content" class="tab-content">
+    <div class="relative flex flex-col min-w-0 break-words bg-white border-0 shadow-xl dark:bg-slate-850 dark:shadow-dark-xl rounded-2xl bg-clip-border">
+      <div class="border-black/12.5 rounded-t-2xl border-b-0 border-solid p-6 pb-0">
+        <div class="flex items-center">
+          <p class="mb-0 dark:text-white/80">Account Settings</p>
+        </div>
+      </div>
+      <div class="flex-auto p-6">
+        <div class="flex flex-wrap -mx-3">
+          <div class="w-full max-w-full px-3 shrink-0 md:w-full md:flex-0">
+            <div class="mb-4">
+              <p class="leading-normal uppercase dark:text-white dark:opacity-60 text-sm">Security Settings</p>
+              <div class="space-y-4 mt-4">
+                <div class="flex items-center justify-between p-4 border rounded-lg dark:border-gray-700">
+                  <div class="flex-1">
+                    <h5 class="text-sm font-semibold dark:text-white mb-2">Authentication Email</h5>
+                    <div class="flex items-center gap-2">
+                      <input type="email" id="auth_email_input" name="auth_email" value="{% if request.user.authentication_email %}{{ request.user.authentication_email }}{% else %}{% endif %}" class="flex-1 bg-slate-100 dark:bg-slate-800 text-gray-800 dark:text-white rounded px-3 py-1 text-sm border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-1 focus:ring-blue-400" readonly />
+                      <div id="auth_email_buttons" class="flex gap-1">
+                        <button type="button" class="auth-btn auth-edit px-3 py-2 bg-blue-500 text-white text-sm font-medium rounded-md hover:bg-blue-600 active:bg-blue-700 transition-all duration-200 shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-300">Edit</button>
+                      </div>
+                    </div>
+                    <p id="auth_email_error" class="text-red-500 text-xs mt-1 hidden">Please enter a valid email address.</p>
+                  </div>
+                </div>
+                <div class="flex items-center justify-between p-4 border rounded-lg dark:border-gray-700">
+                  <div>
+                    <h5 class="text-sm font-semibold dark:text-white">Two-Factor Authentication</h5>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">Add an extra layer of security to your account</p>
+                  </div>
+                  <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" value="" class="sr-only peer">
+                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                  </label>
+                </div>
+                <div class="flex items-center justify-between p-4 border rounded-lg dark:border-gray-700">
+                  <div>
+                    <h5 class="text-sm font-semibold dark:text-white">Login Notifications</h5>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">Get notified when someone logs into your account</p>
+                  </div>
+                  <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" value="" class="sr-only peer" checked>
+                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                  </label>
+                </div>
+              </div>
+            </div>
+            <hr class="h-px mx-0 my-4 bg-transparent border-0 opacity-25 bg-gradient-to-r from-transparent via-black/40 to-transparent dark:bg-gradient-to-r dark:from-transparent dark:via-white dark:to-transparent">
+            <div class="mb-4">
+              <p class="leading-normal uppercase dark:text-white dark:opacity-60 text-sm">Privacy Settings</p>
+              <div class="space-y-4 mt-4">
+                <div class="flex items-center justify-between p-4 border rounded-lg dark:border-gray-700">
+                  <div>
+                    <h5 class="text-sm font-semibold dark:text-white">Profile Visibility</h5>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">Who can see your profile</p>
+                  </div>
+                  <select class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-32 p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white">
+                    <option selected>Public</option>
+                    <option>Friends Only</option>
+                    <option>Private</option>
+                  </select>
+                </div>
+                <div class="flex items-center justify-between p-4 border rounded-lg dark:border-gray-700">
+                  <div>
+                    <h5 class="text-sm font-semibold dark:text-white">Activity Status</h5>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">Show when you're active</p>
+                  </div>
+                  <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" value="" class="sr-only peer" checked>
+                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                  </label>
+                </div>
+              </div>
+            </div>
+            <hr class="h-px mx-0 my-4 bg-transparent border-0 opacity-25 bg-gradient-to-r from-transparent via-black/40 to-transparent dark:bg-gradient-to-r dark:from-transparent dark:via-white dark:to-transparent">
+            <div class="mb-4">
+              <p class="leading-normal uppercase dark:text-white dark:opacity-60 text-sm">Account</p>
+              <div class="space-y-4 mt-4">
+                <div class="flex items-center justify-between p-4 border rounded-lg dark:border-gray-700">
+                  <div>
+                    <h5 class="text-sm font-semibold dark:text-white">Freeze My Account</h5>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">Temporarily disable your account and all activities</p>
+                  </div>
+                  <button type="button" class="px-4 py-2 font-bold text-white bg-orange-500 rounded-lg hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 text-xs">Freeze</button>
+                </div>
+                <div class="flex items-center justify-between p-4 border rounded-lg dark:border-gray-700 border-red-200 dark:border-red-800">
+                  <div>
+                    <h5 class="text-sm font-semibold dark:text-white text-red-600 dark:text-red-400">Delete My Account</h5>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">Permanently delete your account and all data</p>
+                  </div>
+                  <button type="button" class="px-4 py-2 font-bold text-white bg-red-500 rounded-lg hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 text-xs">Delete</button>
+                </div>
+              </div>
+            </div>
+            <div class="flex justify-end mt-6">
+              <button type="button" class="px-6 py-2 font-bold text-white bg-blue-500 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500">Save Changes</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-  const authEmailInput = document.getElementById('auth_email_input');
-  const authEmailButtons = document.getElementById('auth_email_buttons');
-  const authEmailError = document.getElementById('auth_email_error');
-  const originalEmail = authEmailInput.value;
-
-  // Function to encrypt email for display
-  function encryptEmail(email) {
-    if (!email) return '';
-    const [localPart, domainPart] = email.split('@');
-    if (!localPart || !domainPart) return email;
-    
-    const visibleLocal = localPart.slice(0, 3);
-    const domainParts = domainPart.split('.');
-    const domainExt = domainParts.pop();
-    const domainName = domainParts.join('.');
-    
-    return `${visibleLocal}********@*****.${domainExt}`;
-  }
-
-  // Set initial display value
-  if (originalEmail) {
-    authEmailInput.value = encryptEmail(originalEmail);
-  }
-
-  // Use event delegation for all button clicks
-  authEmailButtons.addEventListener('click', function(e) {
-    if (e.target.classList.contains('auth-edit')) {
-      handleEditClick();
-    } 
-    else if (e.target.classList.contains('auth-cancel')) {
-      handleCancelClick();
-    }
-    else if (e.target.classList.contains('auth-authenticate')) {
-      handleAuthenticateClick();
-    }
-  });
-
-  function handleEditClick() {
-    authEmailInput.readOnly = false;
-    authEmailInput.value = originalEmail; // Show full email when editing
-    authEmailInput.focus();
-    
-    // Replace edit button with cancel and authenticate buttons
-    authEmailButtons.innerHTML = `
-      <button type="button" class="auth-btn auth-cancel px-3 py-1 bg-gray-600 text-white text-xs rounded hover:bg-gray-700 transition">
-        Cancel
-      </button>
-      <button type="button" class="auth-btn auth-authenticate px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700 transition">
-        Authenticate
-      </button>
-    `;
-  }
-
-  function handleCancelClick() {
-    authEmailInput.readOnly = true;
-    authEmailInput.value = encryptEmail(originalEmail); // Show encrypted email again
-    
-    // Restore edit button
-    authEmailButtons.innerHTML = `
-      <button type="button" class="auth-btn auth-edit px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700 transition">
-        Edit
-      </button>
-    `;
-  }
-
-  function handleAuthenticateClick() {
-    if (authEmailInput.checkValidity()) {
-      const emailValue = authEmailInput.value;
-      authEmailError.classList.add('hidden');
-      window.location.href = `{% url 'members:auth_email' %}?email=${encodeURIComponent(emailValue)}`;
-    } else {
-      authEmailError.classList.remove('hidden');
-    }
-  }
-});
-</script>
-    <div class="flex flex-col md:flex-row md:items-center md:gap-4 mb-4">
-      <label for="reset_password_btn" class="w-32 text-blue-200 font-medium">Password Reset:</label>
-      <button type="button" id="reset_password_btn" class="ml-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition">Reset Password</button>
-    </div>
-    <div class="flex flex-col md:flex-row md:items-center md:gap-4 mb-4">
-      <label for="reset_password_btn" class="w-32 text-blue-200 font-medium">Account State:</label>
-      <button type="button" id="reset_password_btn" class="ml-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition">Freeze my Account</button>
-    </div>
-    <!-- Password Reset Modal -->
-    <div id="resetPasswordModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-      <div class="bg-slate-800 rounded-xl p-8 shadow-lg w-full max-w-md">
-        <h3 class="text-lg font-bold text-blue-300 mb-4">Reset Password</h3>
-        <p class="text-blue-200 mb-6">Are you sure you want to reset your password? You will receive an email with instructions.</p>
-        <div class="flex justify-end gap-2">
-          <button id="cancelResetBtn" class="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700">Cancel</button>
-          <button id="confirmResetBtn" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">Confirm</button>
-        </div>
-      </div>
-    </div>
-    <!-- Password Change Modal -->
-    <div id="changePasswordModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-      <div class="bg-slate-800 rounded-xl p-8 shadow-lg w-full max-w-md">
-        <h3 class="text-lg font-bold text-blue-300 mb-4">Change Password</h3>
-        <form method="post" action="{% url 'members:member_settings' %}" id="changePasswordForm" autocomplete="off">
-          {% csrf_token %}
-          <div class="mb-4">
-            <label for="old_password" class="block text-blue-200 mb-1">Current Password</label>
-            <input type="password" id="old_password" name="old_password" class="w-full bg-slate-700 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400" required />
-          </div>
-          <div class="mb-4">
-            <label for="new_password" class="block text-blue-200 mb-1">New Password</label>
-            <input type="password" id="new_password" name="new_password" class="w-full bg-slate-700 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400" required />
-          </div>
-          <div class="mb-6">
-            <label for="confirm_new_password" class="block text-blue-200 mb-1">Confirm New Password</label>
-            <input type="password" id="confirm_new_password" name="confirm_new_password" class="w-full bg-slate-700 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400" required />
-          </div>
-          <div class="flex justify-end gap-2">
-            <button type="button" id="cancelChangeBtn" class="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700" onclick="document.getElementById('changePasswordModal').classList.add('hidden');">Cancel</button>
-            <button type="submit" id="updatePasswordBtn" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Update Password</button>
-          </div>
-          {% if password_error %}
-            <div class="mt-4 text-red-400">{{ password_error }}</div>
-          {% endif %}
-          {% if password_success %}
-            <div class="mt-4 text-green-400">{{ password_success }}</div>
-          {% endif %}
-        </form>
-      </div>
-    </div>
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    const resetBtn = document.getElementById('reset_password_btn');
-    const resetModal = document.getElementById('resetPasswordModal');
-    const cancelResetBtn = document.getElementById('cancelResetBtn');
-    const confirmResetBtn = document.getElementById('confirmResetBtn');
-    const changeModal = document.getElementById('changePasswordModal');
-    const cancelChangeBtn = document.getElementById('cancelChangeBtn');
-    const changeForm = document.getElementById('changePasswordForm');
-
-    if (resetBtn && resetModal && cancelResetBtn && confirmResetBtn && changeModal && cancelChangeBtn && changeForm) {
-      resetBtn.addEventListener('click', function() {
-        resetModal.classList.remove('hidden');
-      });
-
-      cancelResetBtn.addEventListener('click', function() {
-        resetModal.classList.add('hidden');
-      });
-
-      confirmResetBtn.addEventListener('click', function() {
-        resetModal.classList.add('hidden');
-        changeModal.classList.remove('hidden');
-      });
-
-      resetModal.addEventListener('click', function(e) {
-        if (e.target === resetModal) {
-          resetModal.classList.add('hidden');
-        }
-      });
-
-      cancelChangeBtn.addEventListener('click', function() {
-        changeModal.classList.add('hidden');
-      });
-
-      changeModal.addEventListener('click', function(e) {
-        if (e.target === changeModal) {
-          changeModal.classList.add('hidden');
-        }
-      });
-
-    changeForm.addEventListener('submit', function(e) {
+  // Tab functionality
+  document.addEventListener('click', function(e) {
+    const link = e.target.closest('a[nav-link]');
+    if (!link) return;
     e.preventDefault();
-
-    const oldPassword = document.getElementById('old_password').value;
-    const newPassword = document.getElementById('new_password').value;
-    const confirmNewPassword = document.getElementById('confirm_new_password').value;
-    const updateBtn = document.getElementById('updatePasswordBtn');
-
-    if (!oldPassword || !newPassword || !confirmNewPassword) {
-        showToast('All fields are required.', false);
-        return;
+    
+    // Remove active from all tabs and contents
+    document.querySelectorAll('a[nav-link]').forEach(l => l.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    
+    // Add active to clicked tab and its content
+    link.classList.add('active');
+    const targetId = link.getAttribute('href').substring(1);
+    const targetContent = document.getElementById(targetId);
+    if (targetContent) {
+      targetContent.classList.add('active');
     }
-    if (newPassword !== confirmNewPassword) {
-        showToast('New passwords do not match.', false);
-        return;
-    }
+  });
+  
+  // Authentication Email functionality (from swap.html)
+  document.addEventListener('DOMContentLoaded', function() {
+    const firstTab = document.querySelector('a[nav-link]');
+    if (firstTab) firstTab.click();
+    
+    const authEmailInput = document.getElementById('auth_email_input');
+    const authEmailButtons = document.getElementById('auth_email_buttons');
+    const authEmailError = document.getElementById('auth_email_error');
+    
+    if (authEmailInput && authEmailButtons) {
+      const originalEmail = authEmailInput.value;
 
-    // Show loading state
-    updateBtn.disabled = true;
-    updateBtn.textContent = 'Updating...';
-
-    fetch('{% url "members:ajax_change_password" %}', {
-        method: 'POST',
-        headers: {
-        'Content-Type': 'application/json',
-        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
-        },
-        body: JSON.stringify({
-        old_password: oldPassword,
-        new_password: newPassword
-        })
-    })
-    .then(r => r.json())
-    .then(data => {
-        if (data.success && data.logout) {
-        showToast('Password changed. Logging out...', true);
-        setTimeout(() => {
-            window.location.href = data.redirect_url || '/members/login/';
-        }, 1500);
-        } else if (data.success) {
-        showToast('Password updated successfully!', true);
-        changeModal.classList.add('hidden');
-        } else {
-        showToast(data.error || 'Password update failed.', false);
-        }
-    })
-    .catch(() => {
-        showToast('Password update failed.', false);
-    })
-    .finally(() => {
-        updateBtn.disabled = false;
-        updateBtn.textContent = 'Update Password';
-    });
-    });
-
-
-      function showToast(message, success) {
-        let toast = document.getElementById('toastMsg');
-        if (!toast) {
-          toast = document.createElement('div');
-          toast.id = 'toastMsg';
-          toast.className = 'fixed top-6 right-6 z-[9999] px-6 py-3 rounded-lg shadow-lg text-white text-sm font-semibold transition-all duration-500';
-          document.body.appendChild(toast);
-        }
-        toast.textContent = message;
-        toast.style.background = success
-          ? 'linear-gradient(90deg,#16a34a,#22d3ee)'
-          : 'linear-gradient(90deg,#e11d74,#f43f5e)';
-        toast.style.opacity = '1';
-        toast.style.pointerEvents = 'auto';
-        setTimeout(() => {
-          toast.style.opacity = '0';
-          toast.style.pointerEvents = 'none';
-        }, 3000);
+      // Function to encrypt email for display
+      function encryptEmail(email) {
+        if (!email) return '';
+        const [localPart, domainPart] = email.split('@');
+        if (!localPart || !domainPart) return email;
+        
+        const visibleLocal = localPart.slice(0, Math.min(3, localPart.length));
+        const domainParts = domainPart.split('.');
+        const domainExt = domainParts.pop();
+        const domainName = domainParts.join('.');
+        
+        return `${visibleLocal}${'*'.repeat(Math.max(3, localPart.length - 3))}@${'*'.repeat(Math.max(3, domainName.length))}.${domainExt}`;
       }
+
+      // Set initial display value - encrypt if email exists
+      if (originalEmail && originalEmail.trim() !== '') {
+        authEmailInput.value = encryptEmail(originalEmail);
+      }
+
+      // Use event delegation for all button clicks
+      authEmailButtons.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        const button = e.target;
+        if (button.classList.contains('auth-edit')) {
+          handleEditClick();
+        } 
+        else if (button.classList.contains('auth-cancel')) {
+          handleCancelClick();
+        }
+        else if (button.classList.contains('auth-authenticate')) {
+          handleAuthenticateClick();
+        }
+      });
+
+      function handleEditClick() {
+        console.log('Edit clicked'); // Debug log
+        authEmailInput.readOnly = false;
+        authEmailInput.value = originalEmail || ''; // Show full email when editing
+        authEmailInput.focus();
+        authEmailInput.select(); // Select all text
+        
+        // Hide error message
+        if (authEmailError) authEmailError.classList.add('hidden');
+        
+        // Replace edit button with X and checkmark buttons
+        authEmailButtons.innerHTML = `
+          <button type="button" class="auth-btn auth-cancel px-3 py-2 bg-red-500 text-white text-sm font-bold rounded-md hover:bg-red-600 active:bg-red-700 transition-all duration-200 shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-red-300" title="Cancel" style="color: white !important;">✕</button>
+          <button type="button" class="auth-btn auth-authenticate px-3 py-2 bg-green-500 text-white text-sm font-bold rounded-md hover:bg-green-600 active:bg-green-700 transition-all duration-200 shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-green-300" title="Authenticate" style="color: white !important;">✓</button>
+        `;
+      }
+
+      function handleCancelClick() {
+        // Return to initial state: readonly input + Edit button
+        authEmailInput.readOnly = true;
+        
+        // Restore original display (encrypted if exists, empty if not)
+        if (originalEmail && originalEmail.trim() !== '') {
+          authEmailInput.value = encryptEmail(originalEmail);
+        } else {
+          authEmailInput.value = '';
+        }
+        
+        // Hide error message
+        if (authEmailError) authEmailError.classList.add('hidden');
+        
+        // Always restore Edit button (regardless of email existence)
+        authEmailButtons.innerHTML = `
+          <button type="button" class="auth-btn auth-edit px-3 py-2 bg-blue-500 text-white text-sm font-medium rounded-md hover:bg-blue-600 active:bg-blue-700 transition-all duration-200 shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-300">Edit</button>
+        `;
+      }
+
+      function handleAuthenticateClick() {
+        console.log('Authenticate clicked'); // Debug log
+        const emailValue = authEmailInput.value.trim();
+        
+        // Validate email
+        if (!emailValue) {
+          if (authEmailError) {
+            authEmailError.textContent = 'Email is required';
+            authEmailError.classList.remove('hidden');
+          }
+          return;
+        }
+        
+        // Check if email is valid
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(emailValue)) {
+          if (authEmailError) {
+            authEmailError.textContent = 'Please enter a valid email address';
+            authEmailError.classList.remove('hidden');
+          }
+          return;
+        }
+        
+        // Hide error and redirect
+        if (authEmailError) authEmailError.classList.add('hidden');
+        
+        // Show loading state
+        authEmailButtons.innerHTML = `
+          <button type="button" class="px-2 py-1 bg-gray-400 text-white text-xs rounded cursor-not-allowed" disabled>Loading...</button>
+        `;
+        
+        // Redirect to authentication page
+        console.log('Redirecting to auth_email with email:', emailValue); // Debug log
+        window.location.href = `{% url 'members:auth_email' %}?email=${encodeURIComponent(emailValue)}`;
+      }
+    } else {
+      console.log('Auth email elements not found'); // Debug log
     }
   });
 </script>
 
-  </div>
-</div>
-<script src="{% static 'members/email_auth.js' %}"></script>
+<style>
+  .tab-content {
+    display: none;
+  }
+  .tab-content.active {
+    display: block;
+  }
+  a[nav-link].active {
+    background-color: #e9ecef;
+    color: #3b82f6 !important;
+  }
+  .auth-btn.auth-cancel {
+    background-color: red !important;
+    color: white !important;
+    border: none;
+  }
+  .auth-btn.auth-authenticate {
+    background-color: green !important;
+    color: white !important;
+    border: none;
+  }
+  #auth_email_input {
+    margin-right: 10px; /* Add spacing between input and buttons */
+  }
+</style>
 {% endblock %}

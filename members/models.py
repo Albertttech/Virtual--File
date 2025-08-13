@@ -9,6 +9,7 @@ from datetime import timedelta
 import random
 import string
 from customadmin.models import VCFFile
+from django.contrib import admin
 
 
 class MemberAccountManager(BaseUserManager):
@@ -127,6 +128,10 @@ class MemberProfile(models.Model):
     include_email_in_vcf = models.BooleanField(default=True)
     profile_name = models.CharField(max_length=100, blank=True)
     contact_name = models.CharField(max_length=100, blank=True)
+    address = models.CharField(max_length=150, blank=True)   
+    city = models.CharField(max_length=100, blank=True) 
+    postal_code = models.CharField(max_length=20, blank=True)
+    about_me = models.TextField(blank=True)
     profile_picture = models.ImageField(
         upload_to='profile_pics/',
         blank=True,
@@ -189,3 +194,15 @@ class EmailVerificationOTP(models.Model):
         # Normalize email before saving
         self.email = self.email.lower().strip()
         super().save(*args, **kwargs)
+
+
+class FirstNameLastName(models.Model):
+    user = models.OneToOneField('MemberAccount', on_delete=models.CASCADE, related_name='first_last_name')
+    first_name = models.CharField(max_length=150, blank=True, default='')
+    last_name = models.CharField(max_length=150, blank=True, default='')
+
+    def __str__(self):
+        return f"{self.first_name} {self.last_name}"
+
+
+admin.site.register(FirstNameLastName)

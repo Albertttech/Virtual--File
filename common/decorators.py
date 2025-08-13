@@ -24,9 +24,10 @@ def member_required(view_func):
     return _wrapped_view
 
 def admin_required(view_func):
-    @login_required(login_url=settings.ADMIN_LOGIN_URL)
+    @wraps(view_func)
     def _wrapped_view(request, *args, **kwargs):
-        if not request.user.is_staff:
-            return redirect(settings.LOGIN_REDIRECT_URL)
+        # Check session-based admin auth instead of Django user auth
+        if not request.session.get('is_admin'):
+            return redirect(settings.ADMIN_LOGIN_URL)
         return view_func(request, *args, **kwargs)
     return _wrapped_view

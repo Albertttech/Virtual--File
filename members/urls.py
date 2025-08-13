@@ -42,5 +42,6 @@ urlpatterns = [
     path('send_email_code/', views.send_email_code, name='send_email_code'),  # send_email_code Changed from send-email-code/
     path('verify_email_code/', views.verify_email_code, name='verify_email_code'),
     path('profile/', views.profile, name='profile'),
+    path('ajax/update-profile/', views.ajax_update_profile, name='ajax_update_profile'),
     
 ]

@@ -7,7 +7,9 @@ import json
 import logging
 import random
 from datetime import timedelta
+from django.core.exceptions import ValidationError
 
+from django.contrib.auth import password_validation
 from django.contrib.auth import update_session_auth_hash
 from django.conf import settings
 from django.shortcuts import render, redirect, get_object_or_404
@@ -26,7 +28,7 @@ from django.utils import timezone
 from django.db import transaction
 from django.contrib.auth.views import PasswordResetView
 
-from .models import VCFFile, UserPurchase, MemberAccount, EmailVerificationOTP
+from .models import VCFFile, UserPurchase, MemberAccount, EmailVerificationOTP, MemberProfile
 from .forms import MemberRegisterForm, MemberLoginForm
 from common.decorators import member_required
 from customadmin.models import Contact
@@ -720,8 +722,7 @@ def ajax_change_password(request):
         if old_password == new_password:
             return JsonResponse({'success': False, 'error': 'New password must be different from current password.'})
 
-        from django.core.exceptions import ValidationError
-        from django.contrib.auth import password_validation
+
         try:
             password_validation.validate_password(new_password, user)
         except ValidationError as ve:
@@ -1200,3 +1201,63 @@ def profile(request):
         'country_name': country_name,
     }
     return render(request, 'members/profile.html', context)
+
+@member_required
+@require_POST
+def ajax_update_profile(request):
+    try:
+        data = json.loads(request.body)
+        user = request.user
+        
+        # Get or create profile
+        profile, created = MemberProfile.objects.get_or_create(account=user)
+        
+        # Update profile fields
+        updated = False
+        
+        # Text fields to update
+        text_fields = [
+            'first_name', 'last_name', 'email', 'profile_name',
+            'address', 'city', 'postal_code', 'about_me'
+        ]
+        
+        for field in text_fields:
+            if field in data:
+                new_value = data.get(field, '').strip()
+                current_value = getattr(profile, field, '')
+                if new_value != current_value:
+                    setattr(profile, field, new_value)
+                    updated = True
+        
+        # Handle checkbox field
+        if 'include_email_in_vcf' in data:
+            new_value = bool(data['include_email_in_vcf'])
+            if profile.include_email_in_vcf != new_value:
+                profile.include_email_in_vcf = new_value
+                updated = True
+        
+        if updated:
+            profile.save()
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Profile updated successfully',
+            'profile': {
+                'first_name': profile.first_name,
+                'last_name': profile.last_name,
+                'email': profile.email,
+                'profile_name': profile.profile_name,
+                'address': profile.address,
+                'city': profile.city,
+                'postal_code': profile.postal_code,
+                'about_me': profile.about_me
+            }
+        })
+        
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        }, status=400)
+
+        

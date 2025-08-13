@@ -6,7 +6,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="apple-touch-icon" sizes="76x76" href="{% static 'assets/img/apple-icon.png' %}" />
-    <link rel="icon" type="image/png" href="{% static 'assets/img/favicon.png' %}" />
+    <link rel="icon" type="image/png" href="{% static 'assets/icon/icon.png' %}" />
     <title>VCF Manager</title>
     <!--     Fonts and icons     -->
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
@@ -113,6 +113,15 @@
               <span class="ml-1 duration-300 opacity-100 pointer-events-none ease">Sign Up</span>
             </a>
           </li>
+
+            <li class="mt-0.5 w-full">
+              <a class="py-2.7 {% if request.resolver_match.url_name == 'member_settings' %}bg-blue-500/13 text-slate-700 font-semibold{% else %}dark:text-white dark:opacity-80{% endif %} text-sm ease-nav-brand my-0 mx-2 flex items-center whitespace-nowrap rounded-lg px-4 transition-colors" href="{% url 'members:member_settings' %}">
+                <div class="mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-center stroke-0 text-center xl:p-2.5">
+                  <i class="relative top-0 text-sm leading-normal text-gray-500 ni ni-settings-gear-65"></i>
+                </div>
+                <span class="ml-1 duration-300 opacity-100 pointer-events-none ease">Settings</span>
+              </a>
+            </li>
         </ul>
       </div>
 
@@ -137,7 +146,7 @@
     <!-- end sidenav -->
 
     <main class="relative h-full max-h-screen transition-all duration-200 ease-in-out xl:ml-68 rounded-xl">
-            <!-- Navbar -->
+        {% block navbar %}    <!-- Navbar -->
       <nav class="relative flex flex-wrap items-center justify-between px-0 py-2 mx-6 transition-all ease-in shadow-none duration-250 rounded-2xl lg:flex-nowrap lg:justify-start" navbar-main navbar-scroll="false">
         <div class="flex items-center justify-between w-full px-4 py-1 mx-auto flex-wrap-inherit">
           <nav>
@@ -281,7 +290,7 @@
           </div>
         </div>
       </nav>
-
+      {% endblock %}
       <!-- end Navbar -->
 
       <!-- cards -->
