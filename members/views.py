@@ -8,6 +8,7 @@ import logging
 import random
 from datetime import timedelta
 
+from django.contrib.auth import update_session_auth_hash
 from django.conf import settings
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import get_user_model, authenticate, login, logout, update_session_auth_hash
@@ -529,6 +530,14 @@ def check_purchases(request):
 # =================================================================
 # 3. VCF File Management Views
 # =================================================================
+@member_required
+def VCF_Tabs(request):
+    from customadmin.models import VCFFile
+    joined_ids = []
+    if request.user.is_authenticated:
+        joined_ids = list(request.user.user_purchases.filter(is_verified=True, is_active=True).values_list('vcf_file_id', flat=True))
+    vcfs = VCFFile.objects.filter(hidden=False).exclude(id__in=joined_ids).order_by('-created_at')[:5]
+    return render(request, 'members/Vcf/billing.html', {'vcfs': vcfs})
 
 @member_required
 def download_vcf(request, vcf_id):
@@ -733,7 +742,6 @@ def ajax_change_password(request):
         return JsonResponse({'success': False, 'error': f'Unexpected error: {str(e)}'})
 
 @member_required
-@auth_email_required
 def member_dashboard(request):
     # For pie chart: user premium, user free, user demo VCF counts
     user_premium_count = 0
@@ -1162,6 +1170,33 @@ def verify_email_code(request):
 @login_required
 def refresh_session(request):
     """Force session refresh after email update"""
-    from django.contrib.auth import update_session_auth_hash
     update_session_auth_hash(request, request.user)
     return JsonResponse({"status": "ok"})
+
+def profile(request):
+    def get_country_name_from_code(country_code):
+        import json
+        try:
+            with open(os.path.join(settings.BASE_DIR, 'common/static/country-codes.json'), encoding='utf-8') as f:
+                countries = json.load(f)
+            for country in countries:
+                if country['dial_code'] == country_code or country['code'] == country_code:
+                    return country['name']
+        except Exception:
+            pass
+        return ''
+
+    try:
+        user_profile = request.user.profile
+        profile_email = user_profile.email
+    except Exception:
+        user_profile = None
+        profile_email = None
+    country_code = getattr(request.user, 'country_code', None)
+    country_name = get_country_name_from_code(country_code) if country_code else ''
+    context = {
+        'phone_number': request.user.phone_number,
+        'email': profile_email,
+        'country_name': country_name,
+    }
+    return render(request, 'members/profile.html', context)

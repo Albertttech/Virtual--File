@@ -8,6 +8,7 @@ from django.contrib.auth.views import PasswordResetDoneView, PasswordResetConfir
 app_name = 'members'
 
 urlpatterns = [
+    path('VCFs/', views.VCF_Tabs, name='VCF_Tabs'),
     path('password-reset/', MemberPasswordResetView.as_view(), name='password_reset'),
     path('password-reset/done/', PasswordResetDoneView.as_view(template_name='members/password_reset_done.html'), name='password_reset_done'),
     path('reset/<uidb64>/<token>/', PasswordResetConfirmView.as_view(template_name='members/password_reset_confirm.html'), name='password_reset_confirm'),
@@ -40,5 +41,6 @@ urlpatterns = [
     path('auth_email/', views.auth_email, name='auth_email'),
     path('send_email_code/', views.send_email_code, name='send_email_code'),  # send_email_code Changed from send-email-code/
     path('verify_email_code/', views.verify_email_code, name='verify_email_code'),
+    path('profile/', views.profile, name='profile'),
     
 ]

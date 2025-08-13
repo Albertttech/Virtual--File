@@ -1,235 +1,385 @@
-{% extends 'members/base.html' %}
+{% extends "members/base.html" %}
 {% load static %}
-{% block title %}Futuristic Member Dashboard{% endblock %}
 
 {% block content %}
-  <!-- Responsive margin to prevent header overlap -->
-  <div class="h-16 sm:h-16 md:h-16 lg:h-16 xl:h-16 2xl:h-16"></div>
-  <!-- Quick Actions & Stats (hidden on mobile, tooltips on desktop, toggled with sidebar) -->
-  <div id="dashboard-action-buttons" class="hidden md:grid grid-cols-5 gap-2 mb-8 w-full max-w-full">
-    <button class="glass-btn flex items-center justify-center gap-1 sm:gap-2 fade-in delay-1 min-w-0 w-full max-w-[120px] sm:max-w-[140px] md:max-w-[150px] px-2 sm:px-3 text-xs sm:text-sm group" title="Add User">
-      <svg class="w-5 h-5 neon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4"/></svg>
-      <span class="sr-only group-hover:not-sr-only group-hover:absolute group-hover:top-full group-hover:left-1/2 group-hover:-translate-x-1/2 group-hover:bg-slate-800 group-hover:text-white group-hover:text-xs group-hover:rounded group-hover:px-2 group-hover:py-1 group-hover:mt-1 group-hover:shadow-lg">Add User</span>
-    </button>
-    <a href="#" class="glass-btn flex items-center justify-center gap-1 sm:gap-2 fade-in delay-5 min-w-0 w-full max-w-[120px] sm:max-w-[140px] md:max-w-[150px] px-2 sm:px-3 text-xs sm:text-sm group" title="Embed">
-      <svg class="w-5 h-5 text-yellow-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16 12H8m8 0a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
-      <span class="sr-only group-hover:not-sr-only group-hover:absolute group-hover:top-full group-hover:left-1/2 group-hover:-translate-x-1/2 group-hover:bg-slate-800 group-hover:text-white group-hover:text-xs group-hover:rounded group-hover:px-2 group-hover:py-1 group-hover:mt-1 group-hover:shadow-lg">Embed</span>
-    </a>
-    <button class="glass-btn flex items-center justify-center gap-1 sm:gap-2 fade-in delay-2 min-w-0 w-full max-w-[120px] sm:max-w-[140px] md:max-w-[150px] px-2 sm:px-3 text-xs sm:text-sm group" title="Export Data">
-      <svg class="w-5 h-5 neon-accent" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
-      <span class="sr-only group-hover:not-sr-only group-hover:absolute group-hover:top-full group-hover:left-1/2 group-hover:-translate-x-1/2 group-hover:bg-slate-800 group-hover:text-white group-hover:text-xs group-hover:rounded group-hover:px-2 group-hover:py-1 group-hover:mt-1 group-hover:shadow-lg">Export Data</span>
-    </button>
-    <button class="glass-btn flex items-center justify-center gap-1 sm:gap-2 fade-in delay-3 min-w-0 w-full max-w-[120px] sm:max-w-[140px] md:max-w-[150px] px-2 sm:px-3 text-xs sm:text-sm group" title="Verify">
-      <svg class="w-5 h-5 neon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
-      <span class="sr-only group-hover:not-sr-only group-hover:absolute group-hover:top-full group-hover:left-1/2 group-hover:-translate-x-1/2 group-hover:bg-slate-800 group-hover:text-white group-hover:text-xs group-hover:rounded group-hover:px-2 group-hover:py-1 group-hover:mt-1 group-hover:shadow-lg">Verify</span>
-    </button>
-    <button class="glass-btn flex items-center justify-center gap-1 sm:gap-2 fade-in delay-4 min-w-0 w-full max-w-[120px] sm:max-w-[140px] md:max-w-[150px] px-2 sm:px-3 text-xs sm:text-sm group" title="More">
-      <svg class="w-5 h-5 neon-accent" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12h18"/></svg>
-      <span class="sr-only group-hover:not-sr-only group-hover:absolute group-hover:top-full group-hover:left-1/2 group-hover:-translate-x-1/2 group-hover:bg-slate-800 group-hover:text-white group-hover:text-xs group-hover:rounded group-hover:px-2 group-hover:py-1 group-hover:mt-1 group-hover:shadow-lg">More</span>
-    </button>
+
+  <!-- row 1 -->
+  <div class="flex flex-wrap -mx-3">
+    <!-- card1 -->
+    <div class="w-full max-w-full px-3 mb-6 sm:w-1/2 sm:flex-none xl:mb-0 xl:w-1/4">
+      <div class="relative flex flex-col min-w-0 break-words bg-white shadow-xl dark:bg-slate-850 dark:shadow-dark-xl rounded-2xl bg-clip-border">
+        <div class="flex-auto p-4">
+          <div class="flex flex-row -mx-3">
+            <div class="flex-none w-2/3 max-w-full px-3">
+              <div>
+                <p class="mb-0 font-sans text-sm font-semibold leading-normal uppercase dark:text-white dark:opacity-60">Today's Money</p>
+                <h5 class="mb-2 font-bold dark:text-white">$53,000</h5>
+                <p class="mb-0 dark:text-white dark:opacity-60">
+                  <span class="text-sm font-bold leading-normal text-emerald-500">+55%</span>
+                  since yesterday
+                </p>
+              </div>
+            </div>
+            <div class="px-3 text-right basis-1/3">
+              <div class="inline-block w-12 h-12 text-center rounded-circle bg-gradient-to-tl from-blue-500 to-violet-500">
+                <i class="ni leading-none ni-money-coins text-lg relative top-3.5 text-white"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- card2 -->
+    <div class="w-full max-w-full px-3 mb-6 sm:w-1/2 sm:flex-none xl:mb-0 xl:w-1/4">
+      <div class="relative flex flex-col min-w-0 break-words bg-white shadow-xl dark:bg-slate-850 dark:shadow-dark-xl rounded-2xl bg-clip-border">
+        <div class="flex-auto p-4">
+          <div class="flex flex-row -mx-3">
+            <div class="flex-none w-2/3 max-w-full px-3">
+              <div>
+                <p class="mb-0 font-sans text-sm font-semibold leading-normal uppercase dark:text-white dark:opacity-60">Today's Users</p>
+                <h5 class="mb-2 font-bold dark:text-white">2,300</h5>
+                <p class="mb-0 dark:text-white dark:opacity-60">
+                  <span class="text-sm font-bold leading-normal text-emerald-500">+3%</span>
+                  since last week
+                </p>
+              </div>
+            </div>
+            <div class="px-3 text-right basis-1/3">
+              <div class="inline-block w-12 h-12 text-center rounded-circle bg-gradient-to-tl from-red-600 to-orange-600">
+                <i class="ni leading-none ni-world text-lg relative top-3.5 text-white"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- card3 -->
+    <div class="w-full max-w-full px-3 mb-6 sm:w-1/2 sm:flex-none xl:mb-0 xl:w-1/4">
+      <div class="relative flex flex-col min-w-0 break-words bg-white shadow-xl dark:bg-slate-850 dark:shadow-dark-xl rounded-2xl bg-clip-border">
+        <div class="flex-auto p-4">
+          <div class="flex flex-row -mx-3">
+            <div class="flex-none w-2/3 max-w-full px-3">
+              <div>
+                <p class="mb-0 font-sans text-sm font-semibold leading-normal uppercase dark:text-white dark:opacity-60">Total VCF Files</p>
+                <h5 class="mb-2 font-bold dark:text-white">{{ total_vcf_files }}</h5>
+                <p class="mb-0 dark:text-white dark:opacity-60">
+                  <span class="text-sm font-bold leading-normal text-red-600">-2%</span>
+                  since last quarter
+                </p>
+              </div>
+            </div>
+            <div class="px-3 text-right basis-1/3">
+              <div class="inline-block w-12 h-12 text-center rounded-circle bg-gradient-to-tl from-blue-500 to-violet-500">
+                <i class="ni leading-none ni-money-coins text-lg relative top-3.5 text-white"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- card4 -->
+    <div class="w-full max-w-full px-3 sm:w-1/2 sm:flex-none xl:w-1/4">
+      <div class="relative flex flex-col min-w-0 break-words bg-white shadow-xl dark:bg-slate-850 dark:shadow-dark-xl rounded-2xl bg-clip-border">
+        <div class="flex-auto p-4">
+          <div class="flex flex-row -mx-3">
+            <div class="flex-none w-2/3 max-w-full px-3">
+              <div>
+                <p class="mb-0 font-sans text-sm font-semibold leading-normal uppercase dark:text-white dark:opacity-60">Total Contacts</p>
+                <h5 class="mb-2 font-bold dark:text-white">{{ total_contacts }}</h5>
+                <p class="mb-0 dark:text-white dark:opacity-60">
+                  <span class="text-sm font-bold leading-normal text-emerald-500">+5%</span>
+                  than last month
+                </p>
+              </div>
+            </div>
+            <div class="px-3 text-right basis-1/3">
+              <div class="inline-block w-12 h-12 text-center rounded-circle bg-gradient-to-tl from-orange-500 to-yellow-500">
+                <i class="ni leading-none ni-user text-lg relative top-3.5 text-white"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <!-- Stats Cards - Modern Responsive Layout -->
-  <div class="flex flex-wrap gap-4 sm:gap-6 mb-8 w-full max-w-full justify-center">
-    <div class="glass w-full sm:w-[48%] md:w-[30%] lg:w-[18%] p-4 xs:p-5 sm:p-6 flex flex-col items-center border-t-4 border-blue-700 fade-in delay-1 min-w-[180px] max-w-xs flex-1">
-      <div class="flex flex-col items-center mb-2 w-full">
-        <i class="fa-solid fa-file-lines w-8 h-8 neon mb-1 text-blue-400"></i>
-        <span class="text-lg font-semibold text-center">Total VCF Files</span>
+  <!-- cards row 2 -->
+  <div class="flex flex-wrap mt-6 -mx-3">
+    <div class="w-full max-w-full px-3 mt-0 lg:w-7/12 lg:flex-none">
+      <div class="border-black/12.5 dark:bg-slate-850 dark:shadow-dark-xl shadow-xl relative z-20 flex min-w-0 flex-col break-words rounded-2xl border-0 border-solid bg-white bg-clip-border">
+        <div class="border-black/12.5 mb-0 rounded-t-2xl border-b-0 border-solid p-6 pt-4 pb-0">
+          <h6 class="capitalize dark:text-white">Contact Growth</h6>
+          <p class="mb-0 text-sm leading-normal dark:text-white dark:opacity-60">
+            <i class="fa fa-arrow-up text-emerald-500"></i>
+            <span class="font-semibold">+5% growth</span> this month
+          </p>
+        </div>
+        <div class="flex-auto p-4">
+          <div>
+            <canvas id="lineChart" height="300"></canvas>
+          </div>
+        </div>
       </div>
-      <span class="text-2xl xs:text-3xl font-bold neon break-words w-full text-center">{{ total_vcf_files }}</span>
-      <div class="progress-bar mt-2 w-full"><div class="progress-bar-inner" style="width: 80%"></div></div>
     </div>
-    <div class="glass w-full sm:w-[48%] md:w-[30%] lg:w-[18%] p-4 xs:p-5 sm:p-6 flex flex-col items-center border-t-4 border-pink-600 fade-in delay-2 min-w-[180px] max-w-xs flex-1">
-      <div class="flex flex-col items-center mb-2 w-full">
-        <i class="fa-solid fa-address-book w-8 h-8 neon-accent mb-1 text-pink-400"></i>
-        <span class="text-lg font-semibold text-center">Total Contacts</span>
+
+    <div class="w-full max-w-full px-3 lg:w-5/12 lg:flex-none">
+      <div slider class="relative w-full h-full overflow-hidden rounded-2xl">
+        <!-- slide 1 -->
+        <div slide class="absolute w-full h-full transition-all duration-500">
+          <img class="object-cover h-full" src="{% static 'assets/img/carousel-1.jpg' %}" alt="carousel image" />
+          <div class="block text-start ml-12 left-0 bottom-0 absolute right-[15%] pt-5 pb-5 text-white">
+            <div class="inline-block w-8 h-8 mb-4 text-center text-black bg-white bg-center rounded-lg fill-current stroke-none">
+              <i class="top-0.75 text-xxs relative text-slate-700 ni ni-camera-compact"></i>
+            </div>
+            <h5 class="mb-1 text-white">Get started with Argon</h5>
+            <p class="dark:opacity-80">There's nothing I really wanted to do in life that I wasn't able to get good at.</p>
+          </div>
+        </div>
+
+        <!-- slide 2 -->
+        <div slide class="absolute w-full h-full transition-all duration-500">
+          <img class="object-cover h-full" src="{% static 'assets/img/carousel-2.jpg' %}" alt="carousel image" />
+          <div class="block text-start ml-12 left-0 bottom-0 absolute right-[15%] pt-5 pb-5 text-white">
+            <div class="inline-block w-8 h-8 mb-4 text-center text-black bg-white bg-center rounded-lg fill-current stroke-none">
+              <i class="top-0.75 text-xxs relative text-slate-700 ni ni-bulb-61"></i>
+            </div>
+            <h5 class="mb-1 text-white">Faster way to create web pages</h5>
+            <p class="dark:opacity-80">That's my skill. I'm not really specifically talented at anything except for the ability to learn.</p>
+          </div>
+        </div>
+
+        <!-- slide 3 -->
+        <div slide class="absolute w-full h-full transition-all duration-500">
+          <img class="object-cover h-full" src="{% static 'assets/img/carousel-3.jpg' %}" alt="carousel image" />
+          <div class="block text-start ml-12 left-0 bottom-0 absolute right-[15%] pt-5 pb-5 text-white">
+            <div class="inline-block w-8 h-8 mb-4 text-center text-black bg-white bg-center rounded-lg fill-current stroke-none">
+              <i class="top-0.75 text-xxs relative text-slate-700 ni ni-trophy"></i>
+            </div>
+            <h5 class="mb-1 text-white">Share with us your design tips!</h5>
+            <p class="dark:opacity-80">Don't be afraid to be wrong because you can't learn anything from a compliment.</p>
+          </div>
+        </div>
+
+        <!-- Control buttons -->
+        <button btn-next class="absolute z-10 w-10 h-10 p-2 text-lg text-white border-none opacity-50 cursor-pointer hover:opacity-100 far fa-chevron-right active:scale-110 top-6 right-4"></button>
+        <button btn-prev class="absolute z-10 w-10 h-10 p-2 text-lg text-white border-none opacity-50 cursor-pointer hover:opacity-100 far fa-chevron-left active:scale-110 top-6 right-16"></button>
       </div>
-      <span class="text-2xl xs:text-3xl font-bold neon-accent break-words w-full text-center">{{ total_contacts }}</span>
-      <div class="progress-bar mt-2 w-full"><div class="progress-bar-inner" style="width: 60%; background:linear-gradient(90deg,#e11d74,#6dd5ed)"></div></div>
-    </div>
-    <div class="glass w-full sm:w-[48%] md:w-[30%] lg:w-[18%] p-4 xs:p-5 sm:p-6 flex flex-col items-center border-t-4 border-green-500 fade-in delay-3 min-w-[180px] max-w-xs flex-1">
-      <div class="flex flex-col items-center mb-2 w-full">
-        <i class="fa-solid fa-users w-8 h-8 text-green-400 mb-1 mr-0"></i>
-        <span class="text-lg font-semibold text-center">Active Users</span>
-      </div>
-      <span class="text-2xl xs:text-3xl font-bold text-green-400 break-words w-full text-center">2,345</span>
-      <div class="progress-bar mt-2 w-full"><div class="progress-bar-inner" style="width: 90%; background:linear-gradient(90deg,#6dd5ed,#22d3ee)"></div></div>
-    </div>
-    <div class="glass w-full sm:w-[48%] md:w-[30%] lg:w-[18%] p-4 xs:p-5 sm:p-6 flex flex-col items-center border-t-4 border-yellow-500 fade-in delay-4 min-w-[180px] max-w-xs flex-1">
-      <div class="flex flex-col items-center mb-2 w-full">
-        <i class="fa-solid fa-box-open w-8 h-8 text-yellow-400 mb-1 mr-0"></i>
-        <span class="text-lg font-semibold text-center">My Subscription Packages</span>
-      </div>
-      <span class="text-2xl xs:text-3xl font-bold text-yellow-400 break-words w-full text-center">{{ total_subscribed }}</span>
-      <div class="progress-bar mt-2 w-full"><div class="progress-bar-inner" style="width: 70%; background:linear-gradient(90deg,#facc15,#fde68a)"></div></div>
-    </div>
-    <div class="glass w-full sm:w-[48%] md:w-[30%] lg:w-[18%] p-4 xs:p-5 sm:p-6 flex flex-col items-center border-t-4 border-purple-600 fade-in delay-5 min-w-[180px] max-w-xs flex-1">
-      <div class="flex flex-col items-center mb-2 w-full">
-        <i class="fa-solid fa-user-check w-8 h-8 text-purple-400 mb-1 mr-0"></i>
-        <span class="text-lg font-semibold text-center">Total Contacts</span>
-      </div>
-      <span class="text-2xl xs:text-3xl font-bold text-purple-400 break-words w-full text-center">1,200</span>
-      <div class="progress-bar mt-2 w-full"><div class="progress-bar-inner" style="width: 65%; background:linear-gradient(90deg,#a78bfa,#f472b6)"></div></div>
-    </div>
-    <div class="glass w-full sm:w-[48%] md:w-[30%] lg:w-[18%] p-4 xs:p-5 sm:p-6 flex flex-col items-center border-t-4 border-gray-400 fade-in delay-6 min-w-[180px] max-w-xs flex-1">
-      <div class="flex flex-col items-center mb-2 w-full">
-        <i class="fa-solid fa-gift w-8 h-8 text-gray-400 mb-1 mr-0"></i>
-        <span class="text-lg font-semibold text-center">Free Packages</span>
-      </div>
-      <span class="text-2xl xs:text-3xl font-bold text-gray-400 break-words w-full text-center">{{ total_free_packages }}</span>
-      <div class="progress-bar mt-2 w-full"><div class="progress-bar-inner" style="width: 50%; background:linear-gradient(90deg,#d1d5db,#f3f4f6)"></div></div>
     </div>
   </div>
 
-  <!-- Charts Row -->
-  <div class="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-8 w-full max-w-full">
-    <div class="glass p-6 fade-in delay-1 flex flex-col justify-center items-center h-full">
-      <div class="flex items-center mb-4 w-full justify-between">
-        <span class="text-lg font-semibold neon">Contact Growth</span>
-        <select id="growthRange" class="bg-gray-900 text-white rounded px-2 py-1 text-sm border border-blue-700 focus:outline-none">
-          <option value="month" selected>Month</option>
-          <option value="week">Week</option>
-          <option value="day">Day</option>
-          <option value="year">Year</option>
-        </select>
-      </div>
-      <div class="flex-1 w-full flex flex-col justify-center items-center">
-        <canvas id="lineChart" height="180"></canvas>
+  <!-- cards row 3 -->
+  <div class="flex flex-wrap mt-6 -mx-3">
+    <div class="w-full max-w-full px-3 mt-0 mb-6 lg:mb-0 lg:w-7/12 lg:flex-none">
+      <div class="relative flex flex-col min-w-0 break-words bg-white border-0 border-solid shadow-xl dark:bg-slate-850 dark:shadow-dark-xl dark:bg-gray-950 border-black-125 rounded-2xl bg-clip-border">
+        <div class="p-4 pb-0 mb-0 rounded-t-4">
+          <div class="flex justify-between">
+            <h6 class="mb-2 dark:text-white">Sales by Country</h6>
+          </div>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="items-center w-full mb-4 align-top border-collapse border-gray-200 dark:border-white/40">
+            <tbody>
+              <tr>
+                <td class="p-2 align-middle bg-transparent border-b w-3/10 whitespace-nowrap dark:border-white/40">
+                  <div class="flex items-center px-2 py-1">
+                    <div>
+                      <img src="{% static 'assets/img/icons/flags/US.png' %}" alt="Country flag" />
+                    </div>
+                    <div class="ml-6">
+                      <p class="mb-0 text-xs font-semibold leading-tight dark:text-white dark:opacity-60">Country:</p>
+                      <h6 class="mb-0 text-sm leading-normal dark:text-white">United States</h6>
+                    </div>
+                  </div>
+                </td>
+                <td class="p-2 align-middle bg-transparent border-b whitespace-nowrap dark:border-white/40">
+                  <div class="text-center">
+                    <p class="mb-0 text-xs font-semibold leading-tight dark:text-white dark:opacity-60">Sales:</p>
+                    <h6 class="mb-0 text-sm leading-normal dark:text-white">2500</h6>
+                  </div>
+                </td>
+                <td class="p-2 align-middle bg-transparent border-b whitespace-nowrap dark:border-white/40">
+                  <div class="text-center">
+                    <p class="mb-0 text-xs font-semibold leading-tight dark:text-white dark:opacity-60">Value:</p>
+                    <h6 class="mb-0 text-sm leading-normal dark:text-white">$230,900</h6>
+                  </div>
+                </td>
+                <td class="p-2 text-sm leading-normal align-middle bg-transparent border-b whitespace-nowrap dark:border-white/40">
+                  <div class="flex-1 text-center">
+                    <p class="mb-0 text-xs font-semibold leading-tight dark:text-white dark:opacity-60">Bounce:</p>
+                    <h6 class="mb-0 text-sm leading-normal dark:text-white">29.9%</h6>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td class="p-2 align-middle bg-transparent border-b w-3/10 whitespace-nowrap dark:border-white/40">
+                  <div class="flex items-center px-2 py-1">
+                    <div>
+                      <img src="{% static 'assets/img/icons/flags/DE.png' %}" alt="Country flag" />
+                    </div>
+                    <div class="ml-6">
+                      <p class="mb-0 text-xs font-semibold leading-tight dark:text-white dark:opacity-60">Country:</p>
+                      <h6 class="mb-0 text-sm leading-normal dark:text-white">Germany</h6>
+                    </div>
+                  </div>
+                </td>
+                <td class="p-2 align-middle bg-transparent border-b whitespace-nowrap dark:border-white/40">
+                  <div class="text-center">
+                    <p class="mb-0 text-xs font-semibold leading-tight dark:text-white dark:opacity-60">Sales:</p>
+                    <h6 class="mb-0 text-sm leading-normal dark:text-white">3.900</h6>
+                  </div>
+                </td>
+                <td class="p-2 align-middle bg-transparent border-b whitespace-nowrap dark:border-white/40">
+                  <div class="text-center">
+                    <p class="mb-0 text-xs font-semibold leading-tight dark:text-white dark:opacity-60">Value:</p>
+                    <h6 class="mb-0 text-sm leading-normal dark:text-white">$440,000</h6>
+                  </div>
+                </td>
+                <td class="p-2 text-sm leading-normal align-middle bg-transparent border-b whitespace-nowrap dark:border-white/40">
+                  <div class="flex-1 text-center">
+                    <p class="mb-0 text-xs font-semibold leading-tight dark:text-white dark:opacity-60">Bounce:</p>
+                    <h6 class="mb-0 text-sm leading-normal dark:text-white">40.22%</h6>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td class="p-2 align-middle bg-transparent border-b w-3/10 whitespace-nowrap dark:border-white/40">
+                  <div class="flex items-center px-2 py-1">
+                    <div>
+                      <img src="{% static 'assets/img/icons/flags/GB.png' %}" alt="Country flag" />
+                    </div>
+                    <div class="ml-6">
+                      <p class="mb-0 text-xs font-semibold leading-tight dark:text-white dark:opacity-60">Country:</p>
+                      <h6 class="mb-0 text-sm leading-normal dark:text-white">Great Britain</h6>
+                    </div>
+                  </div>
+                </td>
+                <td class="p-2 align-middle bg-transparent border-b whitespace-nowrap dark:border-white/40">
+                  <div class="text-center">
+                    <p class="mb-0 text-xs font-semibold leading-tight dark:text-white dark:opacity-60">Sales:</p>
+                    <h6 class="mb-0 text-sm leading-normal dark:text-white">1.400</h6>
+                  </div>
+                </td>
+                <td class="p-2 align-middle bg-transparent border-b whitespace-nowrap dark:border-white/40">
+                  <div class="text-center">
+                    <p class="mb-0 text-xs font-semibold leading-tight dark:text-white dark:opacity-60">Value:</p>
+                    <h6 class="mb-0 text-sm leading-normal dark:text-white">$190,700</h6>
+                  </div>
+                </td>
+                <td class="p-2 text-sm leading-normal align-middle bg-transparent border-b whitespace-nowrap dark:border-white/40">
+                  <div class="flex-1 text-center">
+                    <p class="mb-0 text-xs font-semibold leading-tight dark:text-white dark:opacity-60">Bounce:</p>
+                    <h6 class="mb-0 text-sm leading-normal dark:text-white">23.44%</h6>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td class="p-2 align-middle bg-transparent border-0 w-3/10 whitespace-nowrap">
+                  <div class="flex items-center px-2 py-1">
+                    <div>
+                      <img src="{% static 'assets/img/icons/flags/BR.png' %}" alt="Country flag" />
+                    </div>
+                    <div class="ml-6">
+                      <p class="mb-0 text-xs font-semibold leading-tight dark:text-white dark:opacity-60">Country:</p>
+                      <h6 class="mb-0 text-sm leading-normal dark:text-white">Brasil</h6>
+                    </div>
+                  </div>
+                </td>
+                <td class="p-2 align-middle bg-transparent border-0 whitespace-nowrap">
+                  <div class="text-center">
+                    <p class="mb-0 text-xs font-semibold leading-tight dark:text-white dark:opacity-60">Sales:</p>
+                    <h6 class="mb-0 text-sm leading-normal dark:text-white">562</h6>
+                  </div>
+                </td>
+                <td class="p-2 align-middle bg-transparent border-0 whitespace-nowrap">
+                  <div class="text-center">
+                    <p class="mb-0 text-xs font-semibold leading-tight dark:text-white dark:opacity-60">Value:</p>
+                    <h6 class="mb-0 text-sm leading-normal dark:text-white">$143,960</h6>
+                  </div>
+                </td>
+                <td class="p-2 text-sm leading-normal align-middle bg-transparent border-0 whitespace-nowrap">
+                  <div class="flex-1 text-center">
+                    <p class="mb-0 text-xs font-semibold leading-tight dark:text-white dark:opacity-60">Bounce:</p>
+                    <h6 class="mb-0 text-sm leading-normal dark:text-white">32.14%</h6>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
-    <div class="glass p-6 fade-in delay-2">
-      <div class="flex items-center mb-4">
-        <span class="text-lg font-semibold neon-accent">VCF File Types</span>
+    <div class="w-full max-w-full px-3 mt-0 lg:w-5/12 lg:flex-none">
+      <div class="border-black/12.5 shadow-xl dark:bg-slate-850 dark:shadow-dark-xl relative flex min-w-0 flex-col break-words rounded-2xl border-0 border-solid bg-white bg-clip-border">
+        <div class="p-4 pb-0 rounded-t-4">
+          <h6 class="mb-0 dark:text-white">Categories</h6>
+        </div>
+        <div class="flex-auto p-4">
+          <ul class="flex flex-col pl-0 mb-0 rounded-lg">
+            <li class="relative flex justify-between py-2 pr-4 mb-2 border-0 rounded-t-lg rounded-xl text-inherit">
+              <div class="flex items-center">
+                <div class="inline-block w-8 h-8 mr-4 text-center text-black bg-center shadow-sm fill-current stroke-none bg-gradient-to-tl from-zinc-800 to-zinc-700 dark:bg-gradient-to-tl dark:from-slate-750 dark:to-gray-850 rounded-xl">
+                  <i class="text-white ni ni-mobile-button relative top-0.75 text-xxs"></i>
+                </div>
+                <div class="flex flex-col">
+                  <h6 class="mb-1 text-sm leading-normal text-slate-700 dark:text-white">Devices</h6>
+                  <span class="text-xs leading-tight dark:text-white/80">250 in stock, <span class="font-semibold">346+ sold</span></span>
+                </div>
+              </div>
+              <div class="flex">
+                <button class="group ease-in leading-pro text-xs rounded-3.5xl p-1.2 h-6.5 w-6.5 mx-0 my-auto inline-block cursor-pointer border-0 bg-transparent text-center align-middle font-bold text-slate-700 shadow-none transition-all dark:text-white"><i class="ni ease-bounce text-2xs group-hover:translate-x-1.25 ni-bold-right transition-all duration-200" aria-hidden="true"></i></button>
+              </div>
+            </li>
+            <li class="relative flex justify-between py-2 pr-4 mb-2 border-0 rounded-xl text-inherit">
+              <div class="flex items-center">
+                <div class="inline-block w-8 h-8 mr-4 text-center text-black bg-center shadow-sm fill-current stroke-none bg-gradient-to-tl from-zinc-800 to-zinc-700 dark:bg-gradient-to-tl dark:from-slate-750 dark:to-gray-850 rounded-xl">
+                  <i class="text-white ni ni-tag relative top-0.75 text-xxs"></i>
+                </div>
+                <div class="flex flex-col">
+                  <h6 class="mb-1 text-sm leading-normal text-slate-700 dark:text-white">Tickets</h6>
+                  <span class="text-xs leading-tight dark:text-white/80">123 closed, <span class="font-semibold">15 open</span></span>
+                </div>
+              </div>
+              <div class="flex">
+                <button class="group ease-in leading-pro text-xs rounded-3.5xl p-1.2 h-6.5 w-6.5 mx-0 my-auto inline-block cursor-pointer border-0 bg-transparent text-center align-middle font-bold text-slate-700 shadow-none transition-all dark:text-white"><i class="ni ease-bounce text-2xs group-hover:translate-x-1.25 ni-bold-right transition-all duration-200" aria-hidden="true"></i></button>
+              </div>
+            </li>
+            <li class="relative flex justify-between py-2 pr-4 mb-2 border-0 rounded-b-lg rounded-xl text-inherit">
+              <div class="flex items-center">
+                <div class="inline-block w-8 h-8 mr-4 text-center text-black bg-center shadow-sm fill-current stroke-none bg-gradient-to-tl from-zinc-800 to-zinc-700 dark:bg-gradient-to-tl dark:from-slate-750 dark:to-gray-850 rounded-xl">
+                  <i class="text-white ni ni-box-2 relative top-0.75 text-xxs"></i>
+                </div>
+                <div class="flex flex-col">
+                  <h6 class="mb-1 text-sm leading-normal text-slate-700 dark:text-white">Error logs</h6>
+                  <span class="text-xs leading-tight dark:text-white/80">1 is active, <span class="font-semibold">40 closed</span></span>
+                </div>
+              </div>
+              <div class="flex">
+                <button class="group ease-in leading-pro text-xs rounded-3.5xl p-1.2 h-6.5 w-6.5 mx-0 my-auto inline-block cursor-pointer border-0 bg-transparent text-center align-middle font-bold text-slate-700 shadow-none transition-all dark:text-white"><i class="ni ease-bounce text-2xs group-hover:translate-x-1.25 ni-bold-right transition-all duration-200" aria-hidden="true"></i></button>
+              </div>
+            </li>
+            <li class="relative flex justify-between py-2 pr-4 border-0 rounded-b-lg rounded-xl text-inherit">
+              <div class="flex items-center">
+                <div class="inline-block w-8 h-8 mr-4 text-center text-black bg-center shadow-sm fill-current stroke-none bg-gradient-to-tl from-zinc-800 to-zinc-700 dark:bg-gradient-to-tl dark:from-slate-750 dark:to-gray-850 rounded-xl">
+                  <i class="text-white ni ni-satisfied relative top-0.75 text-xxs"></i>
+                </div>
+                <div class="flex flex-col">
+                  <h6 class="mb-1 text-sm leading-normal text-slate-700 dark:text-white">Happy users</h6>
+                  <span class="text-xs leading-tight dark:text-white/80"><span class="font-semibold">+ 430 </span></span>
+                </div>
+              </div>
+              <div class="flex">
+                <button class="group ease-in leading-pro text-xs rounded-3.5xl p-1.2 h-6.5 w-6.5 mx-0 my-auto inline-block cursor-pointer border-0 bg-transparent text-center align-middle font-bold text-slate-700 shadow-none transition-all dark:text-white"><i class="ni ease-bounce text-2xs group-hover:translate-x-1.25 ni-bold-right transition-all duration-200" aria-hidden="true"></i></button>
+              </div>
+            </li>
+          </ul>
+        </div>
       </div>
-      <canvas id="pieChart" height="120"></canvas>
     </div>
   </div>
 
-  <!-- Table & Recent Activity -->
-  <div class="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-8 w-full max-w-full">
-    <div class="glass p-4 xs:p-5 sm:p-6 fade-in delay-1 overflow-x-auto min-w-0">
-      <div class="flex items-center mb-4">
-        <span class="text-lg font-semibold neon">Recent Users</span>
-      </div>
-      <table class="min-w-full text-left text-sm sortable whitespace-nowrap">
-        <thead>
-          <tr class="border-b border-blue-800">
-            <th class="py-2 px-3">Name</th>
-            <th class="py-2 px-3">Email</th>
-            <th class="py-2 px-3">Status</th>
-            <th class="py-2 px-3">Joined</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr class="hover:bg-blue-900/20 transition">
-            <td class="py-2 px-3">Jane Doe</td>
-            <td class="py-2 px-3">jane@example.com</td>
-            <td class="py-2 px-3"><span class="inline-block px-2 py-1 rounded bg-green-600/80 text-xs">Active</span></td>
-            <td class="py-2 px-3">2025-07-01</td>
-          </tr>
-          <tr class="hover:bg-blue-900/20 transition">
-            <td class="py-2 px-3">John Smith</td>
-            <td class="py-2 px-3">john@example.com</td>
-            <td class="py-2 px-3"><span class="inline-block px-2 py-1 rounded bg-pink-600/80 text-xs">Invited</span></td>
-            <td class="py-2 px-3">2025-07-10</td>
-          </tr>
-          <tr class="hover:bg-blue-900/20 transition">
-            <td class="py-2 px-3">Alice Lee</td>
-            <td class="py-2 px-3">alice@example.com</td>
-            <td class="py-2 px-3"><span class="inline-block px-2 py-1 rounded bg-blue-600/80 text-xs">Pending</span></td>
-            <td class="py-2 px-3">2025-07-15</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    <div class="glass p-6 fade-in delay-2">
-      <div class="flex items-center mb-4">
-        <span class="text-lg font-semibold neon-accent">Recent Activity</span>
-      </div>
-      <ul class="space-y-3 text-sm">
-        <li class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span> Jane Doe uploaded a VCF file <span class="text-xs text-gray-400 ml-2">2m ago</span></li>
-        <li class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-pink-400 animate-pulse"></span> John Smith invited a new user <span class="text-xs text-gray-400 ml-2">10m ago</span></li>
-        <li class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-blue-400 animate-pulse"></span> Alice Lee updated her profile <span class="text-xs text-gray-400 ml-2">1h ago</span></li>
-      </ul>
-    </div>
-  </div>
-{% endblock %}
 
-{% block extra_js %}
-<!-- Font Awesome CDN for icons -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/js/all.min.js" crossorigin="anonymous"></script>
-<script>
-    // Chart.js - Line Chart
-    new Chart(document.getElementById('lineChart'), {
-      type: 'line',
-      data: {
-        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
-        datasets: [{
-          label: 'Users',
-          data: [120, 150, 180, 200, 250, 300, 350],
-          borderColor: '#6dd5ed',
-          backgroundColor: 'rgba(109,213,237,0.1)',
-          tension: 0.4,
-          pointBackgroundColor: '#e11d74',
-          pointRadius: 5,
-        }]
-      },
-      options: {
-        responsive: true,
-        plugins: { legend: { labels: { color: '#fff', font: { family: 'Space Grotesk' } } } },
-        scales: {
-          x: { ticks: { color: '#6dd5ed' }, grid: { color: '#334155' } },
-          y: { ticks: { color: '#e11d74' }, grid: { color: '#334155' } }
-        }
-      }
-    });
-    // Chart.js - Pie Chart
-    // Pass Django values as JS variables
-    var userPremiumCount = "{{ user_premium_count|add:'0' }}";
-    var userFreeCount = "{{ user_free_count|add:'0' }}";
-    var userDemoCount = "{{ user_demo_count|add:'0' }}";
-    // Convert to numbers
-    userPremiumCount = parseInt(userPremiumCount, 10);
-    userFreeCount = parseInt(userFreeCount, 10);
-    userDemoCount = parseInt(userDemoCount, 10);
-
-    new Chart(document.getElementById('pieChart'), {
-      type: 'pie',
-      data: {
-        labels: ['Premium', 'Free', 'Demo'],
-        datasets: [{
-          data: [userPremiumCount, userFreeCount, userDemoCount],
-          backgroundColor: ['#e11d74', '#6dd5ed', '#2563eb'],
-          borderColor: '#22223b',
-        }]
-      },
-      options: {
-        responsive: true,
-        plugins: { legend: { labels: { color: '#fff', font: { family: 'Space Grotesk' } } } }
-      }
-    });
-    // GSAP Animations
-    gsap.utils.toArray('.fade-in').forEach((el, i) => {
-      gsap.fromTo(el, { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 1, delay: 0.2 + i * 0.15, ease: 'power3.out' });
-    });
-    // Sortable Table
-    document.querySelectorAll('.sortable th').forEach(th => {
-      th.addEventListener('click', function() {
-        const table = th.closest('table');
-        const tbody = table.querySelector('tbody');
-        const rows = Array.from(tbody.querySelectorAll('tr'));
-        const idx = Array.from(th.parentNode.children).indexOf(th);
-        const asc = !th.classList.contains('asc');
-        rows.sort((a, b) => {
-          const aText = a.children[idx].textContent.trim();
-          const bText = b.children[idx].textContent.trim();
-          return asc ? aText.localeCompare(bText) : bText.localeCompare(aText);
-        });
-        rows.forEach(row => tbody.appendChild(row));
-        table.querySelectorAll('th').forEach(t => t.classList.remove('asc', 'desc'));
-        th.classList.add(asc ? 'asc' : 'desc');
-      });
-    });
-// ...existing code...
-</script>
+<!-- end cards -->
 {% endblock %}
