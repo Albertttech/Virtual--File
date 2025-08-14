@@ -24,14 +24,15 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password
 from django.core.cache import cache
 from django.core.mail import send_mail
+from django.template.loader import render_to_string
 from django.utils import timezone
 from django.db import transaction
 from django.contrib.auth.views import PasswordResetView
 
-from .models import VCFFile, UserPurchase, MemberAccount, EmailVerificationOTP, MemberProfile
+from .models import UserPurchase, MemberAccount, EmailVerificationOTP, MemberProfile
 from .forms import MemberRegisterForm, MemberLoginForm
 from common.decorators import member_required
-from customadmin.models import Contact
+from customadmin.models import Contact, VCFFile
 from members.utils.email_otp import create_and_send_email_otp
 from .middleware import auth_email_required
 
@@ -168,7 +169,7 @@ def reset_password(request):
 # 2. Payment & Subscription Views (Paystack Integration)
 # =================================================================
 
-@auth_email_required
+
 def get_paystack_credentials():
     """Safe method to get Paystack credentials with multiple fallbacks"""
     if settings.TEST_MODE:
@@ -176,7 +177,7 @@ def get_paystack_credentials():
             'secret_key': settings.PAYSTACK_SECRET_KEY,
             'public_key': settings.PAYSTACK_PUBLIC_KEY,
             'success_url': settings.PAYSTACK_SUCCESS_URL
-            }
+        }
     
     try:
         secret_key = settings.PAYSTACK_SECRET_KEY
@@ -184,15 +185,13 @@ def get_paystack_credentials():
         success_url = settings.PAYSTACK_SUCCESS_URL
     except AttributeError:
         try:
-            # 2. Try direct import from settings
             from vcfproject.settings import PAYSTACK_SECRET_KEY as secret_key
             from vcfproject.settings import PAYSTACK_PUBLIC_KEY as public_key
             from vcfproject.settings import PAYSTACK_SUCCESS_URL as success_url
         except ImportError:
-            # 3. Fallback to environment variables
             secret_key = os.getenv('PAYSTACK_SECRET_KEY', '')
             public_key = os.getenv('PAYSTACK_PUBLIC_KEY', '')
-            success_url = os.getenv('PAYSTACK_SUCCESS_URL', 'http://127.0.0.1:8000/vcf-tabs/')
+            success_url = os.getenv('PAYSTACK_SUCCESS_URL', 'http://127.0.0.1:8000/members/payment-complete/')
     
     return {
         'secret_key': secret_key.strip(),
@@ -221,7 +220,6 @@ def test_paystack_connection(request):
         return JsonResponse({'error': str(e)}, status=500)
 
 @member_required
-@auth_email_required
 def test_payment(request, vcf_id):
     if not settings.TEST_MODE:
         raise Http404("Test mode only available when TEST_MODE=True")
@@ -252,7 +250,6 @@ def paystack_webhook(request):
         payload = request.body
         signature = request.headers.get('X-Paystack-Signature')
         
-        # Verify the signature
         secret = get_paystack_credentials()['secret_key']
         computed_signature = hmac.new(
             secret.encode('utf-8'),
@@ -266,27 +263,36 @@ def paystack_webhook(request):
         event = json.loads(payload)
         print(f"Paystack webhook received: {event}")
         
-        # Handle different event types
         if event['event'] == 'charge.success':
-            # Process successful payment
             data = event['data']
             reference = data['reference']
             
-            # Verify and process the payment
-            return verify_payment(request, reference)
+            # Create a minimal request-like object for verification
+            class SimpleRequest:
+                GET = {'reference': reference}
+                user = None
+                
+            # Call verify_payment with the reference
+            return verify_payment(SimpleRequest(), reference)
             
         return HttpResponse(status=200)
     return HttpResponse(status=405)
 
 @member_required
-@auth_email_required
 def initiate_payment(request, vcf_id):
     credentials = get_paystack_credentials()
     vcf = get_object_or_404(VCFFile, id=vcf_id, vcf_type='premium', hidden=False)
+    
+    # Build dynamic callback URL
+    # Build success_url with a placeholder for reference (Paystack will append ?reference=...)
+    base_success_url = request.build_absolute_uri(reverse('members:payment-complete'))
+    # Optionally, you can add a dummy reference param to ensure Paystack always appends it
+    success_url = f"{base_success_url}?reference={{reference}}"
+    print(f"Success URL: {success_url}")
 
     if request.method == 'POST':
         email = request.POST.get('email', f"{request.user.username}@vcfapp.com")
-        amount = int(float(vcf.subscription_price) * 100)  # Convert Naira to kobo
+        amount = int(float(vcf.subscription_price) * 100)  # Convert to kobo
 
         headers = {
             'Authorization': f'Bearer {credentials["secret_key"]}',
@@ -296,7 +302,7 @@ def initiate_payment(request, vcf_id):
         payload = {
             'email': email,
             'amount': amount,
-            'callback_url': credentials['success_url'],
+            'callback_url': success_url,  # Use dynamic URL with reference param
             'metadata': {
                 'user_id': request.user.id,
                 'vcf_file_id': vcf.id,
@@ -334,7 +340,6 @@ def initiate_payment(request, vcf_id):
 
         return render(request, 'payment/failed.html')
 
-    # If GET request, show the form
     return render(request, 'payment/payment_form.html', {
         'vcf': vcf,
         'public_key': credentials['public_key'],
@@ -343,24 +348,28 @@ def initiate_payment(request, vcf_id):
 
 @member_required
 def payment_complete(request):
+    print(f"Payment complete called with params: {dict(request.GET)}")
+    
     reference = request.GET.get('reference')
-    if reference:
-        return verify_payment(request, reference)
+    trxref = request.GET.get('trxref')
+    payment_ref = reference or trxref
+    
+    if payment_ref:
+        print(f"Verifying payment with reference: {payment_ref}")
+        return verify_payment(request, payment_ref)
+    
     messages.error(request, "Missing payment reference")
-    return redirect('members:vcf_tabs')
+    return redirect('members:billing')
 
-@member_required
+# REMOVE @member_required DECORATOR FOR WEBHOOK COMPATIBILITY
 def verify_payment(request, reference):
     print(f"\n=== Starting payment verification for reference: {reference} ===")
     User = get_user_model()
     credentials = get_paystack_credentials()
 
     try:
-        # 1. Verify with Paystack
-        headers = {
-            'Authorization': f'Bearer {credentials["secret_key"]}',
-            'Content-Type': 'application/json',
-        }
+        # Verify with Paystack
+        headers = {'Authorization': f'Bearer {credentials["secret_key"]}'}
         print("Making request to Paystack API...")
         response = requests.get(
             f'https://api.paystack.co/transaction/verify/{reference}',
@@ -382,35 +391,31 @@ def verify_payment(request, reference):
             messages.error(request, f"Payment status: {tx['status']}")
             return redirect('members:vcf_tabs')
 
-        # 2. Extract metadata with fallbacks
+        # Extract metadata
         metadata = tx.get('metadata', {})
         print(f"Raw metadata: {metadata}")
         
-        user_id = metadata.get('user_id', request.user.id)
-        vcf_id = metadata.get('vcf_file_id', request.GET.get('vcf_id'))
+        user_id = metadata.get('user_id')
+        vcf_id = metadata.get('vcf_file_id')
         
-        if not vcf_id:
-            print("No vcf_id found in metadata or GET parameters")
-            messages.error(request, "Missing VCF file information in payment")
+        if not user_id or not vcf_id:
+            print("Missing user_id or vcf_id in metadata")
+            messages.error(request, "Missing information in payment metadata")
             return redirect('members:vcf_tabs')
 
         print(f"Extracted user_id: {user_id}, vcf_id: {vcf_id}")
 
-        # 3. Get user and VCF file
+        # Get user and VCF file
         try:
             user = User.objects.get(id=user_id)
             vcf = VCFFile.objects.get(id=vcf_id)
             print(f"Found user: {user.username}, VCF: {vcf.name}")
-        except User.DoesNotExist:
-            print(f"User with id {user_id} does not exist")
-            messages.error(request, "User account not found")
-            return redirect('members:vcf_tabs')
-        except VCFFile.DoesNotExist:
-            print(f"VCF with id {vcf_id} does not exist")
-            messages.error(request, "VCF file not found")
+        except (User.DoesNotExist, VCFFile.DoesNotExist) as e:
+            print(f"Database error: {str(e)}")
+            messages.error(request, "Database error verifying payment")
             return redirect('members:vcf_tabs')
 
-        # 4. Create/update purchase record
+        # Create/update purchase record
         print("Creating/updating purchase record...")
         purchase, created = UserPurchase.objects.update_or_create(
             user=user,
@@ -422,22 +427,11 @@ def verify_payment(request, reference):
                 'is_active': True
             }
         )
-        print(f"{'Created' if created else 'Updated'} purchase record:")
-        print(f"ID: {purchase.id}")
-        print(f"User: {purchase.user.username}")
-        print(f"VCF: {purchase.vcf_file.name} (ID: {purchase.vcf_file.id})")
-        print(f"Verified: {purchase.is_verified}")
-        print(f"Active: {purchase.is_active}")
+        print(f"{'Created' if created else 'Updated'} purchase: ID {purchase.id}")
 
-        # 5. Verify the record exists in database
-        try:
-            db_purchase = UserPurchase.objects.get(payment_reference=reference)
-            print("Database verification successful - record exists")
-        except UserPurchase.DoesNotExist:
-            print("WARNING: Record not found in database after creation!")
-
+        # Final redirect to billing page
         messages.success(request, "Payment verified successfully! You can now access the VCF file.")
-        return redirect('members:vcf_tabs')
+        return redirect('members:billing')
 
     except requests.exceptions.RequestException as e:
         print(f"Network error: {str(e)}")
@@ -446,7 +440,8 @@ def verify_payment(request, reference):
         print(f"Unexpected error: {str(e)}", exc_info=True)
         messages.error(request, f"An unexpected error occurred: {str(e)}")
     
-    return redirect('members:vcf_tabs')
+    return redirect('members:billing')
+
 
 @member_required
 def check_vcf_access(request, vcf_id):
@@ -533,13 +528,73 @@ def check_purchases(request):
 # 3. VCF File Management Views
 # =================================================================
 @member_required
-def VCF_Tabs(request):
-    from customadmin.models import VCFFile
-    joined_ids = []
+@auth_email_required
+def vcf_management(request):
+    return render(request, 'members/vcf/table.html')
+
+@member_required
+@auth_email_required
+def billing(request):
+    # Get all purchased/joined VCF IDs for the current user
+    purchased_ids = []
+    joined_free_ids = []
     if request.user.is_authenticated:
-        joined_ids = list(request.user.user_purchases.filter(is_verified=True, is_active=True).values_list('vcf_file_id', flat=True))
-    vcfs = VCFFile.objects.filter(hidden=False).exclude(id__in=joined_ids).order_by('-created_at')[:5]
-    return render(request, 'members/Vcf/billing.html', {'vcfs': vcfs})
+        # Get all purchased IDs (both free and premium)
+        purchased_ids = list(request.user.user_purchases.filter(
+            is_verified=True,
+            is_active=True
+        ).values_list('vcf_file_id', flat=True))
+        
+        # Specifically get joined free VCF IDs
+        joined_free_ids = get_joined_free_vcf_ids(request.user)
+    
+    # Get newest 5 VCFs that user hasn't accessed
+    new_vcfs = VCFFile.objects.filter(hidden=False).exclude(
+        id__in=purchased_ids + joined_free_ids
+    ).order_by('-created_at')[:5]
+    
+    # Get all free and premium VCFs
+    free_vcfs = VCFFile.objects.filter(vcf_type='free', hidden=False)
+    premium_vcfs = VCFFile.objects.filter(vcf_type='premium', hidden=False)
+    
+    # Get user's personal VCF collections
+    my_premium_vcfs = VCFFile.objects.filter(
+        vcf_type='premium',
+        hidden=False,
+        file_purchases__user=request.user,
+        file_purchases__is_verified=True,
+        file_purchases__is_active=True
+    ).distinct()
+    
+    my_free_vcfs = VCFFile.objects.filter(
+        vcf_type='free',
+        hidden=False,
+        file_purchases__user=request.user,
+        file_purchases__is_verified=True,
+        file_purchases__is_active=True
+    ).distinct()
+    
+    # Available VCFs (not purchased/joined)
+    available_free_vcfs = free_vcfs.exclude(id__in=purchased_ids)
+    available_premium_vcfs = premium_vcfs.exclude(id__in=purchased_ids)
+
+    return render(request, 'members/vcf/billing.html', {
+        # New arrivals section
+        'new_vcfs': new_vcfs,
+        
+        # Available VCFs section
+        'free_vcfs': available_free_vcfs,
+        'premium_vcfs': available_premium_vcfs,
+        
+        # User's collection section
+        'purchased_ids': purchased_ids,
+        'my_premium_vcfs': my_premium_vcfs,
+        'my_free_vcfs': my_free_vcfs,
+        
+        # Debug information
+        'purchased_count': len(purchased_ids),
+        'free_joined_count': len(joined_free_ids)
+    })
 
 @member_required
 def download_vcf(request, vcf_id):
@@ -586,52 +641,9 @@ def subscribe_vcf(request, vcf_id):
         if has_access:
             messages.info(request, "You already have access to this VCF file")
     
-    return render(request, 'members/subscribe_vcf.html', {
+    return render(request, 'members/vcf/subscribe_vcf.html', {
         'vcf': vcf,
         'has_access': has_access
-    })
-
-@member_required
-@auth_email_required
-def vcf_tabs(request):
-    # Get joined free VCFs for user
-    joined_free_ids = get_joined_free_vcf_ids(request.user)
-    free_vcfs = VCFFile.objects.filter(vcf_type='free', hidden=False).exclude(id__in=joined_free_ids)
-    premium_vcfs = VCFFile.objects.filter(vcf_type='premium', hidden=False)
-
-    purchased_ids = []
-    if request.user.is_authenticated:
-        purchased_ids = list(request.user.user_purchases.filter(
-            is_verified=True,
-            is_active=True
-        ).values_list('vcf_file_id', flat=True))
-        my_premium_vcfs = VCFFile.objects.filter(
-            vcf_type='premium',
-            hidden=False,
-            file_purchases__user=request.user,
-            file_purchases__is_verified=True,
-            file_purchases__is_active=True
-        ).distinct()
-        my_free_vcfs = VCFFile.objects.filter(
-            vcf_type='free',
-            hidden=False,
-            file_purchases__user=request.user,
-            file_purchases__is_verified=True,
-            file_purchases__is_active=True
-        ).distinct()
-    else:
-        my_premium_vcfs = VCFFile.objects.none()
-        my_free_vcfs = VCFFile.objects.none()
-
-    # Debug output
-    print(f"User {request.user} purchased IDs: {purchased_ids}")
-
-    return render(request, 'members/vcf/vcf_tabs.html', {
-        'free_vcfs': free_vcfs,
-        'premium_vcfs': premium_vcfs,
-        'purchased_ids': purchased_ids,
-        'my_premium_vcfs': my_premium_vcfs,
-        'my_free_vcfs': my_free_vcfs
     })
 
 # Authentication views
@@ -1114,11 +1126,16 @@ def send_email_code(request):
         )
         
         send_mail(
-            'Your Verification Code',
-            f'Your verification code is: {code}',
+            'Your Verification Code - VCF Manager',
+            f'Your verification code is: {code}',  # Plain text fallback
             settings.DEFAULT_FROM_EMAIL,
             [email],
             fail_silently=False,
+            html_message=render_to_string('members/email/verification_code_email.html', {
+                'code': code,
+                'email': email,
+                'user': request.user
+            })
         )
         
         return JsonResponse({
@@ -1260,4 +1277,30 @@ def ajax_update_profile(request):
             'error': str(e)
         }, status=400)
 
+@member_required
+def vcf_table(request):
+    """Display table of VCF files that the user has purchased/joined"""
+    # Get all VCF files (free and premium) that the current user has purchased/subscribed to
+    user_purchases = request.user.user_purchases.filter(
+        is_verified=True,
+        is_active=True
+    ).select_related('vcf_file').order_by('-created_at')
+    
+    # Create a list with VCF data and contact counts
+    vcf_data = []
+    for purchase in user_purchases:
+        vcf = purchase.vcf_file
+        current_contacts = vcf.contacts.count()
+        max_contacts = "Unlimited" if vcf.unlimited_contacts else str(vcf.max_contacts or 0)
         
+        vcf_data.append({
+            'vcf': vcf,
+            'purchase': purchase,
+            'current_contacts': current_contacts,
+            'max_contacts': max_contacts,
+            'contacts_display': f"{current_contacts} / {max_contacts}",
+        })
+    
+    return render(request, 'members/vcf/table.html', {
+        'vcf_data': vcf_data
+    })

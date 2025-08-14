@@ -1,71 +1,142 @@
 {% extends 'members/base.html' %}
-{% block title %}Subscribe to {{ vcf.name }}{% endblock %}
-{% block content %}
-<!-- Add to subscribe_vcf.html -->
-<div class="mt-4 text-center">
-    <a href="{% url 'members:check-access' vcf.id %}" 
-       class="text-sm text-blue-400 hover:underline"
-       target="_blank">
-       Check Access Status (Debug)
-    </a>
-</div>
-<div class="w-full max-w-xl mx-auto mt-12">
-  <div class="glass p-8 rounded-lg">
-    <h1 class="text-2xl font-bold neon mb-4 text-center">
-      {% if has_access %}
-        Access Granted: {{ vcf.name }}
-      {% else %}
-        Subscribe to {{ vcf.name }}
-      {% endif %}
-    </h1>
-    
-    <table class="min-w-full text-left text-sm mb-8 border-separate border-spacing-y-2 double-spaced-table">
-      <tr>
-        <td class="font-semibold pr-4">Name:</td>
-        <td>{{ vcf.name }}</td>
-      </tr>
-      <tr>
-        <td class="font-semibold pr-4">Type:</td>
-        <td>{{ vcf.vcf_type|title }}</td>
-      </tr>
-      <tr>
-        <td class="font-semibold pr-4">Max Contacts:</td>
-        <td>{% if vcf.unlimited_contacts %}Unlimited{% else %}{{ vcf.max_contacts|default:'-' }}{% endif %}</td>
-      </tr>
-      <tr>
-        <td class="font-semibold pr-4">Subscription Price:</td>
-        <td>₦{{ vcf.subscription_price|default:'0.00' }}</td>
-      </tr>
-    </table>
+{% load static %}
+{% block breadcrumb_page %}VCF Subscription{% endblock %}
+{% block breadcrumb_page2 %}{{ vcf.name }}{% endblock %}
 
-    {% if has_access %}
-      <div class="text-center">
-        <a href="{% url 'members:download-vcf' vcf.id %}" 
-           class="glass-btn px-6 py-2 inline-block">
-           Open VCF File
-        </a>
-        <div class="mt-4 text-sm text-green-400">
-          You have access to this file
+{% block content %}
+<div class="flex flex-wrap -mx-3">
+  <div class="w-full max-w-full px-3 shrink-0 md:w-8/12 md:flex-0 mx-auto">
+    <div class="relative flex flex-col min-w-0 break-words bg-white border-0 shadow-xl dark:bg-slate-850 dark:shadow-dark-xl rounded-2xl bg-clip-border">
+      <div class="border-black/12.5 rounded-t-2xl border-b-0 border-solid p-6 pb-0">
+        <div class="flex items-center">
+          <h6 class="mb-0 dark:text-white">
+            {% if has_access %}
+              <i class="fas fa-check-circle text-green-500 mr-2"></i>Access Granted
+            {% else %}
+              <i class="fas fa-credit-card text-blue-500 mr-2"></i>Subscription Required
+            {% endif %}
+          </h6>
+          <div class="ml-auto">
+            <a href="{% url 'members:check-access' vcf.id %}" 
+               class="inline-block px-4 py-2 mb-0 text-xs font-bold text-center text-blue-500 uppercase align-middle transition-all ease-in bg-transparent border border-blue-500 border-solid rounded-lg shadow-none cursor-pointer leading-pro hover:-translate-y-px active:shadow-xs hover:border-blue-500 active:bg-blue-500 active:hover:text-blue-500 hover:text-blue-500 tracking-tight-rem hover:bg-transparent hover:opacity-75 hover:shadow-none active:text-white active:hover:bg-transparent"
+               target="_blank">
+               <i class="fas fa-external-link-alt mr-1"></i>Check Status
+            </a>
+          </div>
         </div>
       </div>
-    {% else %}
-      <form method="post" action="{% url 'members:initiate-payment' vcf.id %}" 
-            class="flex flex-col items-center mt-6 w-full max-w-sm mx-auto glass p-4 rounded-lg">
-        {% csrf_token %}
-        <input type="email" name="email" placeholder="Your Email" 
-               class="rounded-lg bg-slate-800 text-white px-3 py-2 mb-3 w-full" required
-               value="{{ request.user.profile.email|default:'' }}">
-        <button type="submit" class="glass-btn px-6 py-2 w-full">
-          Pay ₦{{ vcf.subscription_price|default:'0.00' }}
-        </button>
-      </form>
-    {% endif %}
+      
+      <div class="flex-auto p-6">
+        <!-- VCF Information Card -->
+        <div class="relative flex flex-col min-w-0 break-words bg-gray-50 dark:bg-slate-800/50 border-0 shadow-md rounded-2xl bg-clip-border mb-6">
+          <div class="p-6">
+            <div class="flex items-center mb-4">
+              <div class="flex items-center justify-center w-12 h-12 mr-4 text-white bg-gradient-to-tl from-blue-500 to-violet-500 rounded-xl">
+                <i class="fas fa-address-card text-lg"></i>
+              </div>
+              <div>
+                <h5 class="mb-0 dark:text-white">{{ vcf.name }}</h5>
+                <p class="mb-0 text-sm text-slate-400 dark:text-slate-300">{{ vcf.vcf_type|title }} VCF File</p>
+              </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="flex justify-between items-center p-3 bg-white dark:bg-slate-850 rounded-lg">
+                <span class="text-sm font-semibold dark:text-white">Max Contacts:</span>
+                <span class="text-sm dark:text-slate-300">
+                  {% if vcf.unlimited_contacts %}
+                    <span class="text-green-500 font-bold">Unlimited</span>
+                  {% else %}
+                    {{ vcf.max_contacts|default:'-' }}
+                  {% endif %}
+                </span>
+              </div>
+              
+              <div class="flex justify-between items-center p-3 bg-white dark:bg-slate-850 rounded-lg">
+                <span class="text-sm font-semibold dark:text-white">Price:</span>
+                <span class="text-lg font-bold text-blue-500">₦{{ vcf.subscription_price|default:'0.00' }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
 
-    <div class="flex justify-center mt-4">
-      <a href="{% url 'members:vcf_tabs' %}" class="text-blue-400 hover:underline text-sm">
-        Back to VCF Tabs
-      </a>
+        {% if has_access %}
+          <!-- Access Granted Section -->
+          <div class="relative flex flex-col min-w-0 break-words bg-gradient-to-tl from-green-500 to-emerald-500 border-0 shadow-xl rounded-2xl bg-clip-border mb-6">
+            <div class="p-6 text-center">
+              <div class="w-16 h-16 mx-auto mb-4 text-center bg-white/20 rounded-xl flex items-center justify-center">
+                <i class="fas fa-check text-2xl text-white"></i>
+              </div>
+              <h5 class="mb-2 text-white">Access Granted!</h5>
+              <p class="text-white/80 text-sm mb-4">You have full access to this VCF file. Click below to download or view.</p>
+              <a href="{% url 'members:download-vcf' vcf.id %}" 
+                 class="inline-block px-6 py-3 mb-0 font-bold text-center text-green-500 uppercase align-middle transition-all bg-white border-0 rounded-lg cursor-pointer hover:scale-102 active:scale-95 hover:shadow-xs leading-pro text-xs ease-in tracking-tight-rem shadow-md bg-150 bg-x-25">
+                <i class="fas fa-download mr-2"></i>Open VCF File
+              </a>
+            </div>
+          </div>
+        {% else %}
+          <!-- Subscription Form Section -->
+          <div class="relative flex flex-col min-w-0 break-words bg-gradient-to-tl from-blue-500 to-violet-500 border-0 shadow-xl rounded-2xl bg-clip-border mb-6">
+            <div class="p-6">
+              <div class="text-center mb-6">
+                <div class="w-16 h-16 mx-auto mb-4 text-center bg-white/20 rounded-xl flex items-center justify-center">
+                  <i class="fas fa-lock text-2xl text-white"></i>
+                </div>
+                <h5 class="mb-2 text-white">Subscription Required</h5>
+                <p class="text-white text-sm">Subscribe to get access to this premium VCF file</p>
+              </div>
+              
+              <form method="post" action="{% url 'members:initiate-payment' vcf.id %}" class="max-w-sm mx-auto">
+                {% csrf_token %}
+                <div class="mb-4">
+                  <label class="inline-block mb-2 ml-1 font-bold text-xs text-white">Email Address</label>
+                  <input type="email" 
+                         name="email" 
+                         placeholder="Enter your email address" 
+                         class="focus:shadow-primary-outline dark:bg-slate-850 dark:text-white text-sm leading-5.6 ease block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding px-3 py-2 font-normal text-gray-700 outline-none transition-all placeholder:text-gray-500 focus:border-blue-500 focus:outline-none" 
+                         required
+                         value="{{ request.user.profile.email|default:'' }}">
+                </div>
+                
+                <div class="flex justify-center">
+                  <button type="submit" 
+                          class="inline-block px-6 py-3 mb-0 font-bold text-center text-blue-500 uppercase align-middle transition-all bg-white border-0 rounded-lg cursor-pointer hover:scale-102 active:scale-95 hover:shadow-xs leading-pro text-sm ease-in tracking-tight-rem shadow-md bg-150 bg-x-25"
+                          style="width: 30%; min-width: 120px;">
+                    <i class="fas fa-credit-card mr-2"></i>Pay ₦{{ vcf.subscription_price|default:'0.00' }}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        {% endif %}
+
+        <!-- Navigation Section -->
+        <div class="flex flex-wrap items-center justify-between">
+          <a href="{% url 'members:billing' %}" 
+             class="inline-block px-4 py-2 mb-0 text-xs font-bold text-center text-slate-500 uppercase align-middle transition-all ease-in bg-transparent border border-slate-200 border-solid rounded-lg shadow-none cursor-pointer leading-pro hover:-translate-y-px active:shadow-xs hover:border-slate-300 active:bg-slate-50 hover:text-slate-600 tracking-tight-rem hover:bg-transparent hover:opacity-75 hover:shadow-none dark:text-slate-400 dark:border-slate-600 dark:hover:border-slate-500 dark:active:bg-slate-700">
+            <i class="fas fa-arrow-left mr-2"></i>Back to VCF Files
+          </a>
+          
+          {% if has_access %}
+            <a href="{% url 'members:dashboard' %}" 
+               class="inline-block px-4 py-2 mb-0 text-xs font-bold text-center text-blue-500 uppercase align-middle transition-all ease-in bg-transparent border border-blue-500 border-solid rounded-lg shadow-none cursor-pointer leading-pro hover:-translate-y-px active:shadow-xs hover:border-blue-500 active:bg-blue-500 active:hover:text-blue-500 hover:text-blue-500 tracking-tight-rem hover:bg-transparent hover:opacity-75 hover:shadow-none active:text-white active:hover:bg-transparent">
+              <i class="fas fa-home mr-2"></i>Dashboard
+            </a>
+          {% endif %}
+        </div>
+      </div>
     </div>
   </div>
 </div>
+
+<!-- Add custom styles for enhanced visual appeal -->
+<style>
+  .hover\:scale-102:hover {
+    transform: scale(1.02);
+  }
+  .active\:scale-95:active {
+    transform: scale(0.95);
+  }
+</style>
 {% endblock %}

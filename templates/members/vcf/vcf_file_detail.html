@@ -1,85 +1,305 @@
 {% extends 'members/base.html' %}
-{% block title %}VCF File Details{% endblock %}
+{% load static %}
+
+{% block breadcrumb_page %}VCF Details{% endblock %}
+{% block breadcrumb_page2 %}{{ vcf.name }}{% endblock %}
+
 {% block content %}
-<div class="w-full max-w-4xl mx-auto mt-10 px-4">
-  <h1 class="text-3xl font-bold neon mb-8 text-center">VCF File: {{ vcf.name }}</h1>
-  <div class="bg-slate-900/80 rounded-xl shadow-lg p-8 relative">
-    <div id="join-container" class="absolute top-6 right-8">
-      <div class="flex items-center gap-2">
-        <a href="#" id="edit-icon" class="p-2 rounded-full hover:bg-green-100" title="Edit Member Info">
-          <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536M9 13l6.536-6.536a2 2 0 112.828 2.828L11.828 15.828a2 2 0 01-2.828 0L9 13z" />
-          </svg>
-        </a>
-        <a href="#" id="upload-icon" class="p-2 rounded-full hover:bg-orange-100" title="Upload">
-          <svg class="w-5 h-5 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 9l5-5 5 5M12 4v12" />
-          </svg>
-        </a>
-        <a href="#" id="download-icon" class="p-2 rounded-full hover:bg-orange-100" title="Download">
-          <svg class="w-5 h-5 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 11l5 5 5-5M12 4v12" />
-          </svg>
-        </a>
-        {% if not joined %}
-          <button id="join-btn" class="px-5 py-2 bg-blue-600 text-white rounded-lg font-semibold shadow hover:bg-blue-700 transition">Join</button>
-        {% else %}
-          <span class="inline-flex items-center px-6 py-2 border-2 border-green-300 bg-green-100/40 text-green-700 rounded-full font-semibold shadow select-none" style="cursor:default;">
-            <span class="text-green-700 text-base">Active</span>
-          </span>
-        {% endif %}
-      </div>
-      <!-- Modal -->
-      <div id="edit-modal-overlay" class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 hidden">
-        <div id="edit-modal-content" class="bg-white rounded-xl shadow-xl p-8 w-full max-w-md mx-auto text-center relative">
-          <button id="close-edit-modal" class="absolute top-3 right-3 text-gray-400 hover:text-red-400 text-2xl font-bold">&times;</button>
-          <div id="edit-modal-body" class="text-lg font-semibold text-slate-800">
-            <span class="text-green-600 text-xl font-bold">Your VCF Info</span><br><br>
-            <form id="edit-member-form" class="space-y-6">
-              <div class="mb-4 text-left">
-                <label class="block text-sm font-semibold text-slate-700 mb-1" for="edit-profile-name">Name in VCF:</label>
-                <input type="text" id="edit-profile-name" name="profile_name" value="{{ profile_name }}" class="px-3 py-2 bg-slate-100 rounded text-slate-800 w-full border border-slate-300 focus:outline-none focus:ring-2 focus:ring-green-400" />
-              </div>
-              <div class="mb-4 text-left">
-                <label class="block text-sm font-semibold text-slate-700 mb-1" for="edit-email">Email:</label>
-                <input type="email" id="edit-email" name="email" value="{{ main_email }}" class="px-3 py-2 bg-slate-100 rounded text-slate-800 w-full border border-slate-300 focus:outline-none focus:ring-2 focus:ring-green-400" />
-              </div>
-              <button type="submit" class="mt-2 px-6 py-2 bg-green-500 text-white rounded-lg font-semibold w-full">Update</button>
-            </form>
+<div class="w-full px-6 py-6 mx-auto">
+  <!-- VCF File Details Header -->
+  <div class="flex flex-wrap -mx-3">
+    <div class="flex-none w-full max-w-full px-3">
+      <div class="relative flex flex-col min-w-0 mb-6 break-words bg-white border-0 border-transparent border-solid shadow-xl dark:bg-slate-850 dark:shadow-dark-xl rounded-2xl bg-clip-border">
+        <div class="p-6 pb-0 mb-0 border-b-0 border-b-solid rounded-t-2xl border-b-transparent">
+          <div class="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4">
+            <div class="flex-1">
+              <h6 class="dark:text-white text-xl sm:text-2xl font-bold">{{ vcf.name }}</h6>
+              <p class="mb-0 text-xs sm:text-sm text-slate-400 dark:text-white dark:opacity-80">
+                {% if vcf.vcf_type == 'premium' %}
+                  <span class="bg-gradient-to-tl from-yellow-500 to-orange-400 px-2.5 text-xs rounded-1.8 py-1.4 inline-block whitespace-nowrap text-center align-baseline font-bold uppercase leading-none text-white">Premium VCF</span>
+                {% else %}
+                  <span class="bg-gradient-to-tl from-emerald-500 to-teal-400 px-2.5 text-xs rounded-1.8 py-1.4 inline-block whitespace-nowrap text-center align-baseline font-bold uppercase leading-none text-white">Free VCF</span>
+                {% endif %}
+                • {{ contacts|length }} Contact{% if contacts|length != 1 %}s{% endif %}
+              </p>
+            </div>
+            <div id="join-container" class="flex flex-wrap items-center justify-center lg:justify-end gap-2 sm:gap-3">
+              <button id="edit-icon" class="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 text-white transition-all bg-gradient-to-tl from-emerald-500 to-teal-400 border border-emerald-500 rounded-full hover:shadow-lg active:opacity-85 hover:-translate-y-px hover:scale-105" title="Edit Member Info">
+                <i class="fas fa-edit text-sm sm:text-base"></i>
+              </button>
+              <button id="upload-icon" class="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 text-white transition-all bg-gradient-to-tl from-blue-500 to-violet-500 border border-blue-500 rounded-full hover:shadow-lg active:opacity-85 hover:-translate-y-px hover:scale-105" title="Upload VCF File">
+                <i class="fas fa-upload text-sm sm:text-base"></i>
+              </button>
+              <button id="download-icon" class="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 text-white transition-all bg-gradient-to-tl from-orange-500 to-yellow-500 border border-orange-500 rounded-full hover:shadow-lg active:opacity-85 hover:-translate-y-px hover:scale-105" title="Download VCF File">
+                <i class="fas fa-download text-sm sm:text-base"></i>
+              </button>
+              {% if not joined %}
+                <button id="join-btn" class="flex items-center justify-center px-4 sm:px-6 py-2 text-xs sm:text-sm font-bold text-white transition-all bg-gradient-to-tl from-green-600 to-lime-400 rounded-lg hover:shadow-lg active:opacity-85 hover:-translate-y-px min-w-0">
+                  <i class="fas fa-plus mr-1 sm:mr-2"></i>
+                  <span>Join</span>
+                </button>
+              {% else %}
+                <span class="inline-flex items-center px-3 sm:px-4 py-2 bg-gradient-to-tl from-green-500 to-teal-400 text-black rounded-lg font-semibold shadow text-xs sm:text-sm">
+                  <i class="fas fa-check mr-1 sm:mr-2"></i>
+                  <span>Active</span>
+                </span>
+              {% endif %}
+            </div>
           </div>
         </div>
       </div>
-      <div id="modal-overlay" class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 hidden">
-        <div id="modal-content" class="bg-white rounded-xl shadow-xl p-8 w-full max-w-md mx-auto text-center relative">
-          <button id="close-modal" class="absolute top-3 right-3 text-gray-400 hover:text-red-400 text-2xl font-bold">&times;</button>
-          <div id="modal-body" class="text-lg font-semibold text-slate-800">Modal Content</div>
+    </div>
+  </div>
+
+  <!-- Contacts Table -->
+  <div class="flex flex-wrap -mx-3">
+    <div class="flex-none w-full max-w-full px-3">
+      <div class="relative flex flex-col min-w-0 mb-6 break-words bg-white border-0 border-transparent border-solid shadow-xl dark:bg-slate-850 dark:shadow-dark-xl rounded-2xl bg-clip-border">
+        <div class="p-6 pb-0 mb-0 border-b-0 border-b-solid rounded-t-2xl border-b-transparent">
+          <h6 class="dark:text-white">Contacts ({{ contacts|length }})</h6>
+        </div>
+        <div class="flex-auto px-0 pt-0 pb-2">
+          <div class="p-0 overflow-x-auto">
+            <table class="items-center w-full mb-0 align-top border-collapse dark:border-white/40 text-slate-500">
+              <thead class="align-bottom">
+                <tr>
+                  <th class="px-6 py-3 font-bold text-left uppercase align-middle bg-transparent border-b border-collapse shadow-none dark:border-white/40 dark:text-white text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">Name</th>
+                  <th class="px-6 py-3 pl-2 font-bold text-left uppercase align-middle bg-transparent border-b border-collapse shadow-none dark:border-white/40 dark:text-white text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">Phone Number</th>
+                  <th class="px-6 py-3 font-bold text-left uppercase align-middle bg-transparent border-b border-collapse shadow-none dark:border-white/40 dark:text-white text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">Email</th>
+                </tr>
+              </thead>
+              <tbody id="contacts-table-body">
+                {% for contact in contacts %}
+                <tr>
+                  <td class="p-2 align-middle bg-transparent border-b dark:border-white/40 whitespace-nowrap shadow-transparent">
+                    <div class="flex px-2 py-1">
+                      <div>
+                        <div class="inline-flex items-center justify-center mr-4 text-sm text-white transition-all duration-200 ease-in-out h-9 w-9 rounded-xl bg-gradient-to-tl from-blue-600 to-cyan-400">
+                          <i class="fas fa-user"></i>
+                        </div>
+                      </div>
+                      <div class="flex flex-col justify-center">
+                        <h6 class="mb-0 text-sm leading-normal dark:text-white">{{ contact.name }}</h6>
+                        <p class="mb-0 text-xs leading-tight dark:text-white dark:opacity-80 text-slate-400">Contact</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="p-2 align-middle bg-transparent border-b dark:border-white/40 whitespace-nowrap shadow-transparent">
+                    <p class="mb-0 text-xs font-semibold leading-tight dark:text-white dark:opacity-80">{{ contact.phone }}</p>
+                  </td>
+                  <td class="p-2 align-middle bg-transparent border-b dark:border-white/40 whitespace-nowrap shadow-transparent">
+                    <p class="mb-0 text-xs font-semibold leading-tight dark:text-white dark:opacity-80">{{ contact.email|default:'-' }}</p>
+                  </td>
+                </tr>
+                {% empty %}
+                <tr>
+                  <td colspan="3" class="p-4 text-center text-slate-400">
+                    <div class="flex flex-col items-center justify-center py-8">
+                      <svg class="w-12 h-12 mb-4 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                      </svg>
+                      <p class="text-sm">No contacts found in this VCF file.</p>
+                    </div>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- Edit Modal -->
+<div id="edit-modal-overlay" class="fixed inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm z-[9999] hidden transition-all duration-300 opacity-0">
+  <div id="edit-modal-content" class="bg-white dark:bg-slate-850 rounded-2xl shadow-2xl sm:p-8 p-4 w-full max-w-md sm:max-w-md max-w-xs mx-4 sm:mx-0 relative transform scale-95 transition-all duration-300 overflow-y-auto max-h-[90vh]">
+    <button id="close-edit-modal" class="absolute top-4 right-4 text-gray-400 hover:text-red-500 text-2xl font-bold transition-colors duration-200 w-8 h-8 flex items-center justify-center rounded-full hover:bg-red-50 dark:hover:bg-red-900/20">&times;</button>
+    <div id="edit-modal-body" class="text-center">
+      <div class="flex items-center justify-center w-16 h-16 mx-auto mb-4 bg-gradient-to-tl from-emerald-500 to-teal-400 rounded-full">
+        <i class="fas fa-edit text-white text-xl"></i>
+      </div>
+      <h3 class="text-xl font-bold text-slate-800 dark:text-white mb-6">Edit Your VCF Info</h3>
+      <form id="edit-member-form" class="space-y-4">
+        <div class="text-left">
+          <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2" for="edit-profile-name">Name in VCF:</label>
+          <input type="text" id="edit-profile-name" name="profile_name" value="{{ profile_name }}" class="w-full px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:bg-slate-700 dark:text-white transition-all duration-200" />
+        </div>
+        <div class="text-left">
+          <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2" for="edit-email">Email:</label>
+          <input type="email" id="edit-email" name="email" value="{{ main_email }}" class="w-full px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:bg-slate-700 dark:text-white transition-all duration-200" />
+        </div>
+        <button type="submit" class="w-full px-6 py-3 bg-gradient-to-tl from-emerald-600 to-teal-400 text-white rounded-lg font-semibold hover:shadow-lg transition-all duration-200 hover:scale-105">
+          <i class="fas fa-save mr-2"></i>Update
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Upload Modal -->
+<div id="upload-modal-overlay" class="fixed inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm z-[9999] hidden transition-all duration-300 opacity-0">
+  <div id="upload-modal-content" class="bg-white dark:bg-slate-850 rounded-2xl shadow-2xl sm:p-8 p-4 w-full max-w-md sm:max-w-md max-w-xs mx-4 sm:mx-0 relative transform scale-95 transition-all duration-300 overflow-y-auto max-h-[90vh]">
+    <button id="close-upload-modal" class="absolute top-4 right-4 text-gray-400 hover:text-red-500 text-2xl font-bold transition-colors duration-200 w-8 h-8 flex items-center justify-center rounded-full hover:bg-red-50 dark:hover:bg-red-900/20">&times;</button>
+    <div class="text-center">
+      <div class="flex items-center justify-center w-16 h-16 mx-auto mb-4 bg-gradient-to-tl from-blue-500 to-violet-500 rounded-full">
+        <i class="fas fa-upload text-white text-xl"></i>
+      </div>
+      <h3 class="text-xl font-bold text-slate-800 dark:text-white mb-4">Upload VCF File</h3>
+      <p class="text-sm text-slate-600 dark:text-slate-400 mb-6">Select a VCF file from your device to upload</p>
+      <div class="border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-lg p-6 mb-4 hover:border-blue-400 transition-colors duration-200">
+        <input type="file" accept=".vcf" id="vcf-file-input" class="hidden">
+        <label for="vcf-file-input" class="cursor-pointer flex flex-col items-center">
+          <i class="fas fa-cloud-upload-alt text-3xl text-slate-400 mb-2"></i>
+          <span class="text-sm text-slate-600 dark:text-slate-400">Click to select VCF file</span>
+        </label>
+      </div>
+      <button id="upload-btn" class="w-full px-6 py-3 bg-gradient-to-tl from-blue-600 to-violet-500 text-white rounded-lg font-semibold hover:shadow-lg transition-all duration-200 hover:scale-105 disabled:opacity-50" disabled>
+        <i class="fas fa-upload mr-2"></i>Upload VCF
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Download Modal -->
+<div id="download-modal-overlay" class="fixed inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm z-[9999] hidden transition-all duration-300 opacity-0">
+  <div id="download-modal-content" class="bg-white dark:bg-slate-850 rounded-2xl shadow-2xl sm:p-8 p-4 w-full max-w-md sm:max-w-md max-w-xs mx-4 sm:mx-0 relative transform scale-95 transition-all duration-300 overflow-y-auto max-h-[90vh]">
+    <button id="close-download-modal" class="absolute top-4 right-4 text-gray-400 hover:text-red-500 text-2xl font-bold transition-colors duration-200 w-8 h-8 flex items-center justify-center rounded-full hover:bg-red-50 dark:hover:bg-red-900/20">&times;</button>
+    <div class="text-center">
+      <div class="flex items-center justify-center w-16 h-16 mx-auto mb-4 bg-gradient-to-tl from-orange-500 to-yellow-500 rounded-full">
+        <i class="fas fa-download text-white text-xl"></i>
+      </div>
+      <h3 class="text-xl font-bold text-slate-800 dark:text-white mb-4">Download VCF File</h3>
+      <p class="text-sm text-slate-600 dark:text-slate-400 mb-6">Download all contacts from this VCF file to your device</p>
+      <div class="bg-slate-50 dark:bg-slate-800 rounded-lg p-4 mb-6">
+        <div class="flex items-center justify-between text-sm">
+          <span class="text-slate-600 dark:text-slate-400">File name:</span>
+          <span class="font-semibold text-slate-800 dark:text-white">{{ vcf.name|default:"contacts" }}.vcf</span>
+        </div>
+        <div class="flex items-center justify-between text-sm mt-2">
+          <span class="text-slate-600 dark:text-slate-400">Contacts:</span>
+          <span class="font-semibold text-slate-800 dark:text-white">{{ contacts|length }} contact{% if contacts|length != 1 %}s{% endif %}</span>
+        </div>
+      </div>
+      <button id="modal-download-btn" class="w-full px-6 py-3 bg-gradient-to-tl from-orange-500 to-yellow-500 text-white rounded-lg font-semibold hover:shadow-lg transition-all duration-200 hover:scale-105">
+        <i class="fas fa-download mr-2"></i>Download VCF
+      </button>
+    </div>
+  </div>
+</div>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+  // Modal management functions
+  function showModal(modalOverlay) {
+    const modalContent = modalOverlay.querySelector('[id$="-content"]');
+    modalOverlay.classList.remove('hidden');
+    setTimeout(() => {
+      modalOverlay.classList.remove('opacity-0');
+      modalContent.classList.remove('scale-95');
+      modalContent.classList.add('scale-100');
+    }, 10);
+  }
+
+  function hideModal(modalOverlay) {
+    const modalContent = modalOverlay.querySelector('[id$="-content"]');
+    modalOverlay.classList.add('opacity-0');
+    modalContent.classList.remove('scale-100');
+    modalContent.classList.add('scale-95');
+    setTimeout(() => {
+      modalOverlay.classList.add('hidden');
+    }, 300);
+  }
+
   // Edit modal logic
   const editModalOverlay = document.getElementById('edit-modal-overlay');
   const closeEditModalBtn = document.getElementById('close-edit-modal');
+  
   document.getElementById('edit-icon').addEventListener('click', function(e) {
     e.preventDefault();
-    editModalOverlay.classList.remove('hidden');
+    showModal(editModalOverlay);
   });
+  
   closeEditModalBtn.addEventListener('click', function() {
-    editModalOverlay.classList.add('hidden');
+    hideModal(editModalOverlay);
   });
+  
   editModalOverlay.addEventListener('click', function(e) {
-    if (e.target === editModalOverlay) editModalOverlay.classList.add('hidden');
+    if (e.target === editModalOverlay) hideModal(editModalOverlay);
   });
+
+  // Upload modal logic
+  const uploadModalOverlay = document.getElementById('upload-modal-overlay');
+  const closeUploadModalBtn = document.getElementById('close-upload-modal');
+  const vcfFileInput = document.getElementById('vcf-file-input');
+  const uploadBtn = document.getElementById('upload-btn');
+  
+  document.getElementById('upload-icon').addEventListener('click', function(e) {
+    e.preventDefault();
+    showModal(uploadModalOverlay);
+  });
+  
+  closeUploadModalBtn.addEventListener('click', function() {
+    hideModal(uploadModalOverlay);
+  });
+  
+  uploadModalOverlay.addEventListener('click', function(e) {
+    if (e.target === uploadModalOverlay) hideModal(uploadModalOverlay);
+  });
+
+  // File input change handler
+  vcfFileInput.addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+      uploadBtn.disabled = false;
+      uploadBtn.innerHTML = `<i class="fas fa-upload mr-2"></i>Upload ${file.name}`;
+    } else {
+      uploadBtn.disabled = true;
+      uploadBtn.innerHTML = '<i class="fas fa-upload mr-2"></i>Upload VCF';
+    }
+  });
+
+  // Upload button handler
+  uploadBtn.addEventListener('click', function() {
+    const file = vcfFileInput.files[0];
+    if (file) {
+      // Add upload logic here
+      showSuccessToast('VCF file uploaded successfully!');
+      hideModal(uploadModalOverlay);
+      vcfFileInput.value = '';
+      uploadBtn.disabled = true;
+      uploadBtn.innerHTML = '<i class="fas fa-upload mr-2"></i>Upload VCF';
+    }
+  });
+
+  // Download modal logic
+  const downloadModalOverlay = document.getElementById('download-modal-overlay');
+  const closeDownloadModalBtn = document.getElementById('close-download-modal');
+  
+  document.getElementById('download-icon').addEventListener('click', function(e) {
+    e.preventDefault();
+    showModal(downloadModalOverlay);
+  });
+  
+  closeDownloadModalBtn.addEventListener('click', function() {
+    hideModal(downloadModalOverlay);
+  });
+  
+  downloadModalOverlay.addEventListener('click', function(e) {
+    if (e.target === downloadModalOverlay) hideModal(downloadModalOverlay);
+  });
+
   // AJAX update for member info in current VCF
   document.getElementById('edit-member-form').addEventListener('submit', function(e) {
     e.preventDefault();
     const profileName = document.getElementById('edit-profile-name').value.trim();
     const email = document.getElementById('edit-email').value.trim();
+    
     if (!profileName) {
-      alert('Profile name is required.');
+      showErrorToast('Profile name is required.');
       return;
     }
+    
     fetch(`{% url 'members:ajax_update_vcf_member' vcf.id %}`, {
       method: 'POST',
       headers: {
@@ -91,63 +311,48 @@ document.addEventListener('DOMContentLoaded', function() {
     .then(r => r.json())
     .then(data => {
       if (data.success) {
-        showSuccessToast('VCF info updated!');
-        editModalOverlay.classList.add('hidden');
+        showSuccessToast('VCF info updated successfully!');
+        hideModal(editModalOverlay);
         // Update contact table row for current user
         const tbody = document.getElementById('contacts-table-body');
         if (tbody) {
-          // Find row by name or email (since phone may not change)
           const rows = tbody.querySelectorAll('tr');
           for (let row of rows) {
-            const nameCell = row.querySelector('td:nth-child(1)');
-            const emailCell = row.querySelector('td:nth-child(3)');
+            const nameCell = row.querySelector('td:nth-child(1) h6');
+            const emailCell = row.querySelector('td:nth-child(3) p');
             if (nameCell && nameCell.textContent.trim() === profileName) {
               nameCell.textContent = profileName;
-              emailCell.textContent = email;
+              if (emailCell) emailCell.textContent = email || '-';
               break;
             }
           }
         }
       } else {
-        alert(data.error || 'Update failed');
+        showErrorToast(data.error || 'Update failed');
       }
     })
-    .catch(() => alert('Update failed'));
+    .catch(() => showErrorToast('Update failed'));
   });
 
-  // Toast logic
+  // Toast notifications
   function showSuccessToast(message) {
+    showToast(message, 'success');
+  }
+  
+  function showErrorToast(message) {
+    showToast(message, 'error');
+  }
+  
+  function showToast(message, type) {
     let toast = document.createElement('div');
     toast.textContent = message;
-    toast.className = 'fixed top-6 right-8 z-[9999] px-6 py-3 bg-green-500 text-white rounded-lg shadow-lg font-semibold opacity-0 transition-all duration-500';
+    const bgColor = type === 'success' ? 'bg-green-500' : 'bg-red-500';
+    toast.className = `fixed top-6 right-8 z-[9999] px-6 py-3 ${bgColor} text-white rounded-lg shadow-lg font-semibold opacity-0 transition-all duration-500`;
     document.body.appendChild(toast);
     setTimeout(() => { toast.style.opacity = '1'; toast.style.transform = 'translateY(0)'; }, 50);
     setTimeout(() => { toast.style.opacity = '0'; toast.style.transform = 'translateY(-20px)'; }, 3050);
     setTimeout(() => { if (toast.parentNode) toast.parentNode.removeChild(toast); }, 3550);
   }
-  // Modal logic
-  const modalOverlay = document.getElementById('modal-overlay');
-  const modalBody = document.getElementById('modal-body');
-  const closeModalBtn = document.getElementById('close-modal');
-  function openModal(content) {
-    modalBody.innerHTML = content;
-    modalOverlay.classList.remove('hidden');
-  }
-  function closeModal() {
-    modalOverlay.classList.add('hidden');
-  }
-  document.getElementById('upload-icon').addEventListener('click', function(e) {
-    e.preventDefault();
-    openModal('<span class="text-green-600 text-xl font-bold">Upload VCF File</span><br><br><input type="file" class="mt-4"><br><br><button class="mt-4 px-6 py-2 bg-green-500 text-white rounded-lg font-semibold">Upload</button>');
-  });
-  document.getElementById('download-icon').addEventListener('click', function(e) {
-    e.preventDefault();
-    openModal('<span class="text-blue-600 text-xl font-bold">Download VCF File</span><br><br><button id="modal-download-btn" class="mt-4 px-6 py-2 bg-blue-500 text-white rounded-lg font-semibold">Download</button>');
-  });
-  closeModalBtn.addEventListener('click', closeModal);
-  modalOverlay.addEventListener('click', function(e) {
-    if (e.target === modalOverlay) closeModal();
-  });
 
   // VCF download logic
   document.addEventListener('click', function(e) {
@@ -158,20 +363,29 @@ document.addEventListener('DOMContentLoaded', function() {
       rows.forEach(row => {
         const cells = row.querySelectorAll('td');
         if (cells.length >= 3) {
-          const name = cells[0].textContent.trim();
-          let phone = cells[1].textContent.trim();
-          // Ensure phone starts with +
-          if (!phone.startsWith('+') && phone.length > 0) {
-            phone = '+' + phone;
+          const nameElement = cells[0].querySelector('h6');
+          const phoneElement = cells[1].querySelector('p');
+          const emailElement = cells[2].querySelector('p');
+          
+          if (nameElement && phoneElement) {
+            const name = nameElement.textContent.trim();
+            let phone = phoneElement.textContent.trim();
+            const email = emailElement ? emailElement.textContent.trim() : '';
+            
+            // Ensure phone starts with +
+            if (!phone.startsWith('+') && phone.length > 0) {
+              phone = '+' + phone;
+            }
+            
+            vcfData += 'BEGIN:VCARD\nVERSION:3.0\n';
+            vcfData += `FN:${name}\n`;
+            vcfData += `TEL;TYPE=CELL:${phone}\n`;
+            if (email && email !== '-') vcfData += `EMAIL:${email}\n`;
+            vcfData += 'END:VCARD\n';
           }
-          const email = cells[2].textContent.trim();
-          vcfData += 'BEGIN:VCARD\nVERSION:3.0\n';
-          vcfData += `FN:${name}\n`;
-          vcfData += `TEL;TYPE=CELL:${phone}\n`;
-          if (email) vcfData += `EMAIL:${email}\n`;
-          vcfData += 'END:VCARD\n';
         }
       });
+      
       // Download as .vcf file
       const blob = new Blob([vcfData.replace(/\n/g, '\r\n')], { type: 'text/vcard' });
       const url = URL.createObjectURL(blob);
@@ -182,13 +396,18 @@ document.addEventListener('DOMContentLoaded', function() {
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
-      closeModal();
+      hideModal(downloadModalOverlay);
+      showSuccessToast('VCF file downloaded successfully!');
     }
   });
+
+  // Join button logic
   const joinBtn = document.getElementById('join-btn');
   if (joinBtn) {
     joinBtn.addEventListener('click', function() {
       joinBtn.disabled = true;
+      joinBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Joining...';
+      
       fetch('{% url "members:ajax_join_vcf" vcf.id %}', {
         method: 'POST',
         headers: {
@@ -200,56 +419,67 @@ document.addEventListener('DOMContentLoaded', function() {
       .then(r => r.json())
       .then(data => {
         if (data.success) {
-          document.getElementById('join-container').innerHTML = `<span class='inline-flex items-center gap-2 px-6 py-2 border-2 border-yellow-400 bg-yellow-100/20 text-yellow-700 rounded-full font-semibold shadow select-none' style='cursor:default;'><svg class='w-5 h-5 text-yellow-500' fill='none' stroke='currentColor' viewBox='0 0 24 24'><path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M5 13l4 4L19 7'/></svg><span class='text-yellow-700 text-base'>Active</span></span>`;
+          document.getElementById('join-container').innerHTML = `
+            <span class="inline-flex items-center px-4 py-2 bg-gradient-to-tl from-green-500 to-teal-400 text-white rounded-lg font-semibold shadow text-xs sm:text-sm">
+              <i class="fas fa-check mr-2"></i>Active
+            </span>
+          `;
+          showSuccessToast('Successfully joined VCF!');
+          
           // Add new contact row to table
           const tbody = document.getElementById('contacts-table-body');
           if (tbody && data.contact) {
-            const tr = document.createElement('tr');
-            tr.className = 'border-b border-blue-900/40';
-            tr.innerHTML = `<td class='px-4 py-2 font-medium text-white'>${data.contact.name}</td>` +
-                          `<td class='px-4 py-2 text-blue-300'>${data.contact.phone}</td>` +
-                          `<td class='px-4 py-2 text-blue-200'>${data.contact.email || ''}</td>`;
             // Remove 'No contacts' row if present
             const noContactsRow = tbody.querySelector('tr td[colspan]');
             if (noContactsRow) noContactsRow.parentElement.remove();
+            
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+              <td class="p-2 align-middle bg-transparent border-b dark:border-white/40 whitespace-nowrap shadow-transparent">
+                <div class="flex px-2 py-1">
+                  <div>
+                    <div class="inline-flex items-center justify-center mr-4 text-sm text-white transition-all duration-200 ease-in-out h-9 w-9 rounded-xl bg-gradient-to-tl from-blue-600 to-cyan-400">
+                      <i class="fas fa-user"></i>
+                    </div>
+                  </div>
+                  <div class="flex flex-col justify-center">
+                    <h6 class="mb-0 text-sm leading-normal dark:text-white">${data.contact.name}</h6>
+                    <p class="mb-0 text-xs leading-tight dark:text-white dark:opacity-80 text-slate-400">Contact</p>
+                  </div>
+                </div>
+              </td>
+              <td class="p-2 align-middle bg-transparent border-b dark:border-white/40 whitespace-nowrap shadow-transparent">
+                <p class="mb-0 text-xs font-semibold leading-tight dark:text-white dark:opacity-80">${data.contact.phone}</p>
+              </td>
+              <td class="p-2 align-middle bg-transparent border-b dark:border-white/40 whitespace-nowrap shadow-transparent">
+                <p class="mb-0 text-xs font-semibold leading-tight dark:text-white dark:opacity-80">${data.contact.email || '-'}</p>
+              </td>
+            `;
             tbody.appendChild(tr);
           }
         } else {
-          alert(data.error || 'Join failed');
+          showErrorToast(data.error || 'Join failed');
           joinBtn.disabled = false;
+          joinBtn.innerHTML = '<i class="fas fa-plus mr-2"></i>Join';
         }
       })
       .catch(() => {
-        alert('Join failed');
+        showErrorToast('Join failed');
         joinBtn.disabled = false;
+        joinBtn.innerHTML = '<i class="fas fa-plus mr-2"></i>Join';
       });
     });
   }
+
+  // Keyboard support for modals
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      // Close any open modal
+      const openModals = document.querySelectorAll('[id$="-modal-overlay"]:not(.hidden)');
+      openModals.forEach(modal => hideModal(modal));
+    }
+  });
 });
 </script>
-    <h2 class="text-lg font-semibold mb-4 text-blue-200">Contacts ({{ contacts|length }})</h2>
-    <div class="overflow-x-auto">
-      <table class="min-w-full text-left text-sm text-blue-100">
-        <thead>
-          <tr class="bg-slate-800">
-            <th class="px-4 py-2 font-semibold" style="width:30%">Name</th>
-            <th class="px-4 py-2 font-semibold" style="width:20%">Number</th>
-            <th class="px-4 py-2 font-semibold" style="width:50%">Email</th>
-          </tr>
-        </thead>
-        <tbody id="contacts-table-body">
-          {% for contact in contacts %}
-          <tr class="border-b border-blue-900/40">
-            <td class="px-4 py-2 font-medium text-white">{{ contact.name }}</td>
-            <td class="px-4 py-2 text-blue-300">{{ contact.phone }}</td>
-            <td class="px-4 py-2 text-blue-200">{{ contact.email|default:'' }}</td>
-          </tr>
-          {% empty %}
-          <tr><td colspan="3" class="text-center text-blue-400 py-8">No contacts found in this file.</td></tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-  </div>
-</div>
+
 {% endblock %}

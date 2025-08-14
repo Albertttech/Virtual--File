@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Verification Code</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            padding: 40px 30px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #10b981, #3b82f6, #8b5cf6, #ec4899);
+        }
+        
+        .logo-icon {
+            width: 80px;
+            height: 80px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 35px;
+        }
+        
+        .header h1 {
+            color: white;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 16px;
+        }
+        
+        .content {
+            padding: 50px 30px;
+            text-align: center;
+        }
+        
+        .greeting {
+            font-size: 20px;
+            color: #1f2937;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        
+        .message {
+            font-size: 16px;
+            color: #6b7280;
+            line-height: 1.6;
+            margin-bottom: 40px;
+        }
+        
+        .code-container {
+            background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+            border-radius: 16px;
+            padding: 40px 20px;
+            margin: 30px 0;
+            border: 2px dashed #d1d5db;
+        }
+        
+        .code-label {
+            font-size: 14px;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        
+        .verification-code {
+            font-size: 36px;
+            font-weight: 800;
+            color: #3b82f6;
+            letter-spacing: 8px;
+            font-family: 'Courier New', monospace;
+            background: white;
+            padding: 20px 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+            display: inline-block;
+            border: 2px solid #3b82f6;
+        }
+        
+        .expiry-notice {
+            background: linear-gradient(135deg, #fef3c7 0%, #fed7aa 100%);
+            border-left: 4px solid #f59e0b;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 30px 0;
+        }
+        
+        .expiry-notice .icon {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            background: #f59e0b;
+            border-radius: 50%;
+            margin-right: 10px;
+            vertical-align: middle;
+            position: relative;
+        }
+        
+        .expiry-notice .icon::after {
+            content: '!';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+        }
+        
+        .expiry-text {
+            color: #92400e;
+            font-weight: 600;
+            font-size: 14px;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        
+        .security-tips {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 25px;
+            margin: 30px 0;
+            text-align: left;
+        }
+        
+        .security-tips h3 {
+            color: #1f2937;
+            font-size: 16px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .security-tips h3::before {
+            content: '🔒';
+            margin-right: 8px;
+        }
+        
+        .security-tips ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .security-tips li {
+            color: #6b7280;
+            font-size: 14px;
+            margin-bottom: 8px;
+            padding-left: 20px;
+            position: relative;
+        }
+        
+        .security-tips li::before {
+            content: '•';
+            color: #3b82f6;
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+        
+        .footer {
+            background: #f9fafb;
+            padding: 30px;
+            text-align: center;
+            border-top: 1px solid #e5e7eb;
+        }
+        
+        .footer p {
+            color: #6b7280;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        
+        .company-name {
+            color: #3b82f6;
+            font-weight: 600;
+        }
+        
+        .brand-gradient {
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .support-link {
+            color: #3b82f6;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .support-link:hover {
+            text-decoration: underline;
+        }
+        
+        @media (max-width: 600px) {
+            .email-container {
+                margin: 10px;
+                border-radius: 15px;
+            }
+            
+            .header,
+            .content {
+                padding: 30px 20px;
+            }
+            
+            .verification-code {
+                font-size: 28px;
+                letter-spacing: 4px;
+                padding: 15px 20px;
+            }
+            
+            .code-container {
+                padding: 30px 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <!-- Header Section -->
+        <div class="header">
+            <div class="logo-icon">
+                🔐
+            </div>
+            <h1>Email Verification</h1>
+            <p>Secure your account with verification</p>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="content">
+            <div class="greeting">Hello there!</div>
+            
+            <div class="message">
+                We received a request to verify your email address for your <span class="company-name brand-gradient">VCF Contact Manager</span> account. 
+                Please use the verification code below to complete the process.
+            </div>
+            
+            <!-- Verification Code Box -->
+            <div class="code-container">
+                <div class="code-label">Your Verification Code</div>
+                <div class="verification-code">{{ code }}</div>
+            </div>
+            
+            <!-- Expiry Notice -->
+            <div class="expiry-notice">
+                <span class="icon"></span>
+                <span class="expiry-text">This code will expire in 15 minutes</span>
+            </div>
+            
+            <!-- Security Tips -->
+            <div class="security-tips">
+                <h3>Security Tips</h3>
+                <ul>
+                    <li>Never share this code with anyone</li>
+                    <li>Our team will never ask for this code</li>
+                    <li>If you didn't request this, please ignore this email</li>
+                    <li>This code can only be used once</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <div class="footer">
+            <p>This email was sent by <span class="company-name brand-gradient">VCF Contact Manager</span></p>
+            <p>If you have any questions, please <a href="mailto:support@vcfmanager.com" class="support-link">contact our support team</a></p>
+            <p>© 2025 VCF Contact Manager. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>
