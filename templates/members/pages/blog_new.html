@@ -1,0 +1,364 @@
+{% extends "members/base.html" %}
+{% load static %}
+
+{% block page_title %}Blog - AlbTech Insights{% endblock %}
+{% block breadcrumb_page %}Blog{% endblock %}
+{% block breadcrumb_page2 %}Blog{% endblock %}
+
+{% block content %}
+<!-- Blog Categories Row -->
+<div class="flex flex-wrap -mx-3">
+  <!-- Featured Post Stats -->
+  <div class="w-full max-w-full px-3 mb-6 sm:w-1/2 sm:flex-none xl:mb-0 xl:w-1/4">
+    <div class="relative flex flex-col min-w-0 break-words bg-white shadow-xl dark:bg-slate-850 dark:shadow-dark-xl rounded-2xl bg-clip-border">
+      <div class="flex-auto p-4">
+        <div class="flex flex-row -mx-3">
+          <div class="flex-none w-2/3 max-w-full px-3">
+            <div>
+              <p class="mb-0 font-sans text-sm font-semibold leading-normal uppercase dark:text-white dark:opacity-60">Articles</p>
+              <h5 class="mb-2 font-bold dark:text-white">50+</h5>
+              <p class="mb-0 dark:text-white dark:opacity-60">
+                <span class="text-sm font-bold leading-normal text-emerald-500">Weekly</span>
+                updates
+              </p>
+            </div>
+          </div>
+          <div class="px-3 text-right basis-1/3">
+            <div class="inline-block w-12 h-12 text-center rounded-circle bg-gradient-to-tl from-blue-500 to-violet-500">
+              <i class="ni leading-none ni-paper-diploma text-lg relative top-3.5 text-white"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Categories Card -->
+  <div class="w-full max-w-full px-3 mb-6 sm:w-1/2 sm:flex-none xl:mb-0 xl:w-1/4">
+    <div class="relative flex flex-col min-w-0 break-words bg-white shadow-xl dark:bg-slate-850 dark:shadow-dark-xl rounded-2xl bg-clip-border">
+      <div class="flex-auto p-4">
+        <div class="flex flex-row -mx-3">
+          <div class="flex-none w-2/3 max-w-full px-3">
+            <div>
+              <p class="mb-0 font-sans text-sm font-semibold leading-normal uppercase dark:text-white dark:opacity-60">Topics</p>
+              <h5 class="mb-2 font-bold dark:text-white">8</h5>
+              <p class="mb-0 dark:text-white dark:opacity-60">
+                <span class="text-sm font-bold leading-normal text-emerald-500">Diverse</span>
+                categories
+              </p>
+            </div>
+          </div>
+          <div class="px-3 text-right basis-1/3">
+            <div class="inline-block w-12 h-12 text-center rounded-circle bg-gradient-to-tl from-red-600 to-orange-600">
+              <i class="ni leading-none ni-tag text-lg relative top-3.5 text-white"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Readers Card -->
+  <div class="w-full max-w-full px-3 mb-6 sm:w-1/2 sm:flex-none xl:mb-0 xl:w-1/4">
+    <div class="relative flex flex-col min-w-0 break-words bg-white shadow-xl dark:bg-slate-850 dark:shadow-dark-xl rounded-2xl bg-clip-border">
+      <div class="flex-auto p-4">
+        <div class="flex flex-row -mx-3">
+          <div class="flex-none w-2/3 max-w-full px-3">
+            <div>
+              <p class="mb-0 font-sans text-sm font-semibold leading-normal uppercase dark:text-white dark:opacity-60">Readers</p>
+              <h5 class="mb-2 font-bold dark:text-white">25K+</h5>
+              <p class="mb-0 dark:text-white dark:opacity-60">
+                <span class="text-sm font-bold leading-normal text-emerald-500">Monthly</span>
+                visitors
+              </p>
+            </div>
+          </div>
+          <div class="px-3 text-right basis-1/3">
+            <div class="inline-block w-12 h-12 text-center rounded-circle bg-gradient-to-tl from-emerald-500 to-teal-400">
+              <i class="ni leading-none ni-satisfied text-lg relative top-3.5 text-white"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Subscribe Card -->
+  <div class="w-full max-w-full px-3 sm:w-1/2 sm:flex-none xl:w-1/4">
+    <div class="relative flex flex-col min-w-0 break-words bg-white shadow-xl dark:bg-slate-850 dark:shadow-dark-xl rounded-2xl bg-clip-border">
+      <div class="flex-auto p-4">
+        <div class="flex flex-row -mx-3">
+          <div class="flex-none w-2/3 max-w-full px-3">
+            <div>
+              <p class="mb-0 font-sans text-sm font-semibold leading-normal uppercase dark:text-white dark:opacity-60">Subscribers</p>
+              <h5 class="mb-2 font-bold dark:text-white">5K+</h5>
+              <p class="mb-0 dark:text-white dark:opacity-60">
+                <span class="text-sm font-bold leading-normal text-emerald-500">Growing</span>
+                community
+              </p>
+            </div>
+          </div>
+          <div class="px-3 text-right basis-1/3">
+            <div class="inline-block w-12 h-12 text-center rounded-circle bg-gradient-to-tl from-orange-500 to-yellow-500">
+              <i class="ni leading-none ni-email-83 text-lg relative top-3.5 text-white"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Latest Articles Section -->
+<div class="flex flex-wrap -mx-3 mt-6">
+  <div class="w-full max-w-full px-3 lg:w-7/12 lg:flex-none">
+    <div class="relative flex flex-col min-w-0 break-words bg-white shadow-xl dark:bg-slate-850 dark:shadow-dark-xl rounded-2xl bg-clip-border">
+      <div class="border-black/12.5 border-b-0 border-solid p-6 pb-0 rounded-t-2xl">
+        <div class="flex items-center">
+          <p class="mb-0 dark:text-white/80">Latest Articles</p>
+          <a href="#subscribe" class="inline-block px-8 py-2 mb-4 ml-auto font-bold leading-normal text-center text-white align-middle transition-all ease-in bg-blue-500 border-0 rounded-lg shadow-md cursor-pointer text-xs tracking-tight-rem hover:shadow-xs hover:-translate-y-px active:opacity-85">
+            Subscribe
+          </a>
+        </div>
+      </div>
+      <div class="flex-auto p-6">
+        <div class="flex flex-wrap -mx-3">
+          <div class="w-full max-w-full px-3 mb-4">
+            <div class="flex">
+              <div class="flex-none w-16 h-16 mr-4">
+                <div class="inline-block w-16 h-16 text-center rounded-lg bg-gradient-to-tl from-blue-500 to-violet-500">
+                  <i class="ni leading-none ni-laptop text-white text-lg relative top-5"></i>
+                </div>
+              </div>
+              <div class="flex-auto">
+                <h6 class="mb-1 font-bold text-sm text-slate-700 dark:text-white/80">
+                  Future of Contact Management
+                </h6>
+                <p class="text-xs leading-relaxed dark:text-white dark:opacity-80 mb-2">
+                  Exploring how AI and machine learning are transforming the way we manage professional contacts and VCF files.
+                </p>
+                <p class="text-xs text-slate-400 dark:text-white/60">
+                  August 10, 2025 • 5 min read
+                </p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="w-full max-w-full px-3 mb-4">
+            <div class="flex">
+              <div class="flex-none w-16 h-16 mr-4">
+                <div class="inline-block w-16 h-16 text-center rounded-lg bg-gradient-to-tl from-emerald-500 to-teal-400">
+                  <i class="ni leading-none ni-app text-white text-lg relative top-5"></i>
+                </div>
+              </div>
+              <div class="flex-auto">
+                <h6 class="mb-1 font-bold text-sm text-slate-700 dark:text-white/80">
+                  VCF Security Best Practices
+                </h6>
+                <p class="text-xs leading-relaxed dark:text-white dark:opacity-80 mb-2">
+                  Essential security measures every business should implement when handling contact data and VCF files.
+                </p>
+                <p class="text-xs text-slate-400 dark:text-white/60">
+                  August 5, 2025 • 7 min read
+                </p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="w-full max-w-full px-3 mb-4">
+            <div class="flex">
+              <div class="flex-none w-16 h-16 mr-4">
+                <div class="inline-block w-16 h-16 text-center rounded-lg bg-gradient-to-tl from-orange-500 to-yellow-500">
+                  <i class="ni leading-none ni-bulb-61 text-white text-lg relative top-5"></i>
+                </div>
+              </div>
+              <div class="flex-auto">
+                <h6 class="mb-1 font-bold text-sm text-slate-700 dark:text-white/80">
+                  Building Better Networks
+                </h6>
+                <p class="text-xs leading-relaxed dark:text-white dark:opacity-80 mb-2">
+                  Proven strategies for growing and maintaining professional networks in the digital age.
+                </p>
+                <p class="text-xs text-slate-400 dark:text-white/60">
+                  July 28, 2025 • 4 min read
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="w-full max-w-full px-3 lg:w-5/12 lg:flex-none">
+    <div class="relative flex flex-col min-w-0 break-words bg-white shadow-xl dark:bg-slate-850 dark:shadow-dark-xl rounded-2xl bg-clip-border h-full">
+      <div class="border-black/12.5 border-b-0 border-solid p-6 pb-0 rounded-t-2xl">
+        <h6 class="mb-0 dark:text-white">Categories</h6>
+      </div>
+      <div class="flex-auto p-6">
+        <ul class="flex flex-col pl-0 mb-0 rounded-lg">
+          <li class="relative flex justify-between py-2 pr-4 mb-2 border-0 rounded-t-inherit text-inherit rounded-xl">
+            <div class="flex items-center">
+              <div class="inline-block w-8 h-8 mr-2 text-center text-black bg-gradient-to-tl from-blue-500 to-violet-500 rounded-xl">
+                <i class="ni leading-none ni-laptop text-white text-sm relative top-2"></i>
+              </div>
+              <div class="flex flex-col">
+                <h6 class="mb-1 text-sm leading-normal dark:text-white">Technology</h6>
+                <span class="text-xs leading-tight dark:text-white/80">15 articles</span>
+              </div>
+            </div>
+            <div class="flex">
+              <button class="group ease-in leading-pro text-xs rounded-3.5xl p-1.2 h-6.5 w-6.5 mx-0 my-auto inline-block cursor-pointer border-0 bg-transparent text-center align-middle font-bold text-slate-700 shadow-none transition-all dark:text-white">
+                <i class="ni leading-none ni-bold-right text-3xs group-hover:translate-x-1.25 ease-bounce"></i>
+              </button>
+            </div>
+          </li>
+          
+          <li class="relative flex justify-between py-2 pr-4 mb-2 border-0 border-t-0 text-inherit rounded-xl">
+            <div class="flex items-center">
+              <div class="inline-block w-8 h-8 mr-2 text-center text-black bg-gradient-to-tl from-emerald-500 to-teal-400 rounded-xl">
+                <i class="ni leading-none ni-app text-white text-sm relative top-2"></i>
+              </div>
+              <div class="flex flex-col">
+                <h6 class="mb-1 text-sm leading-normal dark:text-white">Product Updates</h6>
+                <span class="text-xs leading-tight dark:text-white/80">12 articles</span>
+              </div>
+            </div>
+            <div class="flex">
+              <button class="group ease-in leading-pro text-xs rounded-3.5xl p-1.2 h-6.5 w-6.5 mx-0 my-auto inline-block cursor-pointer border-0 bg-transparent text-center align-middle font-bold text-slate-700 shadow-none transition-all dark:text-white">
+                <i class="ni leading-none ni-bold-right text-3xs group-hover:translate-x-1.25 ease-bounce"></i>
+              </button>
+            </div>
+          </li>
+          
+          <li class="relative flex justify-between py-2 pr-4 mb-2 border-0 border-t-0 text-inherit rounded-xl">
+            <div class="flex items-center">
+              <div class="inline-block w-8 h-8 mr-2 text-center text-black bg-gradient-to-tl from-orange-500 to-yellow-500 rounded-xl">
+                <i class="ni leading-none ni-bulb-61 text-white text-sm relative top-2"></i>
+              </div>
+              <div class="flex flex-col">
+                <h6 class="mb-1 text-sm leading-normal dark:text-white">Tips & Guides</h6>
+                <span class="text-xs leading-tight dark:text-white/80">10 articles</span>
+              </div>
+            </div>
+            <div class="flex">
+              <button class="group ease-in leading-pro text-xs rounded-3.5xl p-1.2 h-6.5 w-6.5 mx-0 my-auto inline-block cursor-pointer border-0 bg-transparent text-center align-middle font-bold text-slate-700 shadow-none transition-all dark:text-white">
+                <i class="ni leading-none ni-bold-right text-3xs group-hover:translate-x-1.25 ease-bounce"></i>
+              </button>
+            </div>
+          </li>
+          
+          <li class="relative flex justify-between py-2 pr-4 border-0 border-t-0 rounded-b-inherit text-inherit rounded-xl">
+            <div class="flex items-center">
+              <div class="inline-block w-8 h-8 mr-2 text-center text-black bg-gradient-to-tl from-red-600 to-orange-600 rounded-xl">
+                <i class="ni leading-none ni-trophy text-white text-sm relative top-2"></i>
+              </div>
+              <div class="flex flex-col">
+                <h6 class="mb-1 text-sm leading-normal dark:text-white">Case Studies</h6>
+                <span class="text-xs leading-tight dark:text-white/80">8 articles</span>
+              </div>
+            </div>
+            <div class="flex">
+              <button class="group ease-in leading-pro text-xs rounded-3.5xl p-1.2 h-6.5 w-6.5 mx-0 my-auto inline-block cursor-pointer border-0 bg-transparent text-center align-middle font-bold text-slate-700 shadow-none transition-all dark:text-white">
+                <i class="ni leading-none ni-bold-right text-3xs group-hover:translate-x-1.25 ease-bounce"></i>
+              </button>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Featured Articles Grid -->
+<div class="flex flex-wrap -mx-3 mt-6">
+  <div class="w-full max-w-full px-3 mb-6 md:w-6/12 md:flex-none lg:w-4/12 lg:mb-0">
+    <div class="relative flex flex-col min-w-0 break-words bg-white shadow-xl dark:bg-slate-850 dark:shadow-dark-xl rounded-2xl bg-clip-border h-full">
+      <div class="flex-auto p-6">
+        <div class="flex">
+          <div class="inline-block w-12 h-12 text-center rounded-lg bg-gradient-to-tl from-blue-500 to-violet-500">
+            <i class="ni leading-none ni-chart-bar-32 text-white text-lg relative top-3.5"></i>
+          </div>
+          <div class="ml-3">
+            <h5 class="dark:text-white">Data Analytics</h5>
+            <p class="mb-0 dark:text-white dark:opacity-60 text-sm">
+              How to leverage contact data for business insights and growth opportunities.
+            </p>
+            <p class="mb-0 dark:text-white dark:opacity-60 text-xs mt-2">
+              July 20, 2025 • 6 min read
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="w-full max-w-full px-3 mb-6 md:w-6/12 md:flex-none lg:w-4/12 lg:mb-0">
+    <div class="relative flex flex-col min-w-0 break-words bg-white shadow-xl dark:bg-slate-850 dark:shadow-dark-xl rounded-2xl bg-clip-border h-full">
+      <div class="flex-auto p-6">
+        <div class="flex">
+          <div class="inline-block w-12 h-12 text-center rounded-lg bg-gradient-to-tl from-red-600 to-orange-600">
+            <i class="ni leading-none ni-world-2 text-white text-lg relative top-3.5"></i>
+          </div>
+          <div class="ml-3">
+            <h5 class="dark:text-white">Global Trends</h5>
+            <p class="mb-0 dark:text-white dark:opacity-60 text-sm">
+              International networking trends and how they impact contact management strategies.
+            </p>
+            <p class="mb-0 dark:text-white dark:opacity-60 text-xs mt-2">
+              July 15, 2025 • 4 min read
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="w-full max-w-full px-3 mb-6 md:w-6/12 md:flex-none lg:w-4/12 lg:mb-0">
+    <div class="relative flex flex-col min-w-0 break-words bg-white shadow-xl dark:bg-slate-850 dark:shadow-dark-xl rounded-2xl bg-clip-border h-full">
+      <div class="flex-auto p-6">
+        <div class="flex">
+          <div class="inline-block w-12 h-12 text-center rounded-lg bg-gradient-to-tl from-emerald-500 to-teal-400">
+            <i class="ni leading-none ni-check-bold text-white text-lg relative top-3.5"></i>
+          </div>
+          <div class="ml-3">
+            <h5 class="dark:text-white">Success Stories</h5>
+            <p class="mb-0 dark:text-white dark:opacity-60 text-sm">
+              Real customer stories showcasing how AlbTech transformed their networking approach.
+            </p>
+            <p class="mb-0 dark:text-white dark:opacity-60 text-xs mt-2">
+              July 10, 2025 • 3 min read
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Newsletter Subscribe Section -->
+<div class="flex flex-wrap -mx-3 mt-6">
+  <div class="w-full max-w-full px-3">
+    <div id="subscribe" class="relative flex flex-col min-w-0 break-words bg-gradient-to-tl from-blue-500 to-violet-500 shadow-xl dark:shadow-dark-xl rounded-2xl bg-clip-border">
+      <div class="flex-auto p-6">
+        <div class="flex items-center">
+          <div class="flex-none">
+            <h4 class="mb-1 text-white">Never Miss an Update</h4>
+            <p class="mb-0 text-white text-sm opacity-80">
+              Subscribe to our newsletter for the latest insights, tips, and product updates delivered to your inbox.
+            </p>
+          </div>
+          <div class="ml-auto">
+            <div class="flex">
+              <input type="email" placeholder="Your email address" class="focus:shadow-primary-outline ease-in leading-5.6 relative -ml-px block min-w-0 flex-auto rounded-l-lg border border-solid border-gray-300 bg-white bg-clip-padding py-2 pl-3 pr-3 text-sm font-normal text-gray-700 outline-none transition-all placeholder:text-gray-500 focus:border-blue-500 focus:outline-none">
+              <button type="button" class="inline-block px-6 py-3 font-bold leading-normal text-center text-blue-500 align-middle transition-all ease-in bg-white border-0 rounded-r-lg shadow-md cursor-pointer text-sm tracking-tight-rem hover:shadow-xs hover:-translate-y-px active:opacity-85">
+                Subscribe
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

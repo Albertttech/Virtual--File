@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About AlbTech - Contact Management Innovation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .gradient-text { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+        .parallax-bg { background-attachment: fixed; background-position: center; background-repeat: no-repeat; background-size: cover; }
+        .team-card:hover { transform: translateY(-8px) scale(1.02); transition: all 0.3s ease; }
+        .stat-counter { font-size: 3rem; font-weight: 700; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        .fade-in-up { animation: fadeInUp 0.8s ease-out; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <h1 class="text-2xl font-bold gradient-text">AlbTech</h1>
+                    </div>
+                    <nav class="hidden md:ml-10 md:flex space-x-8">
+                        <a href="/" class="text-gray-500 hover:text-gray-900 px-3 py-2 text-sm font-medium">Home</a>
+                        <a href="/blog/" class="text-gray-500 hover:text-gray-900 px-3 py-2 text-sm font-medium">Blog</a>
+                        <a href="/about-us/" class="text-indigo-600 px-3 py-2 text-sm font-medium border-b-2 border-indigo-600">About</a>
+                        <a href="/contact/" class="text-gray-500 hover:text-gray-900 px-3 py-2 text-sm font-medium">Contact</a>
+                    </nav>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="/login/" class="text-gray-500 hover:text-gray-900 px-3 py-2 text-sm font-medium">Sign In</a>
+                    <a href="/register/" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors">
+                        Get Started
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="relative bg-gradient-to-br from-indigo-900 via-blue-900 to-purple-900 text-white py-24 overflow-hidden">
+        <div class="absolute inset-0 bg-black opacity-50"></div>
+        <div class="absolute inset-0 parallax-bg" style="background-image: url('https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-4.0.3&auto=format&fit=crop&w=2850&q=80');"></div>
+        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h1 class="text-5xl md:text-7xl font-bold mb-8 fade-in-up">About AlbTech</h1>
+            <p class="text-xl md:text-2xl mb-12 text-blue-100 max-w-4xl mx-auto fade-in-up">
+                We're revolutionizing contact management with cutting-edge VCF technology, 
+                empowering businesses to build stronger relationships and streamline networking.
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16">
+                <div class="bg-white/10 backdrop-blur-sm rounded-xl p-6 fade-in-up">
+                    <div class="text-4xl font-bold text-yellow-400 mb-2">2019</div>
+                    <div class="text-lg">Founded</div>
+                </div>
+                <div class="bg-white/10 backdrop-blur-sm rounded-xl p-6 fade-in-up">
+                    <div class="text-4xl font-bold text-green-400 mb-2">100K+</div>
+                    <div class="text-lg">Users Served</div>
+                </div>
+                <div class="bg-white/10 backdrop-blur-sm rounded-xl p-6 fade-in-up">
+                    <div class="text-4xl font-bold text-blue-400 mb-2">50+</div>
+                    <div class="text-lg">Countries</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Mission Section -->
+    <section class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-gray-900 mb-6">Our Mission</h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    To simplify and enhance digital networking by providing innovative contact management solutions 
+                    that help individuals and businesses build meaningful connections.
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                <div>
+                    <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&auto=format&fit=crop&w=2340&q=80" 
+                         alt="Team collaboration" class="rounded-2xl shadow-2xl">
+                </div>
+                <div class="space-y-8">
+                    <div class="flex items-start space-x-4">
+                        <div class="bg-indigo-100 text-indigo-600 p-3 rounded-xl">
+                            <i class="fas fa-lightbulb text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold text-gray-900 mb-2">Innovation First</h3>
+                            <p class="text-gray-600">We constantly push boundaries to deliver cutting-edge solutions that anticipate and meet evolving market needs.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start space-x-4">
+                        <div class="bg-green-100 text-green-600 p-3 rounded-xl">
+                            <i class="fas fa-users text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold text-gray-900 mb-2">User-Centric Design</h3>
+                            <p class="text-gray-600">Every feature is designed with our users in mind, ensuring intuitive experiences and maximum value.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start space-x-4">
+                        <div class="bg-purple-100 text-purple-600 p-3 rounded-xl">
+                            <i class="fas fa-shield-alt text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold text-gray-900 mb-2">Security & Privacy</h3>
+                            <p class="text-gray-600">We maintain the highest standards of data protection and privacy, treating your information with utmost care.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Team Section -->
+    <section class="py-20 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-gray-900 mb-6">Meet Our Team</h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Passionate innovators and technology experts working together to transform contact management
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Team Member 1 -->
+                <div class="bg-white rounded-2xl shadow-xl p-8 text-center team-card">
+                    <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=facearea&facepad=8&w=256&h=256&q=80" 
+                         alt="Alex Johnson" class="w-24 h-24 rounded-full mx-auto mb-6 object-cover border-4 border-indigo-100">
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Alex Johnson</h3>
+                    <p class="text-indigo-600 font-medium mb-4">Chief Executive Officer</p>
+                    <p class="text-gray-600 mb-6">
+                        Visionary leader with 15+ years in tech, passionate about connecting people through innovative solutions.
+                    </p>
+                    <div class="flex justify-center space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-indigo-600 transition-colors">
+                            <i class="fab fa-linkedin text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-indigo-600 transition-colors">
+                            <i class="fab fa-twitter text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-indigo-600 transition-colors">
+                            <i class="fas fa-envelope text-xl"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Team Member 2 -->
+                <div class="bg-white rounded-2xl shadow-xl p-8 text-center team-card">
+                    <img src="https://images.unsplash.com/photo-1494790108755-2616b056b041?ixlib=rb-4.0.3&auto=format&fit=facearea&facepad=8&w=256&h=256&q=80" 
+                         alt="Sarah Chen" class="w-24 h-24 rounded-full mx-auto mb-6 object-cover border-4 border-green-100">
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Sarah Chen</h3>
+                    <p class="text-green-600 font-medium mb-4">Chief Technology Officer</p>
+                    <p class="text-gray-600 mb-6">
+                        Technical architect driving our platform innovation with expertise in scalable systems and AI integration.
+                    </p>
+                    <div class="flex justify-center space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-green-600 transition-colors">
+                            <i class="fab fa-linkedin text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-green-600 transition-colors">
+                            <i class="fab fa-github text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-green-600 transition-colors">
+                            <i class="fas fa-envelope text-xl"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Team Member 3 -->
+                <div class="bg-white rounded-2xl shadow-xl p-8 text-center team-card">
+                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=facearea&facepad=8&w=256&h=256&q=80" 
+                         alt="Mike Rodriguez" class="w-24 h-24 rounded-full mx-auto mb-6 object-cover border-4 border-purple-100">
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Mike Rodriguez</h3>
+                    <p class="text-purple-600 font-medium mb-4">Head of Product Design</p>
+                    <p class="text-gray-600 mb-6">
+                        UX visionary creating intuitive interfaces that make complex contact management simple and delightful.
+                    </p>
+                    <div class="flex justify-center space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-purple-600 transition-colors">
+                            <i class="fab fa-linkedin text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-purple-600 transition-colors">
+                            <i class="fab fa-dribbble text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-purple-600 transition-colors">
+                            <i class="fas fa-envelope text-xl"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Team Member 4 -->
+                <div class="bg-white rounded-2xl shadow-xl p-8 text-center team-card">
+                    <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&auto=format&fit=facearea&facepad=8&w=256&h=256&q=80" 
+                         alt="Emma Thompson" class="w-24 h-24 rounded-full mx-auto mb-6 object-cover border-4 border-orange-100">
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Emma Thompson</h3>
+                    <p class="text-orange-600 font-medium mb-4">VP of Engineering</p>
+                    <p class="text-gray-600 mb-6">
+                        Engineering leader ensuring our platform delivers reliability, security, and performance at scale.
+                    </p>
+                    <div class="flex justify-center space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-orange-600 transition-colors">
+                            <i class="fab fa-linkedin text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-orange-600 transition-colors">
+                            <i class="fab fa-github text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-orange-600 transition-colors">
+                            <i class="fas fa-envelope text-xl"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Team Member 5 -->
+                <div class="bg-white rounded-2xl shadow-xl p-8 text-center team-card">
+                    <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&auto=format&fit=facearea&facepad=8&w=256&h=256&q=80" 
+                         alt="David Kim" class="w-24 h-24 rounded-full mx-auto mb-6 object-cover border-4 border-blue-100">
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">David Kim</h3>
+                    <p class="text-blue-600 font-medium mb-4">Data Science Lead</p>
+                    <p class="text-gray-600 mb-6">
+                        Analytics expert transforming contact data into actionable insights for better networking outcomes.
+                    </p>
+                    <div class="flex justify-center space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-blue-600 transition-colors">
+                            <i class="fab fa-linkedin text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-blue-600 transition-colors">
+                            <i class="fab fa-kaggle text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-blue-600 transition-colors">
+                            <i class="fas fa-envelope text-xl"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Team Member 6 -->
+                <div class="bg-white rounded-2xl shadow-xl p-8 text-center team-card">
+                    <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&auto=format&fit=facearea&facepad=8&w=256&h=256&q=80" 
+                         alt="Lisa Wang" class="w-24 h-24 rounded-full mx-auto mb-6 object-cover border-4 border-pink-100">
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Lisa Wang</h3>
+                    <p class="text-pink-600 font-medium mb-4">Customer Success Director</p>
+                    <p class="text-gray-600 mb-6">
+                        Customer advocate ensuring every user achieves maximum value from our contact management solutions.
+                    </p>
+                    <div class="flex justify-center space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-pink-600 transition-colors">
+                            <i class="fab fa-linkedin text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-pink-600 transition-colors">
+                            <i class="fab fa-twitter text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-pink-600 transition-colors">
+                            <i class="fas fa-envelope text-xl"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Company Values Section -->
+    <section class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-gray-900 mb-6">Our Values</h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Core principles that guide everything we do and shape our company culture
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="text-center p-6">
+                    <div class="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-rocket text-blue-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">Innovation</h3>
+                    <p class="text-gray-600">Continuously pushing the boundaries of what's possible in contact management technology.</p>
+                </div>
+                
+                <div class="text-center p-6">
+                    <div class="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-handshake text-green-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">Integrity</h3>
+                    <p class="text-gray-600">Building trust through transparency, honesty, and ethical business practices.</p>
+                </div>
+                
+                <div class="text-center p-6">
+                    <div class="bg-purple-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-heart text-purple-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">Excellence</h3>
+                    <p class="text-gray-600">Striving for the highest quality in every product feature and customer interaction.</p>
+                </div>
+                
+                <div class="text-center p-6">
+                    <div class="bg-orange-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-globe text-orange-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">Collaboration</h3>
+                    <p class="text-gray-600">Working together internally and with our customers to achieve shared success.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="py-20 bg-gradient-to-r from-indigo-600 to-purple-600 text-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold mb-6">Our Impact</h2>
+                <p class="text-xl text-indigo-100 max-w-3xl mx-auto">
+                    Numbers that reflect our commitment to transforming how people manage and share contacts
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="text-center">
+                    <div class="text-5xl font-bold mb-2">100K+</div>
+                    <div class="text-indigo-200 text-lg">Active Users</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-5xl font-bold mb-2">10M+</div>
+                    <div class="text-indigo-200 text-lg">VCF Files Processed</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-5xl font-bold mb-2">99.9%</div>
+                    <div class="text-indigo-200 text-lg">Uptime</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-5xl font-bold mb-2">24/7</div>
+                    <div class="text-indigo-200 text-lg">Support Available</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-20 bg-gray-50">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-4xl font-bold text-gray-900 mb-6">Ready to Transform Your Networking?</h2>
+            <p class="text-xl text-gray-600 mb-8">
+                Join thousands of professionals who trust AlbTech for their contact management needs
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="/register/" class="bg-indigo-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-indigo-700 transition-colors">
+                    Start Free Trial
+                </a>
+                <a href="/contact/" class="border-2 border-indigo-600 text-indigo-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-indigo-50 transition-colors">
+                    Contact Sales
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-2xl font-bold gradient-text mb-4">AlbTech</h3>
+                    <p class="text-gray-400 mb-4">
+                        Leading the future of contact management with innovative VCF solutions and cutting-edge technology.
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fab fa-twitter text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fab fa-linkedin text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fab fa-github text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fab fa-medium text-xl"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold mb-4">Product</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white transition-colors">Features</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Pricing</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">API Docs</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Integrations</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold mb-4">Resources</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="/blog/" class="hover:text-white transition-colors">Blog</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Tutorials</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Support</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Community</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold mb-4">Company</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="/about-us/" class="hover:text-white transition-colors">About</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Careers</a></li>
+                        <li><a href="/contact/" class="hover:text-white transition-colors">Contact</a></li>
+                        <li><a href="/license/" class="hover:text-white transition-colors">Privacy</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 pt-8 mt-8 text-center text-gray-400">
+                <p>&copy; 2025 AlbTech. All rights reserved. Built with passion for contact management excellence.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript for Interactive Features -->
+    <script>
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        // Counter animation for stats
+        const observeCounters = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const counter = entry.target;
+                    const target = parseInt(counter.textContent.replace(/[^\d]/g, ''));
+                    let current = 0;
+                    const increment = target / 100;
+                    const timer = setInterval(() => {
+                        current += increment;
+                        if (current >= target) {
+                            current = target;
+                            clearInterval(timer);
+                        }
+                        counter.textContent = counter.textContent.replace(/[\d,]+/, Math.floor(current).toLocaleString());
+                    }, 20);
+                    observeCounters.unobserve(counter);
+                }
+            });
+        });
+
+        // Observe all stat numbers
+        document.querySelectorAll('.text-5xl').forEach(counter => {
+            observeCounters.observe(counter);
+        });
+
+        // Add scroll animation to team cards
+        const observeTeamCards = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        });
+
+        document.querySelectorAll('.team-card').forEach(card => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(30px)';
+            card.style.transition = 'all 0.6s ease';
+            observeTeamCards.observe(card);
+        });
+    </script>
+</body>
+</html>
