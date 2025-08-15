@@ -1,139 +1,451 @@
 {% extends "public/base.html" %}
 {% load static %}
 
-{% block title %}Welcome to Litarch - Contact Management Solutions{% endblock %}
+{% block title %}Building the World's Most Trusted Contact Network - Litarch{% endblock %}
 
 {% block extra_css %}
     <style>
-        .gradient-bg {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        .hero-gradient {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 25%, #334155 50%, #475569 75%, #64748b 100%);
         }
-        .hero-pattern {
-            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Ccircle cx='10' cy='10' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        .network-pattern {
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Ccircle cx='10' cy='10' r='1'/%3E%3Ccircle cx='30' cy='30' r='1'/%3E%3Ccircle cx='50' cy='50' r='1'/%3E%3Cline x1='10' y1='10' x2='30' y2='30' stroke='%23ffffff' stroke-opacity='0.1' stroke-width='0.5'/%3E%3Cline x1='30' y1='30' x2='50' y2='50' stroke='%23ffffff' stroke-opacity='0.1' stroke-width='0.5'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
         }
         .card-hover {
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .card-hover:hover {
-            transform: translateY(-5px);
+            transform: translateY(-8px);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+        .pulse-animation {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: .5; }
+        }
+        .floating {
+            animation: float 6s ease-in-out infinite;
+        }
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
         }
     </style>
 {% endblock %}
 
 {% block content %}
     <!-- Hero Section -->
-    <section class="gradient-bg hero-pattern py-20">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h1 class="text-4xl md:text-6xl font-bold text-white mb-6">
-                Welcome to Litarch
+    <section class="hero-gradient network-pattern py-32 overflow-hidden relative">
+        <div class="absolute inset-0 bg-black opacity-40"></div>
+        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h1 class="text-6xl md:text-8xl font-bold text-white mb-8 leading-tight">
+                Building the world's most trusted contact network
             </h1>
-            <p class="text-xl md:text-2xl text-white opacity-90 mb-8">
-                Revolutionary Contact Management & VCF Solutions
+            <p class="text-2xl md:text-3xl text-gray-200 mb-12 max-w-5xl mx-auto font-light">
+                Where verified profiles meet category communities and AI-driven contact sharing creates 
+                meaningful connections that transform how the world networks.
             </p>
-            <div class="space-x-4">
-                <a href="/members/register/" class="bg-white text-blue-600 hover:bg-gray-100 px-8 py-3 rounded-lg text-lg font-semibold transition-colors">
-                    Get Started
+            <div class="flex flex-col sm:flex-row gap-6 justify-center">
+                <a href="/members/register/" class="bg-white text-gray-900 hover:bg-gray-100 px-12 py-5 rounded-xl text-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-2xl">
+                    Get Started Free
                 </a>
-                <a href="/about/" class="border-2 border-white text-white hover:bg-white hover:text-blue-600 px-8 py-3 rounded-lg text-lg font-semibold transition-colors">
+                <a href="/about/" class="border-2 border-white text-white hover:bg-white hover:text-gray-900 px-12 py-5 rounded-xl text-xl font-semibold transition-all duration-300">
                     Learn More
                 </a>
             </div>
+            <p class="text-gray-300 mt-8 text-lg">Join 250,000+ verified professionals worldwide</p>
         </div>
     </section>
 
-    <!-- Features Section -->
-    <section class="py-20">
+    <!-- Why Litarch Exists -->
+    <section class="py-24 bg-white">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16">
-                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                    Why Choose Litarch?
-                </h2>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                <div>
+                    <h2 class="text-5xl font-bold text-gray-900 mb-8">The Problem With Traditional Networking</h2>
+                    <div class="space-y-6 text-lg text-gray-700">
+                        <p>
+                            <strong>Scattered contacts.</strong> Your professional relationships are trapped in disconnected silos—phone contacts, 
+                            email lists, business cards, and random LinkedIn connections that lead nowhere.
+                        </p>
+                        <p>
+                            <strong>Zero trust.</strong> You can't verify who people really are, what they actually do, or whether 
+                            they're worth your time. Networking feels like gambling with your most valuable asset—your reputation.
+                        </p>
+                        <p>
+                            <strong>Wasted opportunities.</strong> The right connections exist, but you can't find them. 
+                            Opportunities pass by because discovery is broken and meaningful relationships are buried in noise.
+                        </p>
+                    </div>
+                </div>
+                <div class="floating">
+                    <img src="https://images.unsplash.com/photo-1559136555-9303baea8ebd?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80" 
+                         alt="Networking Problems" class="rounded-2xl shadow-2xl">
+                </div>
+            </div>
+            
+            <div class="mt-20 text-center">
+                <h3 class="text-4xl font-bold text-gray-900 mb-6">Litarch Changes Everything</h3>
+                <p class="text-2xl text-gray-600 max-w-4xl mx-auto">
+                    We combine cutting-edge VCF technology with verified community networking and AI-driven matching 
+                    to create the world's first truly trusted contact ecosystem. Where every connection is meaningful, 
+                    verified, and valuable.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Key Features -->
+    <section class="py-24 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-20">
+                <h2 class="text-5xl font-bold text-gray-900 mb-8">Powered by Technology. Driven by Trust.</h2>
                 <p class="text-xl text-gray-600 max-w-3xl mx-auto">
-                    Our platform provides powerful VCF processing tools and contact management solutions to help your business build stronger relationships.
+                    Four pillars of innovation that make Litarch the future of professional networking
                 </p>
             </div>
             
-            <div class="grid md:grid-cols-3 gap-8">
-                <div class="card-hover bg-white p-8 rounded-xl shadow-lg text-center">
-                    <div class="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <i class="fas fa-address-book text-2xl text-blue-600"></i>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <!-- Smart VCF Processing -->
+                <div class="card-hover bg-white p-10 rounded-3xl shadow-lg text-center">
+                    <div class="bg-gradient-to-br from-blue-100 to-indigo-200 w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-8">
+                        <i class="fas fa-microchip text-3xl text-blue-600"></i>
                     </div>
-                    <h3 class="text-xl font-semibold text-gray-900 mb-4">Smart VCF Processing</h3>
-                    <p class="text-gray-600">
-                        Advanced VCF file processing with intelligent parsing, validation, and format conversion capabilities.
+                    <h3 class="text-2xl font-bold text-gray-900 mb-4">Smart VCF Processing</h3>
+                    <p class="text-gray-600 text-lg">
+                        Advanced parsing, validation, and seamless format conversion. Process millions of contacts 
+                        with 99.9% accuracy and instant compatibility.
                     </p>
                 </div>
                 
-                <div class="card-hover bg-white p-8 rounded-xl shadow-lg text-center">
-                    <div class="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <i class="fas fa-shield-alt text-2xl text-green-600"></i>
+                <!-- Verified Networking -->
+                <div class="card-hover bg-white p-10 rounded-3xl shadow-lg text-center">
+                    <div class="bg-gradient-to-br from-green-100 to-emerald-200 w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-8">
+                        <i class="fas fa-user-check text-3xl text-green-600"></i>
                     </div>
-                    <h3 class="text-xl font-semibold text-gray-900 mb-4">Secure & Private</h3>
-                    <p class="text-gray-600">
-                        Your contact data is protected with enterprise-grade security, encryption, and privacy controls.
+                    <h3 class="text-2xl font-bold text-gray-900 mb-4">Verified Networking</h3>
+                    <p class="text-gray-600 text-lg">
+                        Category-based communities with authenticated profiles. Connect with verified professionals 
+                        in your industry, skill set, or interest area.
                     </p>
                 </div>
                 
-                <div class="card-hover bg-white p-8 rounded-xl shadow-lg text-center">
-                    <div class="bg-purple-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <i class="fas fa-network-wired text-2xl text-purple-600"></i>
+                <!-- AI Matching -->
+                <div class="card-hover bg-white p-10 rounded-3xl shadow-lg text-center">
+                    <div class="bg-gradient-to-br from-purple-100 to-violet-200 w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-8">
+                        <i class="fas fa-brain text-3xl text-purple-600"></i>
                     </div>
-                    <h3 class="text-xl font-semibold text-gray-900 mb-4">Seamless Integration</h3>
-                    <p class="text-gray-600">
-                        Easy integration with popular platforms and contact management systems for streamlined workflows.
+                    <h3 class="text-2xl font-bold text-gray-900 mb-4">AI Matching</h3>
+                    <p class="text-gray-600 text-lg">
+                        Intelligent recommendations that connect you with the right people, businesses, and opportunities 
+                        based on your goals and expertise.
+                    </p>
+                </div>
+                
+                <!-- Enterprise Security -->
+                <div class="card-hover bg-white p-10 rounded-3xl shadow-lg text-center">
+                    <div class="bg-gradient-to-br from-orange-100 to-red-200 w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-8">
+                        <i class="fas fa-shield-alt text-3xl text-red-600"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-4">Enterprise Security</h3>
+                    <p class="text-gray-600 text-lg">
+                        Bank-grade encryption, comprehensive privacy controls, and GDPR, SOC 2, ISO 27001 compliance. 
+                        Your data is protected at the highest level.
                     </p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Stats Section -->
-    <section class="bg-gradient-to-r from-indigo-600 to-purple-600 py-20 text-white">
+    <!-- How It Works -->
+    <section class="py-24 bg-white">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16">
-                <h2 class="text-3xl md:text-4xl font-bold mb-6">Trusted by Businesses Worldwide</h2>
-                <p class="text-xl text-indigo-100 max-w-3xl mx-auto">
-                    Join thousands of professionals who rely on Litarch for their contact management needs
+            <div class="text-center mb-20">
+                <h2 class="text-5xl font-bold text-gray-900 mb-8">Simple Steps. Powerful Results.</h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    From sign-up to meaningful connections in four easy steps
                 </p>
             </div>
             
             <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-                <div class="text-center">
-                    <div class="text-4xl md:text-5xl font-bold mb-2">100K+</div>
-                    <div class="text-indigo-200 text-lg">Active Users</div>
+                <!-- Step 1: Join -->
+                <div class="text-center relative">
+                    <div class="bg-blue-600 text-white w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-8 text-3xl font-bold shadow-lg">
+                        1
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-4">Join</h3>
+                    <p class="text-gray-700 text-lg">
+                        Choose your professional category and create your profile. Takes less than 3 minutes to get started.
+                    </p>
+                    <!-- Connection Line -->
+                    <div class="hidden md:block absolute top-10 left-3/4 w-1/2 h-0.5 bg-gray-300"></div>
                 </div>
-                <div class="text-center">
-                    <div class="text-4xl md:text-5xl font-bold mb-2">10M+</div>
-                    <div class="text-indigo-200 text-lg">VCF Files Processed</div>
+
+                <!-- Step 2: Verify -->
+                <div class="text-center relative">
+                    <div class="bg-green-600 text-white w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-8 text-3xl font-bold shadow-lg">
+                        2
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-4">Verify</h3>
+                    <p class="text-gray-700 text-lg">
+                        Complete verification with credentials and portfolio. Build trust with authentic, validated information.
+                    </p>
+                    <!-- Connection Line -->
+                    <div class="hidden md:block absolute top-10 left-3/4 w-1/2 h-0.5 bg-gray-300"></div>
                 </div>
-                <div class="text-center">
-                    <div class="text-4xl md:text-5xl font-bold mb-2">99.9%</div>
-                    <div class="text-indigo-200 text-lg">Uptime</div>
+
+                <!-- Step 3: Connect -->
+                <div class="text-center relative">
+                    <div class="bg-purple-600 text-white w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-8 text-3xl font-bold shadow-lg">
+                        3
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-4">Connect</h3>
+                    <p class="text-gray-700 text-lg">
+                        Discover verified professionals in your field. Share and download trusted contact cards instantly.
+                    </p>
+                    <!-- Connection Line -->
+                    <div class="hidden md:block absolute top-10 left-3/4 w-1/2 h-0.5 bg-gray-300"></div>
                 </div>
+
+                <!-- Step 4: Grow -->
                 <div class="text-center">
-                    <div class="text-4xl md:text-5xl font-bold mb-2">24/7</div>
-                    <div class="text-indigo-200 text-lg">Support</div>
+                    <div class="bg-orange-600 text-white w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-8 text-3xl font-bold shadow-lg">
+                        4
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-4">Grow</h3>
+                    <p class="text-gray-700 text-lg">
+                        Leverage AI matching and visibility tools to build lasting relationships that drive real opportunities.
+                    </p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- CTA Section -->
-    <section class="py-20 bg-gray-50">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
-                Ready to Transform Your Contact Management?
-            </h2>
-            <p class="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-                Join thousands of professionals who trust Litarch for their VCF processing and contact management needs.
+    <!-- Social Proof & Stats -->
+    <section class="py-24 bg-gradient-to-r from-slate-900 to-gray-900 text-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-20">
+                <h2 class="text-5xl font-bold mb-8">Trusted by Industry Leaders Worldwide</h2>
+                <p class="text-xl text-gray-300 max-w-3xl mx-auto">
+                    Join the professionals and companies who've transformed their networking with Litarch
+                </p>
+            </div>
+            
+            <!-- Company Logos -->
+            <div class="grid grid-cols-2 md:grid-cols-6 gap-8 mb-16 opacity-60">
+                <div class="flex items-center justify-center h-16 bg-white/10 rounded-lg backdrop-blur-sm">
+                    <span class="text-white font-bold text-lg">TechCorp</span>
+                </div>
+                <div class="flex items-center justify-center h-16 bg-white/10 rounded-lg backdrop-blur-sm">
+                    <span class="text-white font-bold text-lg">InnovateAI</span>
+                </div>
+                <div class="flex items-center justify-center h-16 bg-white/10 rounded-lg backdrop-blur-sm">
+                    <span class="text-white font-bold text-lg">GlobalNet</span>
+                </div>
+                <div class="flex items-center justify-center h-16 bg-white/10 rounded-lg backdrop-blur-sm">
+                    <span class="text-white font-bold text-lg">ProServe</span>
+                </div>
+                <div class="flex items-center justify-center h-16 bg-white/10 rounded-lg backdrop-blur-sm">
+                    <span class="text-white font-bold text-lg">DataFlow</span>
+                </div>
+                <div class="flex items-center justify-center h-16 bg-white/10 rounded-lg backdrop-blur-sm">
+                    <span class="text-white font-bold text-lg">CloudSync</span>
+                </div>
+            </div>
+            
+            <!-- Statistics -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="text-center">
+                    <div class="text-5xl font-bold mb-2 text-blue-400">250K+</div>
+                    <div class="text-xl text-gray-300 mb-1">Verified Users</div>
+                    <div class="text-sm text-gray-400">Active professionals globally</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-5xl font-bold mb-2 text-green-400">15M+</div>
+                    <div class="text-xl text-gray-300 mb-1">VCF Files Processed</div>
+                    <div class="text-sm text-gray-400">Monthly processing volume</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-5xl font-bold mb-2 text-purple-400">99.9%</div>
+                    <div class="text-xl text-gray-300 mb-1">Platform Uptime</div>
+                    <div class="text-sm text-gray-400">Guaranteed availability</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-5xl font-bold mb-2 text-orange-400">85+</div>
+                    <div class="text-xl text-gray-300 mb-1">Countries Active</div>
+                    <div class="text-sm text-gray-400">Global reach and presence</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Trust & Compliance Banner -->
+    <section class="py-16 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h3 class="text-3xl font-bold text-gray-900 mb-4">Enterprise-Grade Security & Compliance</h3>
+                <p class="text-lg text-gray-600">Your data is protected by the highest industry standards</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="text-center p-6 bg-white rounded-xl shadow-sm">
+                    <div class="bg-blue-100 w-16 h-16 rounded-xl flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-european-union text-2xl text-blue-600"></i>
+                    </div>
+                    <h4 class="text-lg font-bold text-gray-900 mb-2">GDPR Compliant</h4>
+                    <p class="text-gray-600">Full European data protection regulation compliance</p>
+                </div>
+                <div class="text-center p-6 bg-white rounded-xl shadow-sm">
+                    <div class="bg-green-100 w-16 h-16 rounded-xl flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-certificate text-2xl text-green-600"></i>
+                    </div>
+                    <h4 class="text-lg font-bold text-gray-900 mb-2">SOC 2 Type II</h4>
+                    <p class="text-gray-600">Independently audited security controls and operations</p>
+                </div>
+                <div class="text-center p-6 bg-white rounded-xl shadow-sm">
+                    <div class="bg-purple-100 w-16 h-16 rounded-xl flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-lock text-2xl text-purple-600"></i>
+                    </div>
+                    <h4 class="text-lg font-bold text-gray-900 mb-2">ISO 27001</h4>
+                    <p class="text-gray-600">International information security management standard</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials & Use Cases -->
+    <section class="py-24 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-20">
+                <h2 class="text-5xl font-bold text-gray-900 mb-8">Real Stories. Real Results.</h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    See how professionals across industries are transforming their networking with Litarch
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                <!-- Testimonial 1 -->
+                <div class="bg-gradient-to-br from-blue-50 to-indigo-100 p-10 rounded-3xl">
+                    <div class="flex items-center mb-6">
+                        <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=facearea&facepad=8&w=256&h=256&q=80" 
+                             alt="Sarah Chen" class="w-16 h-16 rounded-full mr-4">
+                        <div>
+                            <h4 class="text-xl font-bold text-gray-900">Sarah Chen</h4>
+                            <p class="text-gray-600">Sales Director, TechFlow Solutions</p>
+                        </div>
+                    </div>
+                    <p class="text-lg text-gray-700 mb-6">
+                        "Litarch transformed how our sales team manages contacts. We went from scattered spreadsheets 
+                        to a verified network of 2,000+ prospects. Our conversion rate increased 40% in 6 months."
+                    </p>
+                    <div class="text-blue-600 font-semibold">Enterprise Sales Team</div>
+                </div>
+
+                <!-- Testimonial 2 -->
+                <div class="bg-gradient-to-br from-green-50 to-emerald-100 p-10 rounded-3xl">
+                    <div class="flex items-center mb-6">
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=facearea&facepad=8&w=256&h=256&q=80" 
+                             alt="Marcus Rodriguez" class="w-16 h-16 rounded-full mr-4">
+                        <div>
+                            <h4 class="text-xl font-bold text-gray-900">Marcus Rodriguez</h4>
+                            <p class="text-gray-600">Freelance Design Consultant</p>
+                        </div>
+                    </div>
+                    <p class="text-lg text-gray-700 mb-6">
+                        "As a freelancer, finding trusted clients was always a challenge. Litarch's verified 
+                        categories helped me connect with serious businesses. I've doubled my client base and revenue."
+                    </p>
+                    <div class="text-green-600 font-semibold">Independent Freelancer</div>
+                </div>
+
+                <!-- Testimonial 3 -->
+                <div class="bg-gradient-to-br from-purple-50 to-violet-100 p-10 rounded-3xl">
+                    <div class="flex items-center mb-6">
+                        <img src="https://images.unsplash.com/photo-1494790108755-2616b056b041?ixlib=rb-4.0.3&auto=format&fit=facearea&facepad=8&w=256&h=256&q=80" 
+                             alt="Lisa Wang" class="w-16 h-16 rounded-full mr-4">
+                        <div>
+                            <h4 class="text-xl font-bold text-gray-900">Lisa Wang</h4>
+                            <p class="text-gray-600">Event Organizer, Summit Events</p>
+                        </div>
+                    </div>
+                    <p class="text-lg text-gray-700 mb-6">
+                        "Managing contacts for major conferences was a nightmare until Litarch. Now I can instantly 
+                        organize, verify, and share contact lists with confidence. Our events run seamlessly."
+                    </p>
+                    <div class="text-purple-600 font-semibold">Event Management</div>
+                </div>
+
+                <!-- Testimonial 4 -->
+                <div class="bg-gradient-to-br from-orange-50 to-red-100 p-10 rounded-3xl">
+                    <div class="flex items-center mb-6">
+                        <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&auto=format&fit=facearea&facepad=8&w=256&h=256&q=80" 
+                             alt="David Kim" class="w-16 h-16 rounded-full mr-4">
+                        <div>
+                            <h4 class="text-xl font-bold text-gray-900">David Kim</h4>
+                            <p class="text-gray-600">VP Operations, GlobalTech</p>
+                        </div>
+                    </div>
+                    <p class="text-lg text-gray-700 mb-6">
+                        "Enterprise security was our biggest concern. Litarch's SOC 2 and ISO 27001 certifications, 
+                        plus the contact verification features, made it an easy decision for our 500+ person company."
+                    </p>
+                    <div class="text-orange-600 font-semibold">Enterprise Operations</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Future Vision Teaser -->
+    <section class="py-24 bg-gray-900 text-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-5xl font-bold mb-8">The Future is Just Beginning</h2>
+            <p class="text-2xl text-gray-300 mb-12 max-w-4xl mx-auto">
+                Coming soon: AI-powered commerce tools that turn your trusted network into a marketplace of opportunities, 
+                plus global integration that makes verified trading as simple as sharing a contact.
             </p>
-            <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                <a href="/members/register/" class="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-colors">
-                    Start Free Trial
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-gradient-to-br from-blue-600/20 to-indigo-700/20 p-8 rounded-2xl backdrop-blur-sm">
+                    <i class="fas fa-store text-4xl text-blue-400 mb-4"></i>
+                    <h3 class="text-xl font-bold mb-3">AI Commerce Platform</h3>
+                    <p class="text-gray-300">Turn contacts into customers with intelligent marketplace integration</p>
+                </div>
+                <div class="bg-gradient-to-br from-green-600/20 to-emerald-700/20 p-8 rounded-2xl backdrop-blur-sm">
+                    <i class="fas fa-handshake text-4xl text-green-400 mb-4"></i>
+                    <h3 class="text-xl font-bold mb-3">Global Trading Network</h3>
+                    <p class="text-gray-300">Trusted cross-border commerce built on verified relationships</p>
+                </div>
+                <div class="bg-gradient-to-br from-purple-600/20 to-violet-700/20 p-8 rounded-2xl backdrop-blur-sm">
+                    <i class="fas fa-robot text-4xl text-purple-400 mb-4"></i>
+                    <h3 class="text-xl font-bold mb-3">Opportunity Automation</h3>
+                    <p class="text-gray-300">AI that matches opportunities to professionals automatically</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Final Call to Action -->
+    <section class="py-24 bg-gradient-to-r from-indigo-600 to-purple-600 text-white">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-5xl font-bold mb-8">Ready to Transform Your Network?</h2>
+            <p class="text-2xl mb-12 max-w-3xl mx-auto">
+                Join the trusted contact revolution. Build meaningful connections, discover real opportunities, 
+                and take control of your professional relationships today.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-6 justify-center mb-8">
+                <a href="/members/register/" class="bg-white text-indigo-600 hover:bg-gray-100 px-12 py-5 rounded-xl text-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-2xl">
+                    Start Free Today
                 </a>
-                <a href="/contact/" class="border-2 border-indigo-600 text-indigo-600 hover:bg-indigo-50 px-8 py-4 rounded-lg text-lg font-semibold transition-colors">
+                <a href="/contact/" class="border-2 border-white text-white hover:bg-white hover:text-indigo-600 px-12 py-5 rounded-xl text-xl font-semibold transition-all duration-300">
                     Contact Sales
                 </a>
+            </div>
+            <p class="text-indigo-200 text-lg">
+                ✓ Free to join  ✓ Verify in minutes  ✓ Connect immediately  ✓ No credit card required
+            </p>
+            <div class="mt-8 pulse-animation">
+                <p class="text-2xl font-semibold">The future of networking starts now.</p>
             </div>
         </div>
     </section>

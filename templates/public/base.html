@@ -30,6 +30,29 @@
             to { opacity: 1; transform: translateY(0); } 
         }
         .fade-in-up { animation: fadeInUp 0.8s ease-out; }
+        
+        /* Mobile menu transitions */
+        #mobile-menu {
+            transition: all 0.3s ease-in-out;
+            transform-origin: top;
+        }
+        #mobile-menu.hidden {
+            transform: scaleY(0);
+            opacity: 0;
+        }
+        #mobile-menu:not(.hidden) {
+            transform: scaleY(1);
+            opacity: 1;
+        }
+        
+        /* Mobile menu button animation */
+        #mobile-menu-button {
+            transition: all 0.2s ease;
+        }
+        #mobile-menu-button:hover {
+            background-color: #f3f4f6;
+        }
+        
         {% block extra_css %}{% endblock %}
     </style>
 </head>
@@ -42,6 +65,7 @@
                     <div class="flex-shrink-0">
                         <a href="/" class="text-2xl font-bold gradient-text">Litarch</a>
                     </div>
+                    <!-- Desktop Navigation -->
                     <nav class="hidden md:ml-10 md:flex space-x-8">
                         <a href="/" class="{% if request.resolver_match.url_name == 'home' %}text-indigo-600 border-b-2 border-indigo-600{% else %}text-gray-500 hover:text-gray-900{% endif %} px-3 py-2 text-sm font-medium">Home</a>
                         <a href="/blog/" class="{% if request.resolver_match.url_name == 'blog' %}text-indigo-600 border-b-2 border-indigo-600{% else %}text-gray-500 hover:text-gray-900{% endif %} px-3 py-2 text-sm font-medium">Blog</a>
@@ -50,9 +74,45 @@
                         <a href="/license/" class="{% if request.resolver_match.url_name == 'license' %}text-indigo-600 border-b-2 border-indigo-600{% else %}text-gray-500 hover:text-gray-900{% endif %} px-3 py-2 text-sm font-medium">License</a>
                     </nav>
                 </div>
-                <div class="flex items-center space-x-4">
+                
+                <!-- Desktop Auth Links -->
+                <div class="hidden md:flex items-center space-x-4">
                     <a href="/members/login/" class="text-gray-500 hover:text-gray-900 px-3 py-2 text-sm font-medium">Sign In</a>
                     <a href="/members/register/" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors">
+                        Get Started
+                    </a>
+                </div>
+
+                <!-- Mobile menu button -->
+                <div class="md:hidden">
+                    <button type="button" class="bg-white rounded-md p-2 inline-flex items-center justify-center text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500" aria-expanded="false" id="mobile-menu-button">
+                        <span class="sr-only">Open main menu</span>
+                        <!-- Hamburger icon -->
+                        <svg class="h-6 w-6 block" id="mobile-menu-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                        <!-- Close icon (hidden by default) -->
+                        <svg class="h-6 w-6 hidden" id="mobile-close-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile menu (hidden by default) -->
+        <div class="md:hidden hidden" id="mobile-menu">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white shadow-lg border-t border-gray-200">
+                <a href="/" class="{% if request.resolver_match.url_name == 'home' %}bg-indigo-50 text-indigo-600 border-l-4 border-indigo-600{% else %}text-gray-600 hover:bg-gray-50 hover:text-gray-900{% endif %} block px-3 py-2 text-base font-medium">Home</a>
+                <a href="/blog/" class="{% if request.resolver_match.url_name == 'blog' %}bg-indigo-50 text-indigo-600 border-l-4 border-indigo-600{% else %}text-gray-600 hover:bg-gray-50 hover:text-gray-900{% endif %} block px-3 py-2 text-base font-medium">Blog</a>
+                <a href="/about/" class="{% if request.resolver_match.url_name == 'about' or request.resolver_match.url_name == 'about_us' %}bg-indigo-50 text-indigo-600 border-l-4 border-indigo-600{% else %}text-gray-600 hover:bg-gray-50 hover:text-gray-900{% endif %} block px-3 py-2 text-base font-medium">About</a>
+                <a href="/litarch/" class="{% if request.resolver_match.url_name == 'litarch' %}bg-indigo-50 text-indigo-600 border-l-4 border-indigo-600{% else %}text-gray-600 hover:bg-gray-50 hover:text-gray-900{% endif %} block px-3 py-2 text-base font-medium">Company</a>
+                <a href="/license/" class="{% if request.resolver_match.url_name == 'license' %}bg-indigo-50 text-indigo-600 border-l-4 border-indigo-600{% else %}text-gray-600 hover:bg-gray-50 hover:text-gray-900{% endif %} block px-3 py-2 text-base font-medium">License</a>
+                
+                <!-- Mobile Auth Links -->
+                <div class="border-t border-gray-200 pt-4 mt-4">
+                    <a href="/members/login/" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 block px-3 py-2 text-base font-medium">Sign In</a>
+                    <a href="/members/register/" class="bg-indigo-600 text-white hover:bg-indigo-700 block px-3 py-2 text-base font-medium rounded-lg mx-3 mt-2 text-center">
                         Get Started
                     </a>
                 </div>
@@ -130,6 +190,56 @@
 
     <!-- JavaScript -->
     <script>
+        // Mobile menu toggle functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const hamburgerIcon = document.getElementById('mobile-menu-icon');
+            const closeIcon = document.getElementById('mobile-close-icon');
+
+            if (mobileMenuButton && mobileMenu) {
+                mobileMenuButton.addEventListener('click', function() {
+                    // Toggle mobile menu visibility
+                    mobileMenu.classList.toggle('hidden');
+                    
+                    // Toggle icons
+                    hamburgerIcon.classList.toggle('hidden');
+                    hamburgerIcon.classList.toggle('block');
+                    closeIcon.classList.toggle('hidden');
+                    closeIcon.classList.toggle('block');
+                    
+                    // Update aria-expanded for accessibility
+                    const isExpanded = !mobileMenu.classList.contains('hidden');
+                    mobileMenuButton.setAttribute('aria-expanded', isExpanded);
+                });
+
+                // Close mobile menu when clicking on a link
+                const mobileMenuLinks = mobileMenu.querySelectorAll('a');
+                mobileMenuLinks.forEach(link => {
+                    link.addEventListener('click', function() {
+                        mobileMenu.classList.add('hidden');
+                        hamburgerIcon.classList.remove('hidden');
+                        hamburgerIcon.classList.add('block');
+                        closeIcon.classList.add('hidden');
+                        closeIcon.classList.remove('block');
+                        mobileMenuButton.setAttribute('aria-expanded', 'false');
+                    });
+                });
+
+                // Close mobile menu when clicking outside
+                document.addEventListener('click', function(event) {
+                    if (!mobileMenuButton.contains(event.target) && !mobileMenu.contains(event.target)) {
+                        mobileMenu.classList.add('hidden');
+                        hamburgerIcon.classList.remove('hidden');
+                        hamburgerIcon.classList.add('block');
+                        closeIcon.classList.add('hidden');
+                        closeIcon.classList.remove('block');
+                        mobileMenuButton.setAttribute('aria-expanded', 'false');
+                    }
+                });
+            }
+        });
+
         // Smooth scroll for anchor links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
