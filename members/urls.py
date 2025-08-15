@@ -49,7 +49,7 @@ urlpatterns = [
     # -------------------------
     # VCF Operations
     # -------------------------
-    path('VCFs/', views.billing, name='billing'),
+    path('VCFs/', views.VCF_Tabs, name='VCF_Tabs'),
     #path('vcf-tabs/', views.vcf_tabs, name='vcf_tabs'),
     path('vcf-table/', views.vcf_table, name='vcf_table'),
     path('vcf-detail/<int:vcf_id>/', views.vcf_file_detail, name='vcf_file_detail'),

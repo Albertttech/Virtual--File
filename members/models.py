@@ -10,7 +10,7 @@ import random
 import string
 from customadmin.models import VCFFile
 from django.contrib import admin
-
+from django.utils.functional import cached_property  # Add this import
 
 class MemberAccountManager(BaseUserManager):
     def create_user(self, mobile_number, country_code, username, password=None, **extra_fields):
@@ -114,6 +114,34 @@ class MemberAccount(AbstractBaseUser, PermissionsMixin):
     def save(self, *args, **kwargs):
         self.full_clean()
         super().save(*args, **kwargs)
+        
+    # ====================== CACHED PROPERTIES ======================
+    @cached_property
+    def cached_authentication_email(self):
+        """Cached authentication email to avoid repeated DB lookups"""
+        return self.authentication_email
+    
+    @cached_property
+    def cached_purchases(self):
+        """Cached list of active purchases to minimize DB queries"""
+        return list(self.user_purchases.filter(
+            is_verified=True,
+            is_active=True
+        ).select_related('vcf_file').only('vcf_file_id', 'vcf_file__name'))
+    
+    @cached_property
+    def cached_profile(self):
+        """Cached profile object with safe handling for missing profile"""
+        try:
+            return self.profile
+        except MemberProfile.DoesNotExist:
+            return None
+    
+    @cached_property
+    def cached_mobile_number(self):
+        """Cached mobile number with fallback to username"""
+        return self.mobile_number or self.username
+    # ====================== END CACHED PROPERTIES ======================
 
 
 class MemberProfile(models.Model):

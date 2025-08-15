@@ -20,18 +20,17 @@
                 {% else %}
                   <span class="bg-gradient-to-tl from-emerald-500 to-teal-400 px-2.5 text-xs rounded-1.8 py-1.4 inline-block whitespace-nowrap text-center align-baseline font-bold uppercase leading-none text-white">Free VCF</span>
                 {% endif %}
-                • {{ contacts|length }} Contact{% if contacts|length != 1 %}s{% endif %}
               </p>
             </div>
             <div id="join-container" class="flex flex-wrap items-center justify-center lg:justify-end gap-2 sm:gap-3">
               <button id="edit-icon" class="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 text-white transition-all bg-gradient-to-tl from-emerald-500 to-teal-400 border border-emerald-500 rounded-full hover:shadow-lg active:opacity-85 hover:-translate-y-px hover:scale-105" title="Edit Member Info">
-                <i class="fas fa-edit text-sm sm:text-base"></i>
+                <i class="fa-solid fa-edit text-sm sm:text-base"></i>
               </button>
               <button id="upload-icon" class="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 text-white transition-all bg-gradient-to-tl from-blue-500 to-violet-500 border border-blue-500 rounded-full hover:shadow-lg active:opacity-85 hover:-translate-y-px hover:scale-105" title="Upload VCF File">
-                <i class="fas fa-upload text-sm sm:text-base"></i>
+                <i class="fa-solid fa-upload text-sm sm:text-base"></i>
               </button>
               <button id="download-icon" class="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 text-white transition-all bg-gradient-to-tl from-orange-500 to-yellow-500 border border-orange-500 rounded-full hover:shadow-lg active:opacity-85 hover:-translate-y-px hover:scale-105" title="Download VCF File">
-                <i class="fas fa-download text-sm sm:text-base"></i>
+                <i class="fa-solid fa-download text-sm sm:text-base"></i>
               </button>
               {% if not joined %}
                 <button id="join-btn" class="flex items-center justify-center px-4 sm:px-6 py-2 text-xs sm:text-sm font-bold text-white transition-all bg-gradient-to-tl from-green-600 to-lime-400 rounded-lg hover:shadow-lg active:opacity-85 hover:-translate-y-px min-w-0">
@@ -39,7 +38,7 @@
                   <span>Join</span>
                 </button>
               {% else %}
-                <span class="inline-flex items-center px-3 sm:px-4 py-2 bg-gradient-to-tl from-green-500 to-teal-400 text-black rounded-lg font-semibold shadow text-xs sm:text-sm">
+                <span class="inline-flex items-center px-3 sm:px-4 py-2 bg-gradient-to-tl from-green-500 to-teal-400 text-white rounded-lg font-semibold shadow text-xs sm:text-sm" style="background: #4287ff;border: 3px solid orange;border-radius:20%;">
                   <i class="fas fa-check mr-1 sm:mr-2"></i>
                   <span>Active</span>
                 </span>
@@ -112,41 +111,154 @@
   </div>
 </div>
 
+
+
+
+
+
+
+<style>
+/* W3Schools Modal Styles */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 9999;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgb(0,0,0);
+  background-color: rgba(0,0,0,0.4);
+  -webkit-animation-name: fadeIn;
+  -webkit-animation-duration: 0.4s;
+  animation-name: fadeIn;
+  animation-duration: 0.4s;
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: 15% auto;
+  padding: 0;
+  border: none;
+  width: 80%;
+  max-width: 500px;
+  border-radius: 12px;
+  -webkit-animation-name: slideIn;
+  -webkit-animation-duration: 0.4s;
+  animation-name: slideIn;
+  animation-duration: 0.4s;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+.modal-header {
+  padding: 20px 30px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 12px 12px 0 0;
+  position: relative;
+}
+
+.modal-body {
+  padding: 30px;
+  background: white;
+}
+
+.modal-footer {
+  padding: 20px 30px;
+  background: #f8f9fa;
+  border-radius: 0 0 12px 12px;
+  border-top: 1px solid #e9ecef;
+}
+
+.close {
+  color: white;
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+.close:hover,
+.close:focus {
+  color: #ff6b6b;
+  text-decoration: none;
+}
+
+@-webkit-keyframes slideIn {
+  from {margin-top: -300px; opacity: 0}
+  to {margin-top: 15%; opacity: 1}
+}
+
+@keyframes slideIn {
+  from {margin-top: -300px; opacity: 0}
+  to {margin-top: 15%; opacity: 1}
+}
+
+@-webkit-keyframes fadeIn {
+  from {opacity: 0}
+  to {opacity: 1}
+}
+
+@keyframes fadeIn {
+  from {opacity: 0}
+  to {opacity: 1}
+}
+
+/* Dark mode support */
+.dark .modal-content {
+  background-color: #1e293b;
+  color: white;
+}
+
+.dark .modal-body {
+  background-color: #1e293b;
+}
+
+.dark .modal-footer {
+  background-color: #334155;
+  border-top-color: #475569;
+}
+</style>
+
 <!-- Edit Modal -->
-<div id="edit-modal-overlay" class="fixed inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm z-[9999] hidden transition-all duration-300 opacity-0">
-  <div id="edit-modal-content" class="bg-white dark:bg-slate-850 rounded-2xl shadow-2xl sm:p-8 p-4 w-full max-w-md sm:max-w-md max-w-xs mx-4 sm:mx-0 relative transform scale-95 transition-all duration-300 overflow-y-auto max-h-[90vh]">
-    <button id="close-edit-modal" class="absolute top-4 right-4 text-gray-400 hover:text-red-500 text-2xl font-bold transition-colors duration-200 w-8 h-8 flex items-center justify-center rounded-full hover:bg-red-50 dark:hover:bg-red-900/20">&times;</button>
-    <div id="edit-modal-body" class="text-center">
-      <div class="flex items-center justify-center w-16 h-16 mx-auto mb-4 bg-gradient-to-tl from-emerald-500 to-teal-400 rounded-full">
-        <i class="fas fa-edit text-white text-xl"></i>
-      </div>
-      <h3 class="text-xl font-bold text-slate-800 dark:text-white mb-6">Edit Your VCF Info</h3>
+<div id="edit-modal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <span class="close" data-modal="edit-modal">&times;</span>
+      <h2><i class="fas fa-edit mr-2"></i>Edit Your VCF Info</h2>
+    </div>
+    <div class="modal-body">
       <form id="edit-member-form" class="space-y-4">
         <div class="text-left">
           <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2" for="edit-profile-name">Name in VCF:</label>
-          <input type="text" id="edit-profile-name" name="profile_name" value="{{ profile_name }}" class="w-full px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:bg-slate-700 dark:text-white transition-all duration-200" />
+          <input type="text" id="edit-profile-name" name="profile_name" value="{{ profile_name }}" class="w-full px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-slate-700 dark:text-white transition-all duration-200" />
         </div>
         <div class="text-left">
           <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2" for="edit-email">Email:</label>
-          <input type="email" id="edit-email" name="email" value="{{ main_email }}" class="w-full px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:bg-slate-700 dark:text-white transition-all duration-200" />
+          <input type="email" id="edit-email" name="email" value="{{ main_email }}" class="w-full px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-slate-700 dark:text-white transition-all duration-200" />
         </div>
-        <button type="submit" class="w-full px-6 py-3 bg-gradient-to-tl from-emerald-600 to-teal-400 text-white rounded-lg font-semibold hover:shadow-lg transition-all duration-200 hover:scale-105">
-          <i class="fas fa-save mr-2"></i>Update
-        </button>
       </form>
+    </div>
+    <div class="modal-footer">
+      <button type="submit" form="edit-member-form" class="w-full px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg font-semibold hover:shadow-lg transition-all duration-200">
+        <i class="fas fa-save mr-2"></i>Update
+      </button>
     </div>
   </div>
 </div>
 
 <!-- Upload Modal -->
-<div id="upload-modal-overlay" class="fixed inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm z-[9999] hidden transition-all duration-300 opacity-0">
-  <div id="upload-modal-content" class="bg-white dark:bg-slate-850 rounded-2xl shadow-2xl sm:p-8 p-4 w-full max-w-md sm:max-w-md max-w-xs mx-4 sm:mx-0 relative transform scale-95 transition-all duration-300 overflow-y-auto max-h-[90vh]">
-    <button id="close-upload-modal" class="absolute top-4 right-4 text-gray-400 hover:text-red-500 text-2xl font-bold transition-colors duration-200 w-8 h-8 flex items-center justify-center rounded-full hover:bg-red-50 dark:hover:bg-red-900/20">&times;</button>
-    <div class="text-center">
-      <div class="flex items-center justify-center w-16 h-16 mx-auto mb-4 bg-gradient-to-tl from-blue-500 to-violet-500 rounded-full">
-        <i class="fas fa-upload text-white text-xl"></i>
-      </div>
-      <h3 class="text-xl font-bold text-slate-800 dark:text-white mb-4">Upload VCF File</h3>
+<div id="upload-modal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+      <span class="close" data-modal="upload-modal">&times;</span>
+      <h2><i class="fas fa-upload mr-2"></i>Upload VCF File</h2>
+    </div>
+    <div class="modal-body">
       <p class="text-sm text-slate-600 dark:text-slate-400 mb-6">Select a VCF file from your device to upload</p>
       <div class="border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-lg p-6 mb-4 hover:border-blue-400 transition-colors duration-200">
         <input type="file" accept=".vcf" id="vcf-file-input" class="hidden">
@@ -155,7 +267,9 @@
           <span class="text-sm text-slate-600 dark:text-slate-400">Click to select VCF file</span>
         </label>
       </div>
-      <button id="upload-btn" class="w-full px-6 py-3 bg-gradient-to-tl from-blue-600 to-violet-500 text-white rounded-lg font-semibold hover:shadow-lg transition-all duration-200 hover:scale-105 disabled:opacity-50" disabled>
+    </div>
+    <div class="modal-footer">
+      <button id="upload-btn" class="w-full px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg font-semibold hover:shadow-lg transition-all duration-200 disabled:opacity-50" disabled>
         <i class="fas fa-upload mr-2"></i>Upload VCF
       </button>
     </div>
@@ -163,14 +277,13 @@
 </div>
 
 <!-- Download Modal -->
-<div id="download-modal-overlay" class="fixed inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm z-[9999] hidden transition-all duration-300 opacity-0">
-  <div id="download-modal-content" class="bg-white dark:bg-slate-850 rounded-2xl shadow-2xl sm:p-8 p-4 w-full max-w-md sm:max-w-md max-w-xs mx-4 sm:mx-0 relative transform scale-95 transition-all duration-300 overflow-y-auto max-h-[90vh]">
-    <button id="close-download-modal" class="absolute top-4 right-4 text-gray-400 hover:text-red-500 text-2xl font-bold transition-colors duration-200 w-8 h-8 flex items-center justify-center rounded-full hover:bg-red-50 dark:hover:bg-red-900/20">&times;</button>
-    <div class="text-center">
-      <div class="flex items-center justify-center w-16 h-16 mx-auto mb-4 bg-gradient-to-tl from-orange-500 to-yellow-500 rounded-full">
-        <i class="fas fa-download text-white text-xl"></i>
-      </div>
-      <h3 class="text-xl font-bold text-slate-800 dark:text-white mb-4">Download VCF File</h3>
+<div id="download-modal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+      <span class="close" data-modal="download-modal">&times;</span>
+      <h2><i class="fas fa-download mr-2"></i>Download VCF File</h2>
+    </div>
+    <div class="modal-body">
       <p class="text-sm text-slate-600 dark:text-slate-400 mb-6">Download all contacts from this VCF file to your device</p>
       <div class="bg-slate-50 dark:bg-slate-800 rounded-lg p-4 mb-6">
         <div class="flex items-center justify-between text-sm">
@@ -182,114 +295,86 @@
           <span class="font-semibold text-slate-800 dark:text-white">{{ contacts|length }} contact{% if contacts|length != 1 %}s{% endif %}</span>
         </div>
       </div>
-      <button id="modal-download-btn" class="w-full px-6 py-3 bg-gradient-to-tl from-orange-500 to-yellow-500 text-white rounded-lg font-semibold hover:shadow-lg transition-all duration-200 hover:scale-105">
+    </div>
+    <div class="modal-footer">
+      <button id="modal-download-btn" class="w-full px-6 py-3 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-lg font-semibold hover:shadow-lg transition-all duration-200">
         <i class="fas fa-download mr-2"></i>Download VCF
       </button>
     </div>
   </div>
 </div>
+
 <script>
+// W3Schools Modal JavaScript
 document.addEventListener('DOMContentLoaded', function() {
-  // Modal management functions
-  function showModal(modalOverlay) {
-    const modalContent = modalOverlay.querySelector('[id$="-content"]');
-    modalOverlay.classList.remove('hidden');
-    setTimeout(() => {
-      modalOverlay.classList.remove('opacity-0');
-      modalContent.classList.remove('scale-95');
-      modalContent.classList.add('scale-100');
-    }, 10);
+  // Get all modals
+  const editModal = document.getElementById("edit-modal");
+  const uploadModal = document.getElementById("upload-modal");
+  const downloadModal = document.getElementById("download-modal");
+  
+  // Get buttons that open modals
+  const editBtn = document.getElementById("edit-icon");
+  const uploadBtn = document.getElementById("upload-icon");
+  const downloadBtn = document.getElementById("download-icon");
+  
+  // Get close buttons
+  const closeButtons = document.querySelectorAll(".close");
+  
+  // Open modal functions
+  editBtn.onclick = function() {
+    editModal.style.display = "block";
+  }
+  
+  uploadBtn.onclick = function() {
+    uploadModal.style.display = "block";
+  }
+  
+  downloadBtn.onclick = function() {
+    downloadModal.style.display = "block";
+  }
+  
+  // Close modal functions
+  closeButtons.forEach(function(closeBtn) {
+    closeBtn.onclick = function() {
+      const modalId = this.getAttribute('data-modal');
+      document.getElementById(modalId).style.display = "none";
+    }
+  });
+  
+  // Close modal when clicking outside
+  window.onclick = function(event) {
+    if (event.target.classList.contains('modal')) {
+      event.target.style.display = "none";
+    }
   }
 
-  function hideModal(modalOverlay) {
-    const modalContent = modalOverlay.querySelector('[id$="-content"]');
-    modalOverlay.classList.add('opacity-0');
-    modalContent.classList.remove('scale-100');
-    modalContent.classList.add('scale-95');
-    setTimeout(() => {
-      modalOverlay.classList.add('hidden');
-    }, 300);
-  }
-
-  // Edit modal logic
-  const editModalOverlay = document.getElementById('edit-modal-overlay');
-  const closeEditModalBtn = document.getElementById('close-edit-modal');
-  
-  document.getElementById('edit-icon').addEventListener('click', function(e) {
-    e.preventDefault();
-    showModal(editModalOverlay);
-  });
-  
-  closeEditModalBtn.addEventListener('click', function() {
-    hideModal(editModalOverlay);
-  });
-  
-  editModalOverlay.addEventListener('click', function(e) {
-    if (e.target === editModalOverlay) hideModal(editModalOverlay);
-  });
-
-  // Upload modal logic
-  const uploadModalOverlay = document.getElementById('upload-modal-overlay');
-  const closeUploadModalBtn = document.getElementById('close-upload-modal');
+  // File input and upload functionality
   const vcfFileInput = document.getElementById('vcf-file-input');
-  const uploadBtn = document.getElementById('upload-btn');
+  const uploadButton = document.getElementById('upload-btn');
   
-  document.getElementById('upload-icon').addEventListener('click', function(e) {
-    e.preventDefault();
-    showModal(uploadModalOverlay);
-  });
-  
-  closeUploadModalBtn.addEventListener('click', function() {
-    hideModal(uploadModalOverlay);
-  });
-  
-  uploadModalOverlay.addEventListener('click', function(e) {
-    if (e.target === uploadModalOverlay) hideModal(uploadModalOverlay);
-  });
-
-  // File input change handler
   vcfFileInput.addEventListener('change', function(e) {
     const file = e.target.files[0];
     if (file) {
-      uploadBtn.disabled = false;
-      uploadBtn.innerHTML = `<i class="fas fa-upload mr-2"></i>Upload ${file.name}`;
+      uploadButton.disabled = false;
+      uploadButton.innerHTML = `<i class="fas fa-upload mr-2"></i>Upload ${file.name}`;
     } else {
-      uploadBtn.disabled = true;
-      uploadBtn.innerHTML = '<i class="fas fa-upload mr-2"></i>Upload VCF';
+      uploadButton.disabled = true;
+      uploadButton.innerHTML = '<i class="fas fa-upload mr-2"></i>Upload VCF';
     }
   });
 
-  // Upload button handler
-  uploadBtn.addEventListener('click', function() {
+  uploadButton.addEventListener('click', function() {
     const file = vcfFileInput.files[0];
     if (file) {
-      // Add upload logic here
       showSuccessToast('VCF file uploaded successfully!');
-      hideModal(uploadModalOverlay);
+      uploadModal.style.display = "none";
       vcfFileInput.value = '';
-      uploadBtn.disabled = true;
-      uploadBtn.innerHTML = '<i class="fas fa-upload mr-2"></i>Upload VCF';
+      uploadButton.disabled = true;
+      uploadButton.innerHTML = '<i class="fas fa-upload mr-2"></i>Upload VCF';
     }
   });
 
-  // Download modal logic
-  const downloadModalOverlay = document.getElementById('download-modal-overlay');
-  const closeDownloadModalBtn = document.getElementById('close-download-modal');
-  
-  document.getElementById('download-icon').addEventListener('click', function(e) {
-    e.preventDefault();
-    showModal(downloadModalOverlay);
-  });
-  
-  closeDownloadModalBtn.addEventListener('click', function() {
-    hideModal(downloadModalOverlay);
-  });
-  
-  downloadModalOverlay.addEventListener('click', function(e) {
-    if (e.target === downloadModalOverlay) hideModal(downloadModalOverlay);
-  });
-
-  // AJAX update for member info in current VCF
+  // Edit form submission
   document.getElementById('edit-member-form').addEventListener('submit', function(e) {
     e.preventDefault();
     const profileName = document.getElementById('edit-profile-name').value.trim();
@@ -312,7 +397,7 @@ document.addEventListener('DOMContentLoaded', function() {
     .then(data => {
       if (data.success) {
         showSuccessToast('VCF info updated successfully!');
-        hideModal(editModalOverlay);
+        editModal.style.display = "none";
         // Update contact table row for current user
         const tbody = document.getElementById('contacts-table-body');
         if (tbody) {
@@ -332,6 +417,49 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     })
     .catch(() => showErrorToast('Update failed'));
+  });
+
+  // Download functionality
+  document.getElementById('modal-download-btn').addEventListener('click', function() {
+    // Collect contacts from table
+    const rows = document.querySelectorAll('#contacts-table-body tr');
+    let vcfData = '';
+    rows.forEach(row => {
+      const cells = row.querySelectorAll('td');
+      if (cells.length >= 3) {
+        const nameElement = cells[0].querySelector('h6');
+        const phoneElement = cells[1].querySelector('p');
+        const emailElement = cells[2].querySelector('p');
+        
+        if (nameElement && phoneElement) {
+          const name = nameElement.textContent.trim();
+          let phone = phoneElement.textContent.trim();
+          const email = emailElement ? emailElement.textContent.trim() : '';
+          
+          if (!phone.startsWith('+') && phone.length > 0) {
+            phone = '+' + phone;
+          }
+          
+          vcfData += 'BEGIN:VCARD\nVERSION:3.0\n';
+          vcfData += `FN:${name}\n`;
+          vcfData += `TEL;TYPE=CELL:${phone}\n`;
+          if (email && email !== '-') vcfData += `EMAIL:${email}\n`;
+          vcfData += 'END:VCARD\n';
+        }
+      }
+    });
+    
+    const blob = new Blob([vcfData.replace(/\n/g, '\r\n')], { type: 'text/vcard' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = '{{ vcf.name|default:"contacts" }}.vcf';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    downloadModal.style.display = "none";
+    showSuccessToast('VCF file downloaded successfully!');
   });
 
   // Toast notifications
@@ -354,54 +482,7 @@ document.addEventListener('DOMContentLoaded', function() {
     setTimeout(() => { if (toast.parentNode) toast.parentNode.removeChild(toast); }, 3550);
   }
 
-  // VCF download logic
-  document.addEventListener('click', function(e) {
-    if (e.target && e.target.id === 'modal-download-btn') {
-      // Collect contacts from table
-      const rows = document.querySelectorAll('#contacts-table-body tr');
-      let vcfData = '';
-      rows.forEach(row => {
-        const cells = row.querySelectorAll('td');
-        if (cells.length >= 3) {
-          const nameElement = cells[0].querySelector('h6');
-          const phoneElement = cells[1].querySelector('p');
-          const emailElement = cells[2].querySelector('p');
-          
-          if (nameElement && phoneElement) {
-            const name = nameElement.textContent.trim();
-            let phone = phoneElement.textContent.trim();
-            const email = emailElement ? emailElement.textContent.trim() : '';
-            
-            // Ensure phone starts with +
-            if (!phone.startsWith('+') && phone.length > 0) {
-              phone = '+' + phone;
-            }
-            
-            vcfData += 'BEGIN:VCARD\nVERSION:3.0\n';
-            vcfData += `FN:${name}\n`;
-            vcfData += `TEL;TYPE=CELL:${phone}\n`;
-            if (email && email !== '-') vcfData += `EMAIL:${email}\n`;
-            vcfData += 'END:VCARD\n';
-          }
-        }
-      });
-      
-      // Download as .vcf file
-      const blob = new Blob([vcfData.replace(/\n/g, '\r\n')], { type: 'text/vcard' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = '{{ vcf.name|default:"contacts" }}.vcf';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-      hideModal(downloadModalOverlay);
-      showSuccessToast('VCF file downloaded successfully!');
-    }
-  });
-
-  // Join button logic
+  // Join button logic (existing functionality)
   const joinBtn = document.getElementById('join-btn');
   if (joinBtn) {
     joinBtn.addEventListener('click', function() {
@@ -426,10 +507,8 @@ document.addEventListener('DOMContentLoaded', function() {
           `;
           showSuccessToast('Successfully joined VCF!');
           
-          // Add new contact row to table
           const tbody = document.getElementById('contacts-table-body');
           if (tbody && data.contact) {
-            // Remove 'No contacts' row if present
             const noContactsRow = tbody.querySelector('tr td[colspan]');
             if (noContactsRow) noContactsRow.parentElement.remove();
             
@@ -470,15 +549,6 @@ document.addEventListener('DOMContentLoaded', function() {
       });
     });
   }
-
-  // Keyboard support for modals
-  document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') {
-      // Close any open modal
-      const openModals = document.querySelectorAll('[id$="-modal-overlay"]:not(.hidden)');
-      openModals.forEach(modal => hideModal(modal));
-    }
-  });
 });
 </script>
 

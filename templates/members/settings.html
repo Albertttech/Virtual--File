@@ -54,6 +54,9 @@
   <!-- App Content -->
   <div id="app-content" class="tab-content active">
     <div class="flex flex-wrap -mx-3">
+
+
+      <!-- Edit Profile Section -->
       <div class="w-full max-w-full px-3 shrink-0 md:w-8/12 md:flex-0">
         <div class="relative flex flex-col min-w-0 break-words bg-white border-0 shadow-xl dark:bg-slate-850 dark:shadow-dark-xl rounded-2xl bg-clip-border">
           <div class="border-black/12.5 rounded-t-2xl border-b-0 border-solid p-6 pb-0">
@@ -63,6 +66,52 @@
             </div>
           </div>
           <div class="flex-auto p-6">
+            <p class="leading-normal uppercase dark:text-white dark:opacity-60 text-sm">Display Settings</p>
+            <!-- Sidenav Type -->
+            <div class="mb-6">
+              <div class="flex items-center justify-between">
+                <div>
+                  <h6 class="mb-1 text-sm font-bold dark:text-white">Sidenav Type</h6>
+                  <p class="text-xs leading-normal dark:text-white dark:opacity-80">Choose between white and dark sidenav styles.</p>
+                </div>
+                <div class="block pl-0 ml-auto min-h-6">
+                  <input id="sidenav-toggle" class="rounded-10 duration-250 ease-in-out after:rounded-circle after:shadow-2xl after:duration-250 checked:after:translate-x-5.3 h-5 relative float-left mt-1 ml-auto w-10 cursor-pointer appearance-none border border-solid border-gray-200 bg-slate-800/10 bg-none bg-contain bg-left bg-no-repeat align-top transition-all after:absolute after:top-px after:h-4 after:w-4 after:translate-x-px after:bg-white after:content-[''] checked:border-blue-500/95 checked:bg-blue-500/95 checked:bg-none checked:bg-right" type="checkbox" />
+                </div>
+              </div>
+              <p class="block mt-2 text-xs leading-normal dark:text-white dark:opacity-80 xl:hidden">You can change the sidenav type just on desktop view.</p>
+            </div>
+
+            <hr class="h-px mx-0 my-4 bg-transparent border-0 opacity-25 bg-gradient-to-r from-transparent via-black/40 to-transparent dark:bg-gradient-to-r dark:from-transparent dark:via-white dark:to-transparent " />
+
+            <!-- Navbar Fixed -->
+            <div class="mb-6">
+              <div class="flex items-center justify-between">
+                <div>
+                  <h6 class="mb-1 text-sm font-bold dark:text-white">Navbar Fixed</h6>
+                  <p class="text-xs leading-normal dark:text-white dark:opacity-80">Keep the navbar fixed at the top while scrolling.</p>
+                </div>
+                <div class="block pl-0 ml-auto min-h-6">
+                  <input id="navbarFixed" class="rounded-10 duration-250 ease-in-out after:rounded-circle after:shadow-2xl after:duration-250 checked:after:translate-x-5.3 h-5 relative float-left mt-1 ml-auto w-10 cursor-pointer appearance-none border border-solid border-gray-200 bg-slate-800/10 bg-none bg-contain bg-left bg-no-repeat align-top transition-all after:absolute after:top-px after:h-4 after:w-4 after:translate-x-px after:bg-white after:content-[''] checked:border-blue-500/95 checked:bg-blue-500/95 checked:bg-none checked:bg-right" type="checkbox" />
+                </div>
+              </div>
+            </div>
+
+            <hr class="h-px mx-0 my-4 bg-transparent border-0 opacity-25 bg-gradient-to-r from-transparent via-black/40 to-transparent dark:bg-gradient-to-r dark:from-transparent dark:via-white dark:to-transparent " />
+
+            <!-- Light / Dark Mode -->
+            <div class="mb-6">
+              <div class="flex items-center justify-between">
+                <div>
+                  <h6 class="mb-1 text-sm font-bold dark:text-white">Light / Dark Mode</h6>
+                  <p class="text-xs leading-normal dark:text-white dark:opacity-80">Toggle between light and dark theme.</p>
+                </div>
+                <div class="block pl-0 ml-auto min-h-6">
+                  <input id="dark-toggle" class="rounded-10 duration-250 ease-in-out after:rounded-circle after:shadow-2xl after:duration-250 checked:after:translate-x-5.3 h-5 relative float-left mt-1 ml-auto w-10 cursor-pointer appearance-none border border-solid border-gray-200 bg-slate-800/10 bg-none bg-contain bg-left bg-no-repeat align-top transition-all after:absolute after:top-px after:h-4 after:w-4 after:translate-x-px after:bg-white after:content-[''] checked:border-blue-500/95 checked:bg-blue-500/95 checked:bg-none checked:bg-right" type="checkbox" />
+                </div>
+              </div>
+            </div>
+            <hr class="h-px mx-0 my-4 bg-transparent border-0 opacity-25 bg-gradient-to-r from-transparent via-black/40 to-transparent dark:bg-gradient-to-r dark:from-transparent dark:via-white dark:to-transparent " />
+            
             <p class="leading-normal uppercase dark:text-white dark:opacity-60 text-sm">App Information</p>
             <div class="flex flex-wrap -mx-3">
               <div class="w-full max-w-full px-3 shrink-0 md:w-6/12 md:flex-0">
@@ -502,6 +551,97 @@
       }
     } else {
       console.log('Auth email elements not found'); // Debug log
+    }
+  });
+
+  // Display Settings Functionality
+  document.addEventListener('DOMContentLoaded', function() {
+    // Sidenav Type toggle functionality
+    const sidenavToggle = document.getElementById('sidenav-toggle');
+    const sidebar = document.querySelector('aside');
+
+    if (sidenavToggle && sidebar) {
+      // Check current state and set toggle accordingly
+      const isDarkSidenav = sidebar.classList.contains('bg-slate-850') || sidebar.classList.contains('dark:bg-slate-850');
+      sidenavToggle.checked = isDarkSidenav;
+
+      sidenavToggle.addEventListener('change', function() {
+        if (this.checked) {
+          // Set dark sidenav
+          sidebar.classList.remove('bg-white');
+          sidebar.classList.add('bg-slate-850');
+          localStorage.setItem('sidenavType', 'dark');
+        } else {
+          // Set white sidenav
+          sidebar.classList.remove('bg-slate-850');
+          sidebar.classList.add('bg-white');
+          localStorage.setItem('sidenavType', 'white');
+        }
+      });
+
+      // Load saved preference
+      const savedSidenavType = localStorage.getItem('sidenavType');
+      if (savedSidenavType === 'dark') {
+        sidenavToggle.checked = true;
+        sidebar.classList.remove('bg-white');
+        sidebar.classList.add('bg-slate-850');
+      } else if (savedSidenavType === 'white') {
+        sidenavToggle.checked = false;
+        sidebar.classList.remove('bg-slate-850');
+        sidebar.classList.add('bg-white');
+      }
+    }
+
+    // Navbar Fixed functionality
+    const navbarFixed = document.getElementById('navbarFixed');
+    const navbar = document.querySelector('nav[navbar-main]');
+
+    if (navbarFixed && navbar) {
+      // Load saved preference
+      const isNavbarFixed = localStorage.getItem('navbarFixed') === 'true';
+      navbarFixed.checked = isNavbarFixed;
+      
+      if (isNavbarFixed) {
+        navbar.classList.add('fixed', 'top-0', 'left-0', 'right-0', 'z-50');
+        navbar.classList.remove('relative');
+      }
+
+      navbarFixed.addEventListener('change', function() {
+        if (this.checked) {
+          navbar.classList.add('fixed', 'top-0', 'left-0', 'right-0', 'z-50');
+          navbar.classList.remove('relative');
+          localStorage.setItem('navbarFixed', 'true');
+        } else {
+          navbar.classList.remove('fixed', 'top-0', 'left-0', 'right-0', 'z-50');
+          navbar.classList.add('relative');
+          localStorage.setItem('navbarFixed', 'false');
+        }
+      });
+    }
+
+    // Dark Mode Toggle functionality
+    const darkToggle = document.getElementById('dark-toggle');
+    const body = document.body;
+    const html = document.documentElement;
+
+    if (darkToggle) {
+      // Check if dark mode is already enabled
+      const isDarkMode = localStorage.getItem('darkMode') === 'true' || html.classList.contains('dark');
+      darkToggle.checked = isDarkMode;
+
+      darkToggle.addEventListener('change', function() {
+        if (this.checked) {
+          // Enable dark mode
+          html.classList.add('dark');
+          body.classList.add('dark:bg-slate-900');
+          localStorage.setItem('darkMode', 'true');
+        } else {
+          // Disable dark mode
+          html.classList.remove('dark');
+          body.classList.remove('dark:bg-slate-900');
+          localStorage.setItem('darkMode', 'false');
+        }
+      });
     }
   });
 </script>

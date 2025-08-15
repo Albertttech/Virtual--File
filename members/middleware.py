@@ -3,12 +3,12 @@ from django.shortcuts import redirect
 from django.urls import reverse, resolve
 from django.contrib import messages
 
-
+"""
 def auth_email_required(view_func):
-    """
+ 
     Decorator that checks if the user has set their authentication email.
     If not, redirect to settings page with a flash message.
-    """
+ 
     def _wrapped_view(request, *args, **kwargs):
         if not request.user.is_authenticated:
             return redirect(reverse('members:login'))
@@ -41,9 +41,8 @@ def auth_email_required(view_func):
 
 
 class AuthEmailMiddleware:
-    """
     Middleware to enforce authentication email check for members.
-    """
+    
     def __init__(self, get_response):
         self.get_response = get_response
         # List of URL names that should be exempt from the auth email check
@@ -83,4 +82,4 @@ class AuthEmailMiddleware:
             messages.warning(request, "Please set your authentication email to continue")
             return redirect(reverse('member_settings'))  # Make sure this matches your URL name
 
-        return None
+        return None"""

@@ -10,7 +10,8 @@ def test_api(request):
 
 urlpatterns = [
     path('api/test/', test_api),  # Test API endpoint
-    path('', include('members.urls')),
+    path('', include('public.urls')),  # Public pages (home, blog, about, contact)
+    path('members/', include('members.urls')),  # Member-specific pages
     path('admin/', include('customadmin.urls')),
     path('django-admin/', admin.site.urls),
     path('payment-complete/', member_views.payment_complete, name='payment_complete'),

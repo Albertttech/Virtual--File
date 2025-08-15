@@ -36,14 +36,7 @@
                             </div>
                             <div class="flex flex-col justify-center">
                               <h6 class="mb-0 text-sm leading-normal dark:text-white">{{ item.vcf.name }}</h6>
-                              <p class="mb-0 text-xs leading-tight dark:text-white dark:opacity-80 text-slate-400">
-                                {% if item.vcf.vcf_type == 'premium' %}
-                                  <span class="text-yellow-500 font-semibold">Premium VCF</span>
-                                {% else %}
-                                  <span class="text-green-500 font-semibold">Free VCF</span>
-                                {% endif %}
-                                • {{ request.user.email }}
-                              </p>
+                              <p class="mb-0 text-xs leading-tight dark:text-white dark:opacity-80 text-slate-400">{{ request.user.email }}</p>
                             </div>
                           </div>
                         </td>
@@ -61,7 +54,7 @@
                         <td class="p-2 text-center align-middle bg-transparent border-b dark:border-white/40 whitespace-nowrap shadow-transparent">
                           <span class="text-xs font-semibold leading-tight dark:text-white dark:opacity-80 text-slate-400">{{ item.purchase.created_at|date:"d/m/y" }}</span>
                         </td>
-                        <td class="p-2 text-center align-middle bg-transparent border-b dark:border-white/40 whitespace-nowrap shadow-transparent">
+                        <td class="p-2 align-middle bg-transparent border-b dark:border-white/40 whitespace-nowrap shadow-transparent">
                           <a href="{% url 'members:vcf_file_detail' item.vcf.id %}" class="text-xs font-semibold leading-tight dark:text-white dark:opacity-80 text-slate-400"> View </a>
                         </td>
                       </tr>
@@ -72,7 +65,7 @@
                             <svg class="w-12 h-12 mb-4 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                             </svg>
-                            <p class="text-sm">No VCF files found. <a href="{% url 'members:billing' %}" class="text-blue-400 hover:underline">Browse VCF files</a></p>
+                            <p class="text-sm">No VCF files found. <a href="{% url 'members:vcf_tabs' %}" class="text-blue-400 hover:underline">Browse VCF files</a></p>
                           </div>
                         </td>
                       </tr>

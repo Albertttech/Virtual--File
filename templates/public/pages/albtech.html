@@ -1,0 +1,463 @@
+{% extends "public/base.html" %}
+{% load static %}
+
+{% block title %}Litarch - Reimagining How the World Connects{% endblock %}
+
+{% block content %}
+    <!-- Hero Section -->
+    <section class="relative bg-gradient-to-br from-slate-900 via-gray-900 to-black text-white py-32 overflow-hidden">
+        <div class="absolute inset-0 bg-black opacity-60"></div>
+        <div class="absolute inset-0" style="background-image: url('https://images.unsplash.com/photo-1639762681485-074b7f938ba0?ixlib=rb-4.0.3&auto=format&fit=crop&w=2832&q=80'); background-size: cover; background-position: center;"></div>
+        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h1 class="text-6xl md:text-8xl font-bold mb-8 leading-tight">
+                Litarch is reimagining how the world connects, one verified contact at a time
+            </h1>
+            <p class="text-2xl md:text-3xl mb-16 text-gray-200 max-w-5xl mx-auto font-light">
+                A global technology company pioneering trusted community networking through advanced VCF processing, 
+                AI-driven insights, and category-based professional communities.
+            </p>
+        </div>
+    </section>
+
+    <!-- Our Story Section -->
+    <section class="py-24 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                <div>
+                    <h2 class="text-5xl font-bold text-gray-900 mb-8">Our Story</h2>
+                    <div class="space-y-6 text-lg text-gray-700">
+                        <p>
+                            <strong>The Problem We Saw:</strong> In 2019, we witnessed a world drowning in disconnected contacts, 
+                            unreliable networking, and broken trust in professional relationships. Contact lists were cluttered, 
+                            networking was inefficient, and finding verified professionals felt impossible.
+                        </p>
+                        <p>
+                            <strong>The Solution We Built:</strong> Litarch emerged as the answer—combining cutting-edge VCF technology 
+                            with AI-driven intelligence and category-based communities. We didn't just create another contact manager; 
+                            we built the foundation for trusted global networking.
+                        </p>
+                        <p>
+                            <strong>Our Growth:</strong> From a small team with a big vision, we've grown to serve 250,000+ verified 
+                            professionals across 85+ countries, processing millions of trusted contact exchanges while maintaining 
+                            99.9% uptime and pioneering new standards in contact technology.
+                        </p>
+                    </div>
+                </div>
+                <div>
+                    <img src="https://images.unsplash.com/photo-1556761175-b413da4baf72?ixlib=rb-4.0.3&auto=format&fit=crop&w=2374&q=80" 
+                         alt="Global Technology Innovation" class="rounded-2xl shadow-2xl">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- What We Do Section -->
+    <section class="py-24 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-20">
+                <h2 class="text-5xl font-bold text-gray-900 mb-8">What We Do</h2>
+                <p class="text-2xl text-gray-600 max-w-4xl mx-auto">
+                    We've built the world's most advanced VCF processing platform that powers both enterprise 
+                    contact management and trusted human networking at scale.
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16">
+                <!-- Enterprise Solutions -->
+                <div class="bg-white rounded-3xl shadow-xl p-10">
+                    <div class="bg-blue-100 w-20 h-20 rounded-xl flex items-center justify-center mb-8">
+                        <i class="fas fa-building text-blue-600 text-3xl"></i>
+                    </div>
+                    <h3 class="text-3xl font-bold text-gray-900 mb-6">Enterprise Contact Management</h3>
+                    <ul class="space-y-4 text-lg text-gray-700">
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-green-500 mt-1 mr-3"></i>
+                            <span><strong>VCF Engine:</strong> Process millions of contacts with 99.9% accuracy</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-green-500 mt-1 mr-3"></i>
+                            <span><strong>AI Enrichment:</strong> Intelligent deduplication and data enhancement</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-green-500 mt-1 mr-3"></i>
+                            <span><strong>Cloud Integration:</strong> Seamless API access and bulk processing</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Community Platform -->
+                <div class="bg-white rounded-3xl shadow-xl p-10">
+                    <div class="bg-purple-100 w-20 h-20 rounded-xl flex items-center justify-center mb-8">
+                        <i class="fas fa-users text-purple-600 text-3xl"></i>
+                    </div>
+                    <h3 class="text-3xl font-bold text-gray-900 mb-6">Trusted Community Networking</h3>
+                    <ul class="space-y-4 text-lg text-gray-700">
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-green-500 mt-1 mr-3"></i>
+                            <span><strong>Category Communities:</strong> Verified professionals by industry and skill</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-green-500 mt-1 mr-3"></i>
+                            <span><strong>Trust Verification:</strong> Every profile authenticated and verified</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-green-500 mt-1 mr-3"></i>
+                            <span><strong>Smart Matching:</strong> AI-powered connection recommendations</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Mission & Vision Section -->
+    <section class="py-24 bg-gradient-to-r from-indigo-900 to-purple-900 text-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16">
+                <div>
+                    <h2 class="text-4xl font-bold mb-8">Our Mission</h2>
+                    <p class="text-2xl font-light leading-relaxed">
+                        "To make every connection meaningful, verified, and impactful."
+                    </p>
+                    <p class="text-lg text-indigo-200 mt-6">
+                        We believe that trust is the foundation of all great relationships. Our mission drives us to eliminate 
+                        uncertainty in professional networking by ensuring every connection has verified authenticity and real value.
+                    </p>
+                </div>
+                <div>
+                    <h2 class="text-4xl font-bold mb-8">Our Vision</h2>
+                    <p class="text-2xl font-light leading-relaxed">
+                        "A world where opportunities find you as easily as you find them — built on trust, technology, and community."
+                    </p>
+                    <p class="text-lg text-indigo-200 mt-6">
+                        We envision a future where verified connections create a global network of opportunity, where trust enables 
+                        commerce, and where technology empowers authentic human relationships at scale.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Innovation Pillars Section -->
+    <section class="py-24 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-20">
+                <h2 class="text-5xl font-bold text-gray-900 mb-8">Innovation Pillars</h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Four core areas where we lead the industry and continue to push boundaries
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Technology Leadership -->
+                <div class="bg-gradient-to-br from-blue-50 to-indigo-100 rounded-3xl p-8">
+                    <div class="bg-blue-600 text-white w-16 h-16 rounded-xl flex items-center justify-center mb-6">
+                        <i class="fas fa-code text-2xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-4">Technology Leadership</h3>
+                    <p class="text-gray-700 text-lg mb-4">
+                        Cutting-edge VCF algorithms, machine learning models, and real-time processing engines 
+                        that set industry standards for contact management technology.
+                    </p>
+                    <ul class="text-gray-600 space-y-2">
+                        <li>• Advanced parsing algorithms for all VCF formats</li>
+                        <li>• AI-driven contact deduplication and enrichment</li>
+                        <li>• Real-time processing at enterprise scale</li>
+                    </ul>
+                </div>
+
+                <!-- Community Building -->
+                <div class="bg-gradient-to-br from-green-50 to-emerald-100 rounded-3xl p-8">
+                    <div class="bg-green-600 text-white w-16 h-16 rounded-xl flex items-center justify-center mb-6">
+                        <i class="fas fa-network-wired text-2xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-4">Community Building</h3>
+                    <p class="text-gray-700 text-lg mb-4">
+                        Category-based communities that enable trust-driven networking, verified professional 
+                        relationships, and meaningful business connections.
+                    </p>
+                    <ul class="text-gray-600 space-y-2">
+                        <li>• 180+ professional categories and growing</li>
+                        <li>• Comprehensive verification and trust systems</li>
+                        <li>• AI-powered matching and recommendations</li>
+                    </ul>
+                </div>
+
+                <!-- Scalable Infrastructure -->
+                <div class="bg-gradient-to-br from-purple-50 to-violet-100 rounded-3xl p-8">
+                    <div class="bg-purple-600 text-white w-16 h-16 rounded-xl flex items-center justify-center mb-6">
+                        <i class="fas fa-cloud text-2xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-4">Scalable Infrastructure</h3>
+                    <p class="text-gray-700 text-lg mb-4">
+                        Cloud-native architecture designed for global reach, automatic scaling, and enterprise-grade 
+                        reliability with 99.9% uptime guarantee.
+                    </p>
+                    <ul class="text-gray-600 space-y-2">
+                        <li>• Multi-region cloud deployment</li>
+                        <li>• Auto-scaling microservices architecture</li>
+                        <li>• Global CDN and edge computing</li>
+                    </ul>
+                </div>
+
+                <!-- Security & Privacy -->
+                <div class="bg-gradient-to-br from-orange-50 to-red-100 rounded-3xl p-8">
+                    <div class="bg-red-600 text-white w-16 h-16 rounded-xl flex items-center justify-center mb-6">
+                        <i class="fas fa-shield-alt text-2xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-4">Security & Privacy</h3>
+                    <p class="text-gray-700 text-lg mb-4">
+                        Bank-grade encryption, zero-trust security design, and comprehensive privacy controls 
+                        that exceed international compliance standards.
+                    </p>
+                    <ul class="text-gray-600 space-y-2">
+                        <li>• End-to-end encryption for all data</li>
+                        <li>• GDPR, CCPA, and SOC 2 compliant</li>
+                        <li>• Zero-trust architecture and monitoring</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Values Section -->
+    <section class="py-24 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-20">
+                <h2 class="text-5xl font-bold text-gray-900 mb-8">Our Values</h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    The principles that guide every decision, every feature, and every relationship we build
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Innovation Excellence -->
+                <div class="bg-white rounded-2xl shadow-xl p-8 border-l-4 border-blue-500">
+                    <div class="flex items-center mb-6">
+                        <div class="bg-blue-100 w-12 h-12 rounded-lg flex items-center justify-center mr-4">
+                            <i class="fas fa-rocket text-blue-600 text-xl"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-gray-900">Innovation Excellence</h3>
+                    </div>
+                    <p class="text-gray-700 text-lg">
+                        Pushing boundaries to redefine what's possible in networking technology. We constantly evolve, 
+                        anticipate market needs, and deliver solutions that set new industry standards.
+                    </p>
+                </div>
+
+                <!-- Integrity & Trust -->
+                <div class="bg-white rounded-2xl shadow-xl p-8 border-l-4 border-green-500">
+                    <div class="flex items-center mb-6">
+                        <div class="bg-green-100 w-12 h-12 rounded-lg flex items-center justify-center mr-4">
+                            <i class="fas fa-handshake text-green-600 text-xl"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-gray-900">Integrity & Trust</h3>
+                    </div>
+                    <p class="text-gray-700 text-lg">
+                        Transparency, ethics, and reliability in everything we do. Trust isn't just our product feature—
+                        it's the foundation of how we operate, communicate, and build relationships.
+                    </p>
+                </div>
+
+                <!-- Customer Success -->
+                <div class="bg-white rounded-2xl shadow-xl p-8 border-l-4 border-purple-500">
+                    <div class="flex items-center mb-6">
+                        <div class="bg-purple-100 w-12 h-12 rounded-lg flex items-center justify-center mr-4">
+                            <i class="fas fa-users text-purple-600 text-xl"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-gray-900">Customer Success</h3>
+                    </div>
+                    <p class="text-gray-700 text-lg">
+                        Building solutions that make our users thrive. Every feature is designed with real impact in mind, 
+                        ensuring our customers achieve meaningful results and lasting success.
+                    </p>
+                </div>
+
+                <!-- Global Impact -->
+                <div class="bg-white rounded-2xl shadow-xl p-8 border-l-4 border-orange-500">
+                    <div class="flex items-center mb-6">
+                        <div class="bg-orange-100 w-12 h-12 rounded-lg flex items-center justify-center mr-4">
+                            <i class="fas fa-globe text-orange-600 text-xl"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-gray-900">Global Impact</h3>
+                    </div>
+                    <p class="text-gray-700 text-lg">
+                        Empowering connections across every country and culture. We build for diversity, accessibility, 
+                        and inclusion, creating technology that serves the global community.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Impact Numbers Section -->
+    <section class="py-24 bg-gradient-to-r from-slate-900 to-gray-900 text-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-5xl font-bold mb-6">Our Impact in Numbers</h2>
+                <p class="text-xl text-gray-300 max-w-3xl mx-auto">
+                    Real metrics that demonstrate our global reach and technological excellence
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="text-center p-6">
+                    <div class="text-5xl font-bold text-blue-400 mb-2">250K+</div>
+                    <div class="text-xl text-gray-300 mb-1">Verified Users Served</div>
+                    <div class="text-sm text-gray-400">Active professionals worldwide</div>
+                </div>
+                <div class="text-center p-6">
+                    <div class="text-5xl font-bold text-green-400 mb-2">15M+</div>
+                    <div class="text-xl text-gray-300 mb-1">VCF Files Processed</div>
+                    <div class="text-sm text-gray-400">Monthly processing volume</div>
+                </div>
+                <div class="text-center p-6">
+                    <div class="text-5xl font-bold text-purple-400 mb-2">99.9%</div>
+                    <div class="text-xl text-gray-300 mb-1">Platform Uptime</div>
+                    <div class="text-sm text-gray-400">Guaranteed service availability</div>
+                </div>
+                <div class="text-center p-6">
+                    <div class="text-5xl font-bold text-orange-400 mb-2">85+</div>
+                    <div class="text-xl text-gray-300 mb-1">Global Presence</div>
+                    <div class="text-sm text-gray-400">Countries and territories</div>
+                </div>
+                <div class="text-center p-6">
+                    <div class="text-5xl font-bold text-yellow-400 mb-2">180+</div>
+                    <div class="text-xl text-gray-300 mb-1">Categories Created</div>
+                    <div class="text-sm text-gray-400">Professional communities</div>
+                </div>
+                <div class="text-center p-6">
+                    <div class="text-5xl font-bold text-red-400 mb-2">3.2M+</div>
+                    <div class="text-xl text-gray-300 mb-1">Verified Contacts Shared</div>
+                    <div class="text-sm text-gray-400">Trusted connections made</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Team Section -->
+    <section class="py-24 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-20">
+                <h2 class="text-5xl font-bold text-gray-900 mb-8">Meet the Team</h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Visionary founders, technical leaders, and product innovators united by a shared mission 
+                    to transform how the world connects
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+                <!-- Visionary Leadership -->
+                <div class="text-center">
+                    <div class="bg-gradient-to-br from-blue-100 to-indigo-200 w-32 h-32 rounded-full mx-auto mb-8 flex items-center justify-center">
+                        <i class="fas fa-lightbulb text-blue-600 text-4xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-4">Visionary Founders</h3>
+                    <p class="text-gray-600 text-lg">
+                        Serial entrepreneurs with deep expertise in networking technology, AI, and global platform scaling. 
+                        Combined 40+ years of experience building transformative tech companies.
+                    </p>
+                </div>
+                
+                <!-- Technical Leadership -->
+                <div class="text-center">
+                    <div class="bg-gradient-to-br from-green-100 to-emerald-200 w-32 h-32 rounded-full mx-auto mb-8 flex items-center justify-center">
+                        <i class="fas fa-cogs text-green-600 text-4xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-4">Technical Leads</h3>
+                    <p class="text-gray-600 text-lg">
+                        World-class engineers and AI specialists from leading tech companies including Google, Microsoft, 
+                        and Stanford Research. Pioneers in VCF processing and machine learning applications.
+                    </p>
+                </div>
+                
+                <!-- Product Innovation -->
+                <div class="text-center">
+                    <div class="bg-gradient-to-br from-purple-100 to-violet-200 w-32 h-32 rounded-full mx-auto mb-8 flex items-center justify-center">
+                        <i class="fas fa-rocket text-purple-600 text-4xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-4">Product Innovators</h3>
+                    <p class="text-gray-600 text-lg">
+                        User experience designers and product strategists who've shaped award-winning platforms. 
+                        Focused on creating intuitive solutions that solve real-world networking challenges.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Future Roadmap Section -->
+    <section class="py-24 bg-gray-900 text-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                <div>
+                    <h2 class="text-5xl font-bold mb-8">Future Roadmap</h2>
+                    <div class="space-y-6 text-lg text-gray-300">
+                        <div class="flex items-start space-x-4">
+                            <div class="bg-blue-600 w-3 h-3 rounded-full mt-2 flex-shrink-0"></div>
+                            <div>
+                                <h4 class="text-xl font-semibold text-white mb-2">AI-Powered Marketing Automation</h4>
+                                <p>Intelligent campaign management and lead generation built on verified contact networks</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-4">
+                            <div class="bg-green-600 w-3 h-3 rounded-full mt-2 flex-shrink-0"></div>
+                            <div>
+                                <h4 class="text-xl font-semibold text-white mb-2">Trusted E-Commerce Platform</h4>
+                                <p>Secure marketplace where verified professionals can trade services and products with confidence</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-4">
+                            <div class="bg-purple-600 w-3 h-3 rounded-full mt-2 flex-shrink-0"></div>
+                            <div>
+                                <h4 class="text-xl font-semibold text-white mb-2">Automated Opportunity Matching</h4>
+                                <p>AI-driven system that connects professionals with relevant business opportunities and partnerships</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-4">
+                            <div class="bg-orange-600 w-3 h-3 rounded-full mt-2 flex-shrink-0"></div>
+                            <div>
+                                <h4 class="text-xl font-semibold text-white mb-2">Global Trusted Trading Network</h4>
+                                <p>Cross-border commerce platform eliminating friction in international business relationships</p>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-xl font-semibold text-white mt-8">
+                        We continue to innovate at the intersection of contact management and community networking, 
+                        building the foundation for a more connected, trusted world.
+                    </p>
+                </div>
+                <div>
+                    <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?ixlib=rb-4.0.3&auto=format&fit=crop&w=2340&q=80" 
+                         alt="Future Technology Vision" class="rounded-2xl shadow-2xl">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Call to Action Section -->
+    <section class="py-24 bg-white">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-5xl font-bold text-gray-900 mb-8">Partner With the Future</h2>
+            <p class="text-xl text-gray-600 mb-12 max-w-3xl mx-auto">
+                Join the companies and professionals who are building the future of trusted networking. 
+                Whether you're looking to integrate our technology, join our community, or explore enterprise solutions, 
+                we're here to help you succeed.
+            </p>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                <a href="/members/register/" class="bg-indigo-600 text-white px-8 py-5 rounded-xl text-lg font-semibold hover:bg-indigo-700 transition-all duration-300 transform hover:scale-105 shadow-lg">
+                    Join Our Community
+                </a>
+                <a href="/contact/" class="border-2 border-indigo-600 text-indigo-600 px-8 py-5 rounded-xl text-lg font-semibold hover:bg-indigo-50 transition-all duration-300">
+                    Enterprise Solutions
+                </a>
+                <a href="/contact/" class="bg-gray-800 text-white px-8 py-5 rounded-xl text-lg font-semibold hover:bg-gray-900 transition-all duration-300">
+                    Partner With Us
+                </a>
+            </div>
+            <p class="text-gray-500 mt-8 text-lg">
+                Ready to reimagine how the world connects? Let's build the future together.
+            </p>
+        </div>
+    </section>
+{% endblock %}

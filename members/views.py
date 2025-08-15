@@ -31,10 +31,10 @@ from django.contrib.auth.views import PasswordResetView
 
 from .models import UserPurchase, MemberAccount, EmailVerificationOTP, MemberProfile
 from .forms import MemberRegisterForm, MemberLoginForm
-from common.decorators import member_required
+from common.decorators import member_auth_required
 from customadmin.models import Contact, VCFFile
 from members.utils.email_otp import create_and_send_email_otp
-from .middleware import auth_email_required
+
 
 # =================================================================
 # Categories in this file:
@@ -219,7 +219,7 @@ def test_paystack_connection(request):
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
 
-@member_required
+@member_auth_required
 def test_payment(request, vcf_id):
     if not settings.TEST_MODE:
         raise Http404("Test mode only available when TEST_MODE=True")
@@ -278,7 +278,7 @@ def paystack_webhook(request):
         return HttpResponse(status=200)
     return HttpResponse(status=405)
 
-@member_required
+@member_auth_required
 def initiate_payment(request, vcf_id):
     credentials = get_paystack_credentials()
     vcf = get_object_or_404(VCFFile, id=vcf_id, vcf_type='premium', hidden=False)
@@ -346,7 +346,7 @@ def initiate_payment(request, vcf_id):
         'amount': vcf.subscription_price
     })
 
-@member_required
+@member_auth_required
 def payment_complete(request):
     print(f"Payment complete called with params: {dict(request.GET)}")
     
@@ -359,9 +359,9 @@ def payment_complete(request):
         return verify_payment(request, payment_ref)
     
     messages.error(request, "Missing payment reference")
-    return redirect('members:billing')
+    return redirect('members:vcf_tabs')
 
-# REMOVE @member_required DECORATOR FOR WEBHOOK COMPATIBILITY
+# REMOVE @member_auth_required DECORATOR FOR WEBHOOK COMPATIBILITY
 def verify_payment(request, reference):
     print(f"\n=== Starting payment verification for reference: {reference} ===")
     User = get_user_model()
@@ -431,7 +431,7 @@ def verify_payment(request, reference):
 
         # Final redirect to billing page
         messages.success(request, "Payment verified successfully! You can now access the VCF file.")
-        return redirect('members:billing')
+        return redirect('members:vcf_tabs')
 
     except requests.exceptions.RequestException as e:
         print(f"Network error: {str(e)}")
@@ -440,10 +440,10 @@ def verify_payment(request, reference):
         print(f"Unexpected error: {str(e)}", exc_info=True)
         messages.error(request, f"An unexpected error occurred: {str(e)}")
     
-    return redirect('members:billing')
+    return redirect('members:vcf_tabs')
 
 
-@member_required
+@member_auth_required
 def check_vcf_access(request, vcf_id):
     try:
         vcf = VCFFile.objects.get(id=vcf_id)
@@ -471,7 +471,7 @@ def check_vcf_access(request, vcf_id):
         return JsonResponse({'error': 'VCF not found'}, status=404)
 
         
-@member_required
+@member_auth_required
 def debug_purchases(request):
     purchases = request.user.user_purchases.select_related('vcf_file').all()
     data = {
@@ -490,7 +490,7 @@ def debug_purchases(request):
     return JsonResponse(data)
 
 
-@member_required
+@member_auth_required
 def check_payment_status(request):
     reference = request.GET.get('reference')
     if not reference:
@@ -509,7 +509,7 @@ def check_payment_status(request):
         'vcf_id': purchase.vcf_file.id
     })
 
-@member_required
+@member_auth_required
 def check_purchases(request):
     purchases = request.user.user_purchases.select_related('vcf_file').all()
     response = []
@@ -527,14 +527,12 @@ def check_purchases(request):
 # =================================================================
 # 3. VCF File Management Views
 # =================================================================
-@member_required
-@auth_email_required
+@member_auth_required
 def vcf_management(request):
     return render(request, 'members/vcf/table.html')
 
-@member_required
-@auth_email_required
-def billing(request):
+@member_auth_required
+def VCF_Tabs(request):
     # Get all purchased/joined VCF IDs for the current user
     purchased_ids = []
     joined_free_ids = []
@@ -596,7 +594,7 @@ def billing(request):
         'free_joined_count': len(joined_free_ids)
     })
 
-@member_required
+@member_auth_required
 def download_vcf(request, vcf_id):
     vcf = get_object_or_404(VCFFile, id=vcf_id)
     
@@ -717,7 +715,7 @@ def member_logout(request):
 
 # AJAX endpoint for password change
 @csrf_exempt
-@member_required
+@member_auth_required
 def ajax_change_password(request):
     if request.method != 'POST':
         return JsonResponse({'success': False, 'error': 'Invalid request method.'})
@@ -754,7 +752,7 @@ def ajax_change_password(request):
     except Exception as e:
         return JsonResponse({'success': False, 'error': f'Unexpected error: {str(e)}'})
 
-@member_required
+@member_auth_required
 def member_dashboard(request):
     # For pie chart: user premium, user free, user demo VCF counts
     user_premium_count = 0
@@ -814,9 +812,6 @@ def member_dashboard(request):
         'user_free_count': user_free_count,
         'user_demo_count': user_demo_count,
     })
-
-
-
 
 @login_required
 def vcf_file_detail(request, vcf_id):
@@ -878,7 +873,7 @@ def get_joined_free_vcf_ids(user):
     ).values_list('vcf_file_id', flat=True))
 
 # Join free VCF view
-@member_required
+@member_auth_required
 def join_free_vcf(request, vcf_id):
     vcf = get_object_or_404(VCFFile, id=vcf_id, vcf_type='free', hidden=False)
     # Check if already joined
@@ -895,7 +890,7 @@ def join_free_vcf(request, vcf_id):
     return redirect('members:vcf_tabs')
 
 
-@member_required
+@member_auth_required
 @require_POST
 def ajax_join_vcf(request, vcf_id):
     from customadmin.models import Contact
@@ -968,7 +963,7 @@ def member_settings(request):
         'password_success': password_success,
     })
 
-@member_required
+@member_auth_required
 @require_POST
 def ajax_update_profile_name(request):
     try:
@@ -985,7 +980,7 @@ def ajax_update_profile_name(request):
         return JsonResponse({'success': False, 'error': str(e)})
 
 # AJAX: Update email
-@member_required
+@member_auth_required
 @require_POST
 def ajax_update_email(request):
     try:
@@ -1005,7 +1000,7 @@ def ajax_update_email(request):
         return JsonResponse({'success': False, 'error': str(e)})
 
 # AJAX: Update include_email_in_vcf
-@member_required
+@member_auth_required
 @require_POST
 def ajax_update_include_email(request):
     try:
@@ -1021,7 +1016,7 @@ def ajax_update_include_email(request):
 
 
 # AJAX: Update member info for a specific VCF file
-@member_required
+@member_auth_required
 @require_POST
 def ajax_update_vcf_member(request, vcf_id):
     try:
@@ -1219,7 +1214,7 @@ def profile(request):
     }
     return render(request, 'members/profile.html', context)
 
-@member_required
+@member_auth_required
 @require_POST
 def ajax_update_profile(request):
     try:
@@ -1277,10 +1272,11 @@ def ajax_update_profile(request):
             'error': str(e)
         }, status=400)
 
-@member_required
+@member_auth_required
 def vcf_table(request):
     """Display table of VCF files that the user has purchased/joined"""
-    # Get all VCF files (free and premium) that the current user has purchased/subscribed to
+    
+    # Get all VCF files that the current user has purchased or joined
     user_purchases = request.user.user_purchases.filter(
         is_verified=True,
         is_active=True

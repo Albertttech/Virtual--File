@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Litarch - Contact Management Innovation{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .gradient-text { 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+            -webkit-background-clip: text; 
+            background-clip: text; 
+            -webkit-text-fill-color: transparent; 
+        }
+        .parallax-bg { 
+            background-attachment: fixed; 
+            background-position: center; 
+            background-repeat: no-repeat; 
+            background-size: cover; 
+        }
+        .blog-card:hover, .team-card:hover { 
+            transform: translateY(-4px); 
+            transition: all 0.3s ease; 
+        }
+        @keyframes fadeInUp { 
+            from { opacity: 0; transform: translateY(30px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
+        .fade-in-up { animation: fadeInUp 0.8s ease-out; }
+        {% block extra_css %}{% endblock %}
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <a href="/" class="text-2xl font-bold gradient-text">Litarch</a>
+                    </div>
+                    <nav class="hidden md:ml-10 md:flex space-x-8">
+                        <a href="/" class="{% if request.resolver_match.url_name == 'home' %}text-indigo-600 border-b-2 border-indigo-600{% else %}text-gray-500 hover:text-gray-900{% endif %} px-3 py-2 text-sm font-medium">Home</a>
+                        <a href="/blog/" class="{% if request.resolver_match.url_name == 'blog' %}text-indigo-600 border-b-2 border-indigo-600{% else %}text-gray-500 hover:text-gray-900{% endif %} px-3 py-2 text-sm font-medium">Blog</a>
+                        <a href="/about/" class="{% if request.resolver_match.url_name == 'about' or request.resolver_match.url_name == 'about_us' %}text-indigo-600 border-b-2 border-indigo-600{% else %}text-gray-500 hover:text-gray-900{% endif %} px-3 py-2 text-sm font-medium">About</a>
+                        <a href="/litarch/" class="{% if request.resolver_match.url_name == 'litarch' %}text-indigo-600 border-b-2 border-indigo-600{% else %}text-gray-500 hover:text-gray-900{% endif %} px-3 py-2 text-sm font-medium">Company</a>
+                        <a href="/license/" class="{% if request.resolver_match.url_name == 'license' %}text-indigo-600 border-b-2 border-indigo-600{% else %}text-gray-500 hover:text-gray-900{% endif %} px-3 py-2 text-sm font-medium">License</a>
+                    </nav>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="/members/login/" class="text-gray-500 hover:text-gray-900 px-3 py-2 text-sm font-medium">Sign In</a>
+                    <a href="/members/register/" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors">
+                        Get Started
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-2xl font-bold gradient-text mb-4">Litarch</h3>
+                    <p class="text-gray-400 mb-4">
+                        Leading the future of contact management with innovative VCF solutions and cutting-edge technology.
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fab fa-twitter text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fab fa-linkedin text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fab fa-github text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fab fa-medium text-xl"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold mb-4">Product</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white transition-colors">Features</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Pricing</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">API Docs</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Integrations</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold mb-4">Resources</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="/blog/" class="hover:text-white transition-colors">Blog</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Tutorials</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Support</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Community</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold mb-4">Company</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="/about/" class="hover:text-white transition-colors">About</a></li>
+                        <li><a href="/litarch/" class="hover:text-white transition-colors">Litarch</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Careers</a></li>
+                        <li><a href="/license/" class="hover:text-white transition-colors">Privacy</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 pt-8 mt-8 text-center text-gray-400">
+                <p>&copy; 2025 Litarch. All rights reserved. Built with passion for contact management excellence.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        {% block extra_js %}{% endblock %}
+    </script>
+</body>
+</html>
