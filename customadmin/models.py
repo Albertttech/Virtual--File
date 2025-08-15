@@ -17,6 +17,12 @@ class VCFFile(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     hidden = models.BooleanField(default=False)
 
+    class Meta:
+        indexes = [
+            models.Index(fields=['hidden', 'vcf_type'], name='vcf_hidden_type_idx'),
+            models.Index(fields=['-created_at'], name='vcf_created_at_idx'),
+        ]
+
     def __str__(self):
         return self.name
     # Add this to the VCFFile model in customadmin/models.py

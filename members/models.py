@@ -195,6 +195,10 @@ class UserPurchase(models.Model):
         unique_together = ('user', 'vcf_file')
         verbose_name = 'User Purchase'
         verbose_name_plural = 'User Purchases'
+        indexes = [
+            models.Index(fields=['vcf_file'], name='purchase_vcf_file_idx'),
+            models.Index(fields=['is_verified', 'is_active'], name='purchase_verified_active_idx'),
+        ]
 
     def __str__(self):
         return f"{self.user} - {self.vcf_file} (${self.amount_paid})"

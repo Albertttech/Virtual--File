@@ -23,6 +23,8 @@ from django.views.decorators.http import require_POST, require_http_methods
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password
 from django.core.cache import cache
+from django.db.models import Prefetch, Q, Count
+from django.views.decorators.cache import cache_page
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.utils import timezone
@@ -533,66 +535,77 @@ def vcf_management(request):
 
 @member_auth_required
 def VCF_Tabs(request):
-    # Get all purchased/joined VCF IDs for the current user
-    purchased_ids = []
-    joined_free_ids = []
-    if request.user.is_authenticated:
-        # Get all purchased IDs (both free and premium)
-        purchased_ids = list(request.user.user_purchases.filter(
-            is_verified=True,
-            is_active=True
-        ).values_list('vcf_file_id', flat=True))
-        
-        # Specifically get joined free VCF IDs
-        joined_free_ids = get_joined_free_vcf_ids(request.user)
+    """Optimized VCF Tabs view with caching and efficient queries"""
     
-    # Get newest 5 VCFs that user hasn't accessed
-    new_vcfs = VCFFile.objects.filter(hidden=False).exclude(
-        id__in=purchased_ids + joined_free_ids
-    ).order_by('-created_at')[:5]
+    # Check cache first
+    cache_key = f"vcf_tabs_{request.user.id}"
+    cached_data = cache.get(cache_key)
     
-    # Get all free and premium VCFs
-    free_vcfs = VCFFile.objects.filter(vcf_type='free', hidden=False)
-    premium_vcfs = VCFFile.objects.filter(vcf_type='premium', hidden=False)
+    if cached_data:
+        return render(request, 'members/vcf/billing.html', cached_data)
     
-    # Get user's personal VCF collections
-    my_premium_vcfs = VCFFile.objects.filter(
-        vcf_type='premium',
-        hidden=False,
-        file_purchases__user=request.user,
-        file_purchases__is_verified=True,
-        file_purchases__is_active=True
-    ).distinct()
+    # Single query to get user's purchases with prefetch
+    user_purchases = UserPurchase.objects.filter(
+        user=request.user,
+        is_verified=True,
+        is_active=True
+    ).select_related('vcf_file').prefetch_related(
+        Prefetch(
+            'vcf_file',
+            queryset=VCFFile.objects.select_related().filter(hidden=False)
+        )
+    )
     
-    my_free_vcfs = VCFFile.objects.filter(
-        vcf_type='free',
-        hidden=False,
-        file_purchases__user=request.user,
-        file_purchases__is_verified=True,
-        file_purchases__is_active=True
-    ).distinct()
+    # Extract purchased VCF IDs in memory
+    purchased_vcf_ids = []
+    my_premium_vcfs = []
+    my_free_vcfs = []
     
-    # Available VCFs (not purchased/joined)
-    available_free_vcfs = free_vcfs.exclude(id__in=purchased_ids)
-    available_premium_vcfs = premium_vcfs.exclude(id__in=purchased_ids)
-
-    return render(request, 'members/vcf/billing.html', {
-        # New arrivals section
+    for purchase in user_purchases:
+        vcf = purchase.vcf_file
+        if not vcf.hidden:
+            purchased_vcf_ids.append(vcf.id)
+            if vcf.vcf_type == 'premium':
+                my_premium_vcfs.append(vcf)
+            elif vcf.vcf_type == 'free':
+                my_free_vcfs.append(vcf)
+    
+    # Single optimized query for all VCFs
+    all_vcfs = VCFFile.objects.filter(
+        hidden=False
+    ).order_by('-created_at')
+    
+    # Filter in memory for better performance
+    new_vcfs = []
+    available_free_vcfs = []
+    available_premium_vcfs = []
+    
+    for vcf in all_vcfs:
+        if vcf.id not in purchased_vcf_ids:
+            if len(new_vcfs) < 5:
+                new_vcfs.append(vcf)
+            
+            if vcf.vcf_type == 'free':
+                available_free_vcfs.append(vcf)
+            elif vcf.vcf_type == 'premium':
+                available_premium_vcfs.append(vcf)
+    
+    # Prepare context data
+    context_data = {
         'new_vcfs': new_vcfs,
-        
-        # Available VCFs section
         'free_vcfs': available_free_vcfs,
         'premium_vcfs': available_premium_vcfs,
-        
-        # User's collection section
-        'purchased_ids': purchased_ids,
+        'purchased_ids': purchased_vcf_ids,
         'my_premium_vcfs': my_premium_vcfs,
         'my_free_vcfs': my_free_vcfs,
-        
-        # Debug information
-        'purchased_count': len(purchased_ids),
-        'free_joined_count': len(joined_free_ids)
-    })
+        'purchased_count': len(purchased_vcf_ids),
+        'free_joined_count': len(my_free_vcfs)
+    }
+    
+    # Cache for 5 minutes
+    cache.set(cache_key, context_data, 300)
+    
+    return render(request, 'members/vcf/billing.html', context_data)
 
 @member_auth_required
 def download_vcf(request, vcf_id):
@@ -754,64 +767,59 @@ def ajax_change_password(request):
 
 @member_auth_required
 def member_dashboard(request):
-    # For pie chart: user premium, user free, user demo VCF counts
-    user_premium_count = 0
-    user_free_count = 0
-    user_demo_count = 0
-    if request.user.is_authenticated:
-        # Premium VCFs user has subscribed to
-        user_premium_count = request.user.user_purchases.filter(
-            vcf_file__vcf_type='premium',
-            vcf_file__hidden=False,
-            is_verified=True,
-            is_active=True
-        ).count()
-        # Free VCFs user has joined
-        user_free_count = request.user.user_purchases.filter(
-            vcf_file__vcf_type='free',
-            vcf_file__hidden=False,
-            is_verified=True,
-            is_active=True
-        ).count()
-        # Demo VCFs user has joined (if you have a demo type)
-        user_demo_count = request.user.user_purchases.filter(
-            vcf_file__vcf_type='demo',
-            vcf_file__hidden=False,
-            is_verified=True,
-            is_active=True
-        ).count()
-    # Total VCF files (free + premium, not hidden)
-    total_vcf_files = VCFFile.objects.filter(hidden=False).count()
-    # Total free packages (not hidden)
-    total_free_packages = VCFFile.objects.filter(vcf_type='free', hidden=False).count()
-    # Total premium VCF files subscribed/purchased by user
-    total_subscribed = request.user.user_purchases.filter(
-        vcf_file__vcf_type='premium',
-        vcf_file__hidden=False,
+    """Optimized dashboard with caching and efficient queries"""
+    
+    # Check cache first
+    cache_key = f"dashboard_{request.user.id}"
+    cached_data = cache.get(cache_key)
+    
+    if cached_data:
+        return render(request, 'members/dashboard.html', cached_data)
+    
+    # Get global counts efficiently
+    vcf_counts = VCFFile.objects.filter(hidden=False).aggregate(
+        total_vcf_files=Count('id'),
+        total_free_packages=Count('id', filter=Q(vcf_type='free'))
+    )
+    
+    # Single query for user's purchases with aggregation
+    user_stats = request.user.user_purchases.filter(
         is_verified=True,
-        is_active=True
-    ).count() if request.user.is_authenticated else 0
-    # Total contacts in all VCFs the user has joined (free and premium)
-    contact_count = 0
-    if request.user.is_authenticated:
-        # Get all VCF ids the user has joined (free and premium)
-        joined_vcf_ids = request.user.user_purchases.filter(
-            is_verified=True,
-            is_active=True,
-            vcf_file__hidden=False
-        ).values_list('vcf_file_id', flat=True)
-        from customadmin.models import Contact
-        contact_count = Contact.objects.filter(vcf_file_id__in=joined_vcf_ids).count()
-    # Pass all to template
-    return render(request, 'members/dashboard.html', {
-        'total_vcf_files': total_vcf_files,
-        'total_subscribed': total_subscribed,
-        'total_free_packages': total_free_packages,
+        is_active=True,
+        vcf_file__hidden=False
+    ).aggregate(
+        total_subscribed=Count('id', filter=Q(vcf_file__vcf_type='premium')),
+        user_premium_count=Count('id', filter=Q(vcf_file__vcf_type='premium')),
+        user_free_count=Count('id', filter=Q(vcf_file__vcf_type='free')),
+        user_demo_count=Count('id', filter=Q(vcf_file__vcf_type='demo'))
+    )
+    
+    # Get contact count efficiently
+    joined_vcf_ids = request.user.user_purchases.filter(
+        is_verified=True,
+        is_active=True,
+        vcf_file__hidden=False
+    ).values_list('vcf_file_id', flat=True)
+    
+    contact_count = Contact.objects.filter(
+        vcf_file_id__in=joined_vcf_ids
+    ).count() if joined_vcf_ids else 0
+    
+    # Prepare context data
+    context_data = {
+        'total_vcf_files': vcf_counts['total_vcf_files'] or 0,
+        'total_subscribed': user_stats['total_subscribed'] or 0,
+        'total_free_packages': vcf_counts['total_free_packages'] or 0,
         'total_contacts': contact_count,
-        'user_premium_count': user_premium_count,
-        'user_free_count': user_free_count,
-        'user_demo_count': user_demo_count,
-    })
+        'user_premium_count': user_stats['user_premium_count'] or 0,
+        'user_free_count': user_stats['user_free_count'] or 0,
+        'user_demo_count': user_stats['user_demo_count'] or 0,
+    }
+    
+    # Cache for 5 minutes
+    cache.set(cache_key, context_data, 300)
+    
+    return render(request, 'members/dashboard.html', context_data)
 
 @login_required
 def vcf_file_detail(request, vcf_id):

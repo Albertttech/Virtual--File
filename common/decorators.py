@@ -8,9 +8,21 @@ from django.conf import settings
 
 def member_auth_required(view_func):
     """
-    Combined decorator that handles both member and email authentication checks
-    with minimal database queries
+    Optimized decorator that handles both member and email authentication checks
+    with minimal database queries and efficient URL resolution
     """
+    # Cache allowed URL names to avoid repeated list creation
+    ALLOWED_URL_NAMES = frozenset([
+        'member_settings',
+        'logout', 
+        'auth_email',
+        'send_email_code',
+        'verify_email_code',
+        'login',
+        'forgot_password',
+        'reset_password',
+    ])
+    
     @wraps(view_func)
     def _wrapped_view(request, *args, **kwargs):
         # Check authentication
@@ -23,27 +35,12 @@ def member_auth_required(view_func):
             messages.error(request, "Staff members must use the admin interface.")
             return redirect(settings.ADMIN_LOGIN_URL)
 
+        # Use resolver_match for efficient URL name access
+        current_url_name = getattr(request.resolver_match, 'url_name', None) if request.resolver_match else None
+        
         # Check authentication email using cached property
-        if not request.user.cached_authentication_email:
-            # List of allowed URL names (not paths)
-            allowed_url_names = [
-                'member_settings',
-                'logout',
-                'auth_email',
-                'send_email_code',
-                'verify_email_code',
-                'login',
-                'forgot_password',
-                'reset_password',
-            ]
-            
-            # Resolve current URL name
-            try:
-                current_url_name = resolve(request.path_info).url_name
-            except:
-                current_url_name = None
-                
-            if current_url_name not in allowed_url_names:
+        if not getattr(request.user, 'authentication_email', None):
+            if current_url_name not in ALLOWED_URL_NAMES:
                 messages.warning(
                     request, 
                     "Please set your authentication email to access this page",

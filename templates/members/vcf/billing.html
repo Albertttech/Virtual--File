@@ -1,5 +1,6 @@
 {% extends "members/base.html" %}
 {% load static %}
+{% load cache %}
 {% block breadcrumb_page %}Billing{% endblock %}
 {% block breadcrumb_page2 %}Billing{% endblock %}
 {% block content %}
@@ -121,6 +122,7 @@
         </div>
       </div>
       <div class="flex-auto p-4 pb-0">
+        {% cache 300 vcf_section user.id %}
         <ul class="flex flex-col pl-0 mb-0 rounded-lg">
           {% for vcf in vcfs|slice:":5" %}
           <li class="relative flex justify-between px-4 py-2 pl-0 mb-2 border-0 rounded-xl text-inherit">
@@ -142,6 +144,7 @@
           </li>
           {% endfor %}
         </ul>
+        {% endcache %}
       </div>
     </div>
   </div>

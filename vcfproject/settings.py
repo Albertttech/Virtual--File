@@ -357,3 +357,35 @@ LOGGING = {
         'level': 'DEBUG' if DEBUG else 'INFO',
     },
 }
+
+# --------------------------------------------
+# Celery Configuration (Async Tasks)
+# --------------------------------------------
+# Celery settings
+CELERY_BROKER_URL = config('CELERY_BROKER_URL', default='redis://localhost:6379/0')
+CELERY_RESULT_BACKEND = config('CELERY_RESULT_BACKEND', default='redis://localhost:6379/0')
+
+# Celery task settings
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = TIME_ZONE
+
+# Task routing
+CELERY_TASK_ROUTES = {
+    'members.tasks.verify_paystack_payment_async': {'queue': 'payments'},
+    'members.tasks.cleanup_unverified_purchases': {'queue': 'cleanup'},
+    'members.tasks.invalidate_user_cache': {'queue': 'cache'},
+}
+
+# Task retry settings
+CELERY_TASK_ALWAYS_EAGER = config('CELERY_ALWAYS_EAGER', default=DEBUG, cast=bool)
+CELERY_TASK_EAGER_PROPAGATES = True
+
+# Periodic tasks (if using celery beat)
+CELERY_BEAT_SCHEDULE = {
+    'cleanup-unverified-purchases': {
+        'task': 'members.tasks.cleanup_unverified_purchases',
+        'schedule': 3600.0,  # Every hour
+    },
+}
