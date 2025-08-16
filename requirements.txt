@@ -1,25 +1,37 @@
 anyio==4.9.0
 asgiref==3.9.0
+celery>=5.3.0
+celery[redis]>=5.3.0
 certifi==2025.7.14
 charset-normalizer==3.4.2
 dj-database-url==2.1.0
 Django==5.2.4
+django-cachalot>=2.5.0  # ORM query caching
+django-compressor>=4.0  # Static file compression
+django-debug-toolbar>=4.0.0  # Development only
 django-extensions==4.1
+django-extensions>=3.2.0  # For database profiling
+django-redis>=5.2.0
+django-silk>=5.0.0  # Performance profiling
 django_paystack==1.0.0
 gunicorn==23.0.0
 h11==0.16.0
 httpcore==1.0.9
 httpx==0.28.1
 idna==3.10
+memcached>=1.6.0  # Alternative to Redis
 packaging==25.0
 paystackapi==2.1.3
 pillow==11.3.0
 psycopg==3.1.18
+psycopg2-binary>=2.9.0  # For PostgreSQL
 pypaystack2==2.0.3
 python-dateutil==2.9.0.post0
 python-decouple==3.8
 python-dotenv==1.1.1
+python-memcached>=1.59
 pytz==2025.2
+redis>=4.5.0
 requests==2.32.4
 six==1.17.0
 sniffio==1.3.1
@@ -29,27 +41,3 @@ tzdata==2025.2
 urllib3==2.5.0
 vobject==0.9.9
 whitenoise==6.9.0
-# requirements_optimized.txt
-# Core Django optimizations
-django-redis>=5.2.0
-redis>=4.5.0
-
-# Async task processing
-celery>=5.3.0
-celery[redis]>=5.3.0
-
-# Database optimization
-psycopg2-binary>=2.9.0  # For PostgreSQL
-django-extensions>=3.2.0  # For database profiling
-
-# Monitoring and profiling
-django-debug-toolbar>=4.0.0  # Development only
-django-silk>=5.0.0  # Performance profiling
-
-# Production caching
-memcached>=1.6.0  # Alternative to Redis
-python-memcached>=1.59
-
-# Optional: Advanced optimization tools
-django-cachalot>=2.5.0  # ORM query caching
-django-compressor>=4.0  # Static file compression
