@@ -41,6 +41,13 @@ urlpatterns = [
     path('verify_email_code/', views.verify_email_code, name='verify_email_code'),
 
     # -------------------------
+    # Password Reset AJAX Endpoints
+    # -------------------------
+    path('ajax/send-password-reset-code/', views.send_password_reset_code, name='send_password_reset_code'),
+    path('ajax/verify-password-reset-code/', views.verify_password_reset_code, name='verify_password_reset_code'),
+    path('ajax/change-password-with-reset/', views.change_password_with_reset, name='change_password_with_reset'),
+
+    # -------------------------
     # Dashboard & Management
     # -------------------------
     path('dashboard/', views.member_dashboard, name='dashboard'),

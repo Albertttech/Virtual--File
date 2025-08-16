@@ -29,3 +29,27 @@ tzdata==2025.2
 urllib3==2.5.0
 vobject==0.9.9
 whitenoise==6.9.0
+# requirements_optimized.txt
+# Core Django optimizations
+django-redis>=5.2.0
+redis>=4.5.0
+
+# Async task processing
+celery>=5.3.0
+celery[redis]>=5.3.0
+
+# Database optimization
+psycopg2-binary>=2.9.0  # For PostgreSQL
+django-extensions>=3.2.0  # For database profiling
+
+# Monitoring and profiling
+django-debug-toolbar>=4.0.0  # Development only
+django-silk>=5.0.0  # Performance profiling
+
+# Production caching
+memcached>=1.6.0  # Alternative to Redis
+python-memcached>=1.59
+
+# Optional: Advanced optimization tools
+django-cachalot>=2.5.0  # ORM query caching
+django-compressor>=4.0  # Static file compression

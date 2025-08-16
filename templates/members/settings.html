@@ -6,6 +6,10 @@
 {% block breadcrumb_page2 %}Profile{% endblock %}
 {% block navbar %}{% endblock %}
 
+{% block extra_js %}
+<script src="{% static 'members/js/password_reset.js' %}"></script>
+{% endblock %}
+
 {% block content %}
 {% csrf_token %}
 <div class="relative w-full mx-auto mt-60">
@@ -902,6 +906,98 @@
   </div>
 </div>
 
+<!-- Change Password Modal -->
+<div id="changePasswordModal" class="reset-password-modal">
+  <div class="reset-modal-content">
+    <!-- Modal Header -->
+    <div class="reset-modal-header">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center">
+          <div class="w-8 h-8 bg-green-100 dark:bg-green-900/20 rounded-lg flex items-center justify-center mr-3">
+            <i class="fas fa-lock text-green-600 dark:text-green-400 text-sm"></i>
+          </div>
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Create New Password</h3>
+        </div>
+        <button type="button" id="closeChangePasswordModal" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
+          <i class="fas fa-times text-xl"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Modal Body -->
+    <div class="reset-modal-body">
+      <!-- Progress Message Section -->
+      <div id="changePasswordProgressMessage" class="progress-message progress-info" style="display: none;">
+        <div class="flex items-center">
+          <i class="fas fa-info-circle mr-2"></i>
+          <span id="changePasswordProgressText">Ready to create your new password</span>
+        </div>
+      </div>
+
+      <!-- Instructions -->
+      <div class="mb-6">
+        <p class="text-sm text-gray-600 dark:text-gray-300">
+          Your identity has been verified. Create a strong new password for your account.
+        </p>
+      </div>
+
+      <!-- New Password Input -->
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          New Password
+        </label>
+        <div class="relative">
+          <input type="password" id="newPassword" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white" placeholder="Enter new password" />
+          <button type="button" id="toggleNewPassword" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+            <i class="fas fa-eye"></i>
+          </button>
+        </div>
+        <div class="mt-1">
+          <div id="passwordStrength" class="text-xs"></div>
+        </div>
+      </div>
+
+      <!-- Confirm Password Input -->
+      <div class="mb-6">
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          Confirm New Password
+        </label>
+        <div class="relative">
+          <input type="password" id="confirmPassword" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white" placeholder="Confirm new password" />
+          <button type="button" id="toggleConfirmPassword" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+            <i class="fas fa-eye"></i>
+          </button>
+        </div>
+        <div class="mt-1">
+          <div id="passwordMatch" class="text-xs"></div>
+        </div>
+      </div>
+
+      <!-- Password Requirements -->
+      <div class="mb-6 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+        <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Password Requirements:</h4>
+        <ul class="text-xs text-gray-600 dark:text-gray-400 space-y-1">
+          <li id="req-length" class="flex items-center"><i class="fas fa-times text-red-500 mr-2 w-3"></i>At least 8 characters</li>
+          <li id="req-uppercase" class="flex items-center"><i class="fas fa-times text-red-500 mr-2 w-3"></i>One uppercase letter</li>
+          <li id="req-lowercase" class="flex items-center"><i class="fas fa-times text-red-500 mr-2 w-3"></i>One lowercase letter</li>
+          <li id="req-number" class="flex items-center"><i class="fas fa-times text-red-500 mr-2 w-3"></i>One number</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Modal Footer -->
+    <div class="reset-modal-footer">
+      <button type="button" id="cancelChangePasswordBtn" class="px-4 py-2 text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white font-medium rounded-lg transition-colors">
+        Cancel
+      </button>
+      <button type="button" id="saveNewPasswordBtn" class="px-6 py-2 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 shadow-lg border-0" disabled>
+        <i class="fas fa-save mr-2 text-white"></i>
+        <span class="text-white">Save New Password</span>
+      </button>
+    </div>
+  </div>
+</div>
+
 <script>
 // Reset Password Modal Functionality
 document.addEventListener('DOMContentLoaded', function() {
@@ -1038,7 +1134,5 @@ document.addEventListener('DOMContentLoaded', function() {
       verifyResetCodeBtn.innerHTML = '<i class="fas fa-paper-plane mr-2 text-white"></i><span class="text-white">Send Code</span>';
     }, 3000);
   });
-});
-</script>
 </style>
 {% endblock %}

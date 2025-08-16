@@ -1461,3 +1461,187 @@ def vcf_table(request):
     return render(request, 'members/vcf/table.html', {
         'vcf_data': vcf_data
     })
+
+# =================================================================
+# Password Reset Views
+# =================================================================
+
+@login_required
+@require_http_methods(['POST'])
+def send_password_reset_code(request):
+    """
+    Send password reset code to user's email
+    """
+    try:
+        user = request.user
+        
+        # Check if user has an email
+        email = user.authentication_email or user.email
+        if not email:
+            return JsonResponse({
+                'success': False,
+                'message': 'No email address found for your account.'
+            })
+        
+        # Generate 6-digit code
+        reset_code = str(random.randint(100000, 999999))
+        
+        # Store code in cache with 15-minute expiry
+        cache_key = f"password_reset_{user.id}"
+        cache.set(cache_key, reset_code, timeout=900)  # 15 minutes
+        
+        # Send email
+        try:
+            html_content = render_to_string('members/email/password_reset_email.html', {
+                'user': user,
+                'reset_code': reset_code
+            })
+            
+            send_mail(
+                subject='Password Reset Code - Litarch Contact Gain',
+                message=f'Your password reset code is: {reset_code}',
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[email],
+                html_message=html_content,
+            )
+            
+            return JsonResponse({
+                'success': True,
+                'message': 'Password reset code sent successfully!'
+            })
+            
+        except Exception as e:
+            logger.error(f"Failed to send password reset email: {str(e)}")
+            return JsonResponse({
+                'success': False,
+                'message': 'Failed to send email. Please try again.'
+            })
+            
+    except Exception as e:
+        logger.error(f"Password reset code generation failed: {str(e)}")
+        return JsonResponse({
+            'success': False,
+            'message': 'An error occurred. Please try again.'
+        })
+
+@login_required 
+@require_http_methods(['POST'])
+def verify_password_reset_code(request):
+    """
+    Verify the password reset code entered by user
+    """
+    try:
+        user = request.user
+        entered_code = request.POST.get('code', '').strip()
+        
+        if not entered_code:
+            return JsonResponse({
+                'success': False,
+                'message': 'Please enter the verification code.'
+            })
+        
+        # Check code from cache
+        cache_key = f"password_reset_{user.id}"
+        stored_code = cache.get(cache_key)
+        
+        if not stored_code:
+            return JsonResponse({
+                'success': False,
+                'message': 'Verification code has expired. Please request a new one.'
+            })
+        
+        if entered_code != stored_code:
+            return JsonResponse({
+                'success': False,
+                'message': 'Invalid verification code. Please try again.'
+            })
+        
+        # Code is valid - mark as verified and extend expiry for password change
+        cache.set(f"password_reset_verified_{user.id}", True, timeout=300)  # 5 minutes to change password
+        cache.delete(cache_key)  # Remove the used code
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Code verified successfully!'
+        })
+        
+    except Exception as e:
+        logger.error(f"Password reset code verification failed: {str(e)}")
+        return JsonResponse({
+            'success': False,
+            'message': 'An error occurred. Please try again.'
+        })
+
+@login_required
+@require_http_methods(['POST']) 
+def change_password_with_reset(request):
+    """
+    Change password after successful reset code verification
+    """
+    try:
+        user = request.user
+        
+        # Check if user is verified for password reset
+        verification_key = f"password_reset_verified_{user.id}"
+        if not cache.get(verification_key):
+            return JsonResponse({
+                'success': False,
+                'message': 'Verification expired. Please start the password reset process again.'
+            })
+        
+        new_password = request.POST.get('new_password', '').strip()
+        confirm_password = request.POST.get('confirm_password', '').strip()
+        
+        # Validate inputs
+        if not new_password or not confirm_password:
+            return JsonResponse({
+                'success': False,
+                'message': 'Both password fields are required.'
+            })
+        
+        if new_password != confirm_password:
+            return JsonResponse({
+                'success': False,
+                'message': 'Passwords do not match.'
+            })
+        
+        # Check if new password is same as current
+        if user.check_password(new_password):
+            return JsonResponse({
+                'success': False,
+                'message': 'New password must be different from your current password.'
+            })
+        
+        # Validate password strength
+        try:
+            password_validation.validate_password(new_password, user)
+        except ValidationError as e:
+            return JsonResponse({
+                'success': False,
+                'message': ', '.join(e.messages)
+            })
+        
+        # Change password
+        user.set_password(new_password)
+        user.save()
+        
+        # Update session to prevent logout
+        update_session_auth_hash(request, user)
+        
+        # Clear verification cache
+        cache.delete(verification_key)
+        
+        # Log the password change
+        logger.info(f"Password successfully changed for user: {user.username}")
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Password changed successfully!'
+        })
+        
+    except Exception as e:
+        logger.error(f"Password change failed: {str(e)}")
+        return JsonResponse({
+            'success': False,
+            'message': 'An error occurred. Please try again.'
+        })
