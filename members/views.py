@@ -244,7 +244,7 @@ def test_payment(request, vcf_id):
         purchase.save()
     
     messages.success(request, "Test purchase completed successfully")
-    return redirect(reverse('members:vcf_tabs'))
+    return redirect(reverse('members:VCF_Tabs'))
 
 @csrf_exempt
 def paystack_webhook(request):
@@ -286,10 +286,9 @@ def initiate_payment(request, vcf_id):
     vcf = get_object_or_404(VCFFile, id=vcf_id, vcf_type='premium', hidden=False)
     
     # Build dynamic callback URL
-    # Build success_url with a placeholder for reference (Paystack will append ?reference=...)
     base_success_url = request.build_absolute_uri(reverse('members:payment-complete'))
-    # Optionally, you can add a dummy reference param to ensure Paystack always appends it
-    success_url = f"{base_success_url}?reference={{reference}}"
+    # Paystack will automatically append ?reference=XXXX to this URL
+    success_url = base_success_url
     print(f"Success URL: {success_url}")
 
     if request.method == 'POST':
@@ -348,9 +347,11 @@ def initiate_payment(request, vcf_id):
         'amount': vcf.subscription_price
     })
 
-@member_auth_required
 def payment_complete(request):
     print(f"Payment complete called with params: {dict(request.GET)}")
+    print(f"User authenticated: {request.user.is_authenticated}")
+    if request.user.is_authenticated:
+        print(f"Current user: {request.user.username}")
     
     reference = request.GET.get('reference')
     trxref = request.GET.get('trxref')
@@ -360,8 +361,9 @@ def payment_complete(request):
         print(f"Verifying payment with reference: {payment_ref}")
         return verify_payment(request, payment_ref)
     
+    print("Missing payment reference in request")
     messages.error(request, "Missing payment reference")
-    return redirect('members:vcf_tabs')
+    return redirect('members:vcf_table')
 
 # REMOVE @member_auth_required DECORATOR FOR WEBHOOK COMPATIBILITY
 def verify_payment(request, reference):
@@ -385,13 +387,13 @@ def verify_payment(request, reference):
         if not data.get('status'):
             print("Paystack returned unsuccessful status")
             messages.error(request, "Payment verification failed with Paystack")
-            return redirect('members:vcf_tabs')
+            return redirect('members:vcf_table')
 
         tx = data['data']
         if tx['status'] != 'success':
             print(f"Transaction status is {tx['status']}, not 'success'")
             messages.error(request, f"Payment status: {tx['status']}")
-            return redirect('members:vcf_tabs')
+            return redirect('members:vcf_table')
 
         # Extract metadata
         metadata = tx.get('metadata', {})
@@ -403,7 +405,7 @@ def verify_payment(request, reference):
         if not user_id or not vcf_id:
             print("Missing user_id or vcf_id in metadata")
             messages.error(request, "Missing information in payment metadata")
-            return redirect('members:vcf_tabs')
+            return redirect('members:vcf_table')
 
         print(f"Extracted user_id: {user_id}, vcf_id: {vcf_id}")
 
@@ -415,34 +417,126 @@ def verify_payment(request, reference):
         except (User.DoesNotExist, VCFFile.DoesNotExist) as e:
             print(f"Database error: {str(e)}")
             messages.error(request, "Database error verifying payment")
-            return redirect('members:vcf_tabs')
+            return redirect('members:vcf_table')
 
         # Create/update purchase record
         print("Creating/updating purchase record...")
-        purchase, created = UserPurchase.objects.update_or_create(
-            user=user,
-            vcf_file=vcf,
-            defaults={
-                'payment_reference': reference,
-                'amount_paid': float(tx['amount']) / 100,
-                'is_verified': True,
-                'is_active': True
-            }
-        )
-        print(f"{'Created' if created else 'Updated'} purchase: ID {purchase.id}")
+        with transaction.atomic():
+            purchase, created = UserPurchase.objects.update_or_create(
+                user=user,
+                vcf_file=vcf,
+                defaults={
+                    'payment_reference': reference,
+                    'amount_paid': float(tx['amount']) / 100,
+                    'is_verified': True,
+                    'is_active': True
+                }
+            )
+            print(f"{'Created' if created else 'Updated'} purchase: ID {purchase.id}")
 
-        # Final redirect to billing page
-        messages.success(request, "Payment verified successfully! You can now access the VCF file.")
-        return redirect('members:vcf_tabs')
+        # Log the user back in if they're not authenticated
+        if not request.user.is_authenticated or request.user.id != user.id:
+            print(f"Logging in user {user.username} after payment")
+            from django.contrib.auth import login
+            try:
+                # Clear any existing session data first
+                request.session.flush()
+                
+                # Login the user
+                login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+                
+                # Explicitly save the session and set session expiry
+                request.session['_auth_user_id'] = str(user.pk)
+                request.session['_auth_user_backend'] = 'django.contrib.auth.backends.ModelBackend'
+                request.session.set_expiry(0)  # Session expires when browser closes
+                request.session.save()
+                
+                print(f"User {user.username} logged in successfully")
+                print(f"Session key: {request.session.session_key}")
+                print(f"Session data: {dict(request.session)}")
+                
+            except Exception as login_error:
+                print(f"Login failed for user {user.username}: {str(login_error)}")
+                messages.warning(request, f"Payment successful! Please log in to access your purchased VCF: {vcf.name}")
+                return redirect('members:login')
+
+        # Final redirect to Contact Analytics (vcf_table)
+        messages.success(request, f"Payment verified successfully! You now have access to '{vcf.name}'. You can download it from your VCF library.")
+        
+        # Clear any cached VCF data to ensure fresh data is shown
+        cache_key = f"vcf_tabs_{user.id}"
+        cache.delete(cache_key)
+        
+        # Verify user is authenticated before redirecting
+        if not request.user.is_authenticated:
+            print("User not authenticated after login attempt, redirecting to login")
+            messages.warning(request, f"Payment successful! Please log in to access your purchased VCF: {vcf.name}")
+            return redirect('members:login')
+            
+        print(f"User {request.user.username} successfully authenticated, redirecting to Contact Analytics")
+        
+        # Store purchase info in session for success page
+        request.session['recent_purchase'] = {
+            'vcf_name': vcf.name,
+            'amount': float(tx['amount']) / 100,
+            'reference': reference
+        }
+        request.session.save()
+        
+        # Instead of redirecting, render directly to avoid session loss
+        return render(request, 'members/payment/payment_success.html', {
+            'purchase_info': {
+                'vcf_name': vcf.name,
+                'amount': float(tx['amount']) / 100,
+                'reference': reference
+            },
+            'user_authenticated': request.user.is_authenticated,
+            'purchase': purchase,
+            'user': user
+        })
 
     except requests.exceptions.RequestException as e:
         print(f"Network error: {str(e)}")
         messages.error(request, "Network error verifying payment. Please check your purchase history.")
+        return render(request, 'members/payment/payment_success.html', {
+            'user_authenticated': request.user.is_authenticated,
+            'error': True,
+            'error_message': "Network error verifying payment. Please check your purchase history."
+        })
     except Exception as e:
         print(f"Unexpected error: {str(e)}", exc_info=True)
         messages.error(request, f"An unexpected error occurred: {str(e)}")
+        return render(request, 'members/payment/payment_success.html', {
+            'user_authenticated': request.user.is_authenticated,
+            'error': True,
+            'error_message': f"An unexpected error occurred: {str(e)}"
+        })
     
-    return redirect('members:vcf_tabs')
+    return render(request, 'members/payment/payment_success.html', {
+        'user_authenticated': request.user.is_authenticated,
+        'error': True,
+        'error_message': "Payment verification failed. Please contact support."
+    })
+
+def payment_success(request):
+    """Payment success page that doesn't require authentication"""
+    purchase_info = request.session.get('recent_purchase')
+    
+    if not purchase_info:
+        messages.info(request, "No recent purchase found.")
+        return redirect('members:VCF_Tabs')
+    
+    # Clear the purchase info from session
+    if 'recent_purchase' in request.session:
+        del request.session['recent_purchase']
+        request.session.save()
+    
+    context = {
+        'purchase_info': purchase_info,
+        'user_authenticated': request.user.is_authenticated
+    }
+    
+    return render(request, 'members/payment/payment_success.html', context)
 
 
 @member_auth_required
@@ -592,6 +686,7 @@ def VCF_Tabs(request):
     
     # Prepare context data
     context_data = {
+        'vcfs': new_vcfs,  # For VCF Tray display (first 5 VCFs)
         'new_vcfs': new_vcfs,
         'free_vcfs': available_free_vcfs,
         'premium_vcfs': available_premium_vcfs,
@@ -826,7 +921,7 @@ def vcf_file_detail(request, vcf_id):
     vcf = get_object_or_404(VCFFile, id=vcf_id, vcf_type='premium', hidden=False)
     # Only allow if user has purchased/subscribed
     if not request.user.user_purchases.filter(vcf_file=vcf, is_verified=True, is_active=True).exists():
-        return redirect('members:vcf_tabs')
+        return redirect('members:VCF_Tabs')
     contacts_qs = Contact.objects.filter(vcf_file=vcf)
     # Build a list of dicts with name, phone, email for template
     contacts = []
@@ -895,7 +990,7 @@ def join_free_vcf(request, vcf_id):
             is_verified=True,
             is_active=True
         )
-    return redirect('members:vcf_tabs')
+    return redirect('members:VCF_Tabs')
 
 
 @member_auth_required
@@ -1098,20 +1193,58 @@ def auth_email(request):
 @require_POST
 @login_required
 def send_email_code(request):
+    import logging
+    logger = logging.getLogger(__name__)
+    
     try:
-        data = json.loads(request.body)
+        # Log the request details for debugging
+        logger.info(f"send_email_code called by user {request.user.id}")
+        logger.info(f"Request body: {request.body}")
+        logger.info(f"Content-Type: {request.content_type}")
+        
+        # Validate request body is not empty
+        if not request.body:
+            logger.error("Empty request body received")
+            return JsonResponse({"error": "Request body cannot be empty"}, status=400)
+        
+        # Validate Content-Type
+        if request.content_type != 'application/json':
+            logger.error(f"Invalid Content-Type: {request.content_type}")
+            return JsonResponse({"error": "Content-Type must be application/json"}, status=400)
+        
+        try:
+            data = json.loads(request.body)
+        except json.JSONDecodeError as e:
+            logger.error(f"JSON decode error: {str(e)}")
+            logger.error(f"Raw body: {request.body}")
+            return JsonResponse({"error": "Invalid JSON data"}, status=400)
+        
         email = data.get('email')
         
+        logger.info(f"Extracted email: {email}")
+        
         if not email:
+            logger.error("No email provided in request")
             return JsonResponse({"error": "Email is required"}, status=400)
+        
+        # Validate email format
+        from django.core.validators import validate_email
+        from django.core.exceptions import ValidationError
+        try:
+            validate_email(email)
+        except ValidationError:
+            logger.error(f"Invalid email format: {email}")
+            return JsonResponse({"error": "Invalid email format"}, status=400)
 
         # Rate limiting for code requests (60 seconds cooldown)
         cache_key = f"email_otp_sent:{request.user.id}"
         if cache.get(cache_key):
+            logger.info("Rate limit hit - user must wait")
             return JsonResponse({"error": "Please wait before requesting another code"}, status=429)
 
         # Set cooldown
         cache.set(cache_key, True, timeout=60)
+        logger.info("Rate limit cooldown set")
 
         # Create and send OTP
         EmailVerificationOTP.objects.filter(
@@ -1119,6 +1252,7 @@ def send_email_code(request):
             email=email,
             is_used=False
         ).update(is_used=True)
+        logger.info("Invalidated existing OTPs")
         
         code = str(random.randint(100000, 999999))
         otp = EmailVerificationOTP.objects.create(
@@ -1127,26 +1261,45 @@ def send_email_code(request):
             code=code,
             expires_at=timezone.now() + timedelta(minutes=15)
         )
+        logger.info(f"Created OTP with code: {code}")
         
-        send_mail(
-            'Your Verification Code - VCF Manager',
-            f'Your verification code is: {code}',  # Plain text fallback
-            settings.DEFAULT_FROM_EMAIL,
-            [email],
-            fail_silently=False,
-            html_message=render_to_string('members/email/verification_code_email.html', {
-                'code': code,
-                'email': email,
-                'user': request.user
-            })
-        )
+        # Check if email settings are configured
+        try:
+            from django.conf import settings
+            logger.info(f"EMAIL_BACKEND: {getattr(settings, 'EMAIL_BACKEND', 'Not set')}")
+            logger.info(f"DEFAULT_FROM_EMAIL: {getattr(settings, 'DEFAULT_FROM_EMAIL', 'Not set')}")
+            logger.info(f"EMAIL_HOST: {getattr(settings, 'EMAIL_HOST', 'Not set')}")
+            
+            send_mail(
+                'Your Verification Code - VCF Manager',
+                f'Your verification code is: {code}',  # Plain text fallback
+                settings.DEFAULT_FROM_EMAIL,
+                [email],
+                fail_silently=False,
+                html_message=render_to_string('members/email/verification_code_email.html', {
+                    'code': code,
+                    'email': email,
+                    'user': request.user
+                })
+            )
+            logger.info(f"Email sent successfully to {email}")
+        except Exception as email_error:
+            logger.error(f"Email sending failed: {str(email_error)}")
+            # Still return success to avoid exposing email config issues
+            # but log the actual error
+            return JsonResponse({
+                "error": f"Failed to send email: {str(email_error)}"
+            }, status=500)
         
         return JsonResponse({
             "ok": True, 
             "message": f"Verification code sent to {email}"
         })
     except Exception as e:
-        return JsonResponse({"error": str(e)}, status=500)
+        logger.error(f"Unexpected error in send_email_code: {str(e)}")
+        import traceback
+        logger.error(traceback.format_exc())
+        return JsonResponse({"error": "An unexpected error occurred. Please try again."}, status=500)
     
 @require_POST
 @login_required

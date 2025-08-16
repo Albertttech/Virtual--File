@@ -3,6 +3,10 @@ from django.shortcuts import redirect
 from django.urls import reverse, resolve
 from django.contrib import messages
 from django.conf import settings
+# dev/prod
+from django.http import HttpResponseRedirect
+from django.conf import settings
+
 
 class AuthMiddleware:
     """
@@ -21,6 +25,10 @@ class AuthMiddleware:
             'auth_email',
             'send_email_code',
             'verify_email_code',
+            'payment-complete',  # Allow payment completion without auth check
+            'verify-payment',    # Allow payment verification without auth check
+            'payment_success',   # Allow payment success page without auth check
+            'paystack_webhook',  # Allow webhook access
         ]
         self.admin_exempt_urls = [
             'login',
@@ -34,6 +42,10 @@ class AuthMiddleware:
     def process_view(self, request, view_func, view_args, view_kwargs):
         # Skip static files
         if request.path.startswith('/static/'):
+            return None
+            
+        # Skip payment-related paths
+        if any(path in request.path for path in ['/payment-complete/', '/verify-payment/', '/payment-success/', '/webhook/']):
             return None
 
         try:
@@ -67,3 +79,22 @@ class AuthMiddleware:
                 return redirect('members:member_settings')
 
         return None
+
+
+
+class DevelopmentSSLRedirectMiddleware:
+    """
+    Redirects HTTPS to HTTP in development mode to prevent HTTPS errors
+    with the Django development server.
+    """
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        # Only redirect in development mode
+        if settings.DEPLOYMENT_MODE == 'development' and request.META.get('HTTP_X_FORWARDED_PROTO') == 'https':
+            # Build HTTP URL
+            http_url = request.build_absolute_uri().replace('https://', 'http://')
+            return HttpResponseRedirect(http_url)
+        
+        return self.get_response(request)

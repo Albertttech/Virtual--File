@@ -66,6 +66,7 @@ urlpatterns = [
     path('subscribe-vcf/<int:vcf_id>/pay/', views.initiate_payment, name='initiate-payment'),
     path('verify-payment/<str:reference>/', views.verify_payment, name='verify-payment'),
     path('payment-complete/', views.payment_complete, name='payment-complete'),
+    path('payment-success/', views.payment_success, name='payment_success'),
     path('test-payment/<int:vcf_id>/', views.test_payment, name='test-payment'),
     path('initiate-payment/<int:vcf_id>/', views.initiate_payment, name='initiate_payment'),
     path('webhook/paystack/', views.paystack_webhook, name='paystack_webhook'),

@@ -1,3 +1,48 @@
+// CSRF Token handling functions
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+function getCsrfToken() {
+    // First try to get from meta tag
+    const metaTag = document.querySelector('meta[name="csrf-token"]');
+    if (metaTag && metaTag.getAttribute('content')) {
+        const token = metaTag.getAttribute('content');
+        if (token && token.length > 10) { // Basic length validation
+            return token;
+        }
+    }
+    
+    // Try to get from DOM input
+    const csrfInput = document.querySelector("input[name='csrfmiddlewaretoken']");
+    if (csrfInput && csrfInput.value) {
+        const token = csrfInput.value;
+        if (token && token.length > 10) { // Basic length validation
+            return token;
+        }
+    }
+    
+    // Fallback to cookie
+    const cookieToken = getCookie('csrftoken');
+    if (cookieToken && cookieToken.length > 10) { // Basic length validation
+        return cookieToken;
+    }
+    
+    console.error('CSRF token not found or invalid length');
+    return null;
+}
+
 document.addEventListener("DOMContentLoaded", () => {
     const sendCodeBtn = document.getElementById('send-code-btn');
     const messageDiv = document.getElementById('message');
@@ -222,13 +267,40 @@ document.addEventListener("DOMContentLoaded", () => {
             window.updateEmailProgressBar(25);
         }
 
+        // Get CSRF token - ensure it's valid
+        const csrfToken = getCsrfToken();
+        if (!csrfToken) {
+            showMessage('Security token not found. Please refresh the page and try again.', 'error');
+            if (window.updateEmailProgressBar) {
+                window.updateEmailProgressBar(0);
+            }
+            sendCodeBtn.disabled = false;
+            sendCodeBtn.classList.remove('opacity-75', 'opacity-50', 'cursor-not-allowed');
+            return;
+        }
+
+        // Prepare request body - ensure it's valid JSON
+        let requestBody;
+        try {
+            requestBody = JSON.stringify({email: email});
+        } catch (error) {
+            console.error('Error preparing request:', error);
+            showMessage('Failed to prepare request. Please try again.', 'error');
+            if (window.updateEmailProgressBar) {
+                window.updateEmailProgressBar(0);
+            }
+            sendCodeBtn.disabled = false;
+            sendCodeBtn.classList.remove('opacity-75', 'opacity-50', 'cursor-not-allowed');
+            return;
+        }
+
         fetch(window.emailAuthConfig.sendCodeUrl, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRFToken': getCookie('csrftoken')
+                'X-CSRFToken': csrfToken
             },
-            body: JSON.stringify({email: email})
+            body: requestBody
         })
         .then(response => {
             // Progress: response received
@@ -308,11 +380,23 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
+        // Get CSRF token - ensure it's valid
+        const csrfToken = getCsrfToken();
+        if (!csrfToken) {
+            showMessage('Security token not found. Please refresh the page and try again.', 'error');
+            if (window.updateEmailProgressBar) {
+                window.updateEmailProgressBar(0);
+            }
+            return;
+        }
+
+        console.log('Verification attempt - CSRF token length:', csrfToken.length);
+
         fetch(window.emailAuthConfig.verifyCodeUrl, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRFToken': getCookie('csrftoken')
+                'X-CSRFToken': csrfToken
             },
             body: JSON.stringify({
                 email: email,

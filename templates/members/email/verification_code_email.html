@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Email Verification Code</title>
+    <title>Secure Your Litarch Contact Gain Account</title>
     <style>
         * {
             margin: 0;
@@ -261,50 +261,51 @@
         <!-- Header Section -->
         <div class="header">
             <div class="logo-icon">
-                🔐
+                �
             </div>
-            <h1>Email Verification</h1>
-            <p>Secure your account with verification</p>
+            <h1>Account Security Verification</h1>
+            <p>Protecting your trusted network growth platform</p>
         </div>
         
         <!-- Main Content -->
         <div class="content">
-            <div class="greeting">Hello there!</div>
+            <div class="greeting">Welcome to secure growth, {{ user.first_name|default:"Valued Member" }}!</div>
             
             <div class="message">
-                We received a request to verify your email address for your <span class="company-name brand-gradient">VCF Contact Manager</span> account. 
-                Please use the verification code below to complete the process.
+                We're securing your access to <span class="company-name brand-gradient">Litarch Contact Gain</span> - your trusted platform for ethical contact network expansion. 
+                Use the verification code below to continue building your professional network safely.
             </div>
             
             <!-- Verification Code Box -->
             <div class="code-container">
-                <div class="code-label">Your Verification Code</div>
+                <div class="code-label">Your Secure Access Code</div>
                 <div class="verification-code">{{ code }}</div>
             </div>
             
             <!-- Expiry Notice -->
             <div class="expiry-notice">
                 <span class="icon"></span>
-                <span class="expiry-text">This code will expire in 15 minutes</span>
+                <span class="expiry-text">Secure code expires in 15 minutes for your protection</span>
             </div>
             
             <!-- Security Tips -->
             <div class="security-tips">
-                <h3>Security Tips</h3>
+                <h3>Network Security Guidelines</h3>
                 <ul>
-                    <li>Never share this code with anyone</li>
-                    <li>Our team will never ask for this code</li>
-                    <li>If you didn't request this, please ignore this email</li>
-                    <li>This code can only be used once</li>
+                    <li>Keep this code confidential - never share with anyone</li>
+                    <li>Litarch team will never request your verification codes</li>
+                    <li>Didn't request access? Safely ignore this email</li>
+                    <li>Each code is single-use and expires automatically</li>
+                    <li>Your trusted network data is always protected</li>
                 </ul>
             </div>
         </div>
         
         <!-- Footer -->
         <div class="footer">
-            <p>This email was sent by <span class="company-name brand-gradient">VCF Contact Manager</span></p>
-            <p>If you have any questions, please <a href="mailto:support@vcfmanager.com" class="support-link">contact our support team</a></p>
-            <p>© 2025 VCF Contact Manager. All rights reserved.</p>
+            <p>This secure notification was sent by <span class="company-name brand-gradient">Litarch Contact Gain</span></p>
+            <p>Need assistance with your growth platform? <a href="mailto:support@litarch.com" class="support-link">Contact our dedicated support team</a></p>
+            <p>© 2025 Litarch Contact Gain. Building trusted networks, ethically. All rights reserved.</p>
         </div>
     </div>
 </body>

@@ -1,0 +1,119 @@
+{% extends "members/base.html" %}
+{% load static %}
+
+{% block breadcrumb_page %}Payment{% endblock %}
+{% block breadcrumb_page2 %}Success{% endblock %}
+
+{% block content %}
+<div class="flex flex-wrap -mx-3">
+  <div class="w-full max-w-full px-3 shrink-0 md:w-8/12 md:flex-0 mx-auto">
+    <div class="relative flex flex-col min-w-0 break-words bg-white border-0 shadow-xl dark:bg-slate-850 dark:shadow-dark-xl rounded-2xl bg-clip-border">
+      
+      <!-- Success Header -->
+      <div class="relative overflow-hidden rounded-t-2xl bg-gradient-to-tl from-green-500 to-teal-400">
+        <div class="relative z-10 flex-auto p-6 text-center">
+          <div class="w-20 h-20 mx-auto mb-4 text-center bg-white/20 rounded-full flex items-center justify-center">
+            <i class="fas fa-check text-3xl text-white"></i>
+          </div>
+          <h2 class="text-2xl font-bold text-white mb-2">Payment Successful!</h2>
+          <p class="text-white/90">Your VCF purchase has been completed</p>
+        </div>
+      </div>
+      
+      <!-- Purchase Details -->
+      <div class="flex-auto p-6">
+        {% if purchase_info %}
+        <div class="relative flex flex-col min-w-0 break-words bg-gray-50 dark:bg-slate-800/50 border-0 shadow-md rounded-2xl bg-clip-border mb-6">
+          <div class="p-6">
+            <h6 class="mb-4 text-lg font-semibold text-slate-700 dark:text-white">Purchase Details</h6>
+            
+            <div class="space-y-3">
+              <div class="flex justify-between items-center">
+                <span class="text-sm text-slate-500 dark:text-slate-300">VCF Package:</span>
+                <span class="font-medium text-slate-700 dark:text-white">{{ purchase_info.vcf_name }}</span>
+              </div>
+              
+              <div class="flex justify-between items-center">
+                <span class="text-sm text-slate-500 dark:text-slate-300">Amount Paid:</span>
+                <span class="font-medium text-slate-700 dark:text-white">₦{{ purchase_info.amount|floatformat:2 }}</span>
+              </div>
+              
+              <div class="flex justify-between items-center">
+                <span class="text-sm text-slate-500 dark:text-slate-300">Reference:</span>
+                <span class="font-mono text-xs text-slate-600 dark:text-slate-400">{{ purchase_info.reference }}</span>
+              </div>
+              
+              <hr class="my-4 border-slate-200 dark:border-slate-600">
+              
+              <div class="flex justify-between items-center">
+                <span class="text-sm text-green-600 dark:text-green-400">Status:</span>
+                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                  <i class="fas fa-check mr-1"></i>
+                  Verified & Active
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endif %}
+        
+        <!-- Action Buttons -->
+        <div class="text-center space-y-4">
+          {% if user_authenticated %}
+            <a href="{% url 'members:vcf_table' %}" 
+               class="inline-block px-8 py-3 mb-2 font-bold text-center text-white uppercase align-middle transition-all bg-gradient-to-tl from-blue-500 to-violet-500 border-0 rounded-lg cursor-pointer leading-normal text-sm ease-in tracking-tight-rem shadow-md bg-150 bg-x-25 hover:-translate-y-px active:opacity-85 hover:shadow-xs">
+              <i class="fas fa-chart-line mr-2"></i>
+              Go to Contact Analytics
+            </a>
+            
+            <div class="block">
+              <a href="{% url 'members:VCF_Tabs' %}" 
+                 class="inline-block px-6 py-2 mb-0 text-sm font-bold text-center text-slate-500 uppercase align-middle transition-all ease-in bg-transparent border border-slate-200 border-solid rounded-lg shadow-none cursor-pointer leading-pro hover:-translate-y-px active:shadow-xs hover:border-slate-300 active:bg-slate-50 hover:text-slate-600 tracking-tight-rem hover:bg-transparent hover:opacity-75 hover:shadow-none dark:text-slate-400 dark:border-slate-600 dark:hover:border-slate-500 dark:active:bg-slate-700">
+                <i class="fas fa-folder-open mr-2"></i>
+                Browse All VCFs
+              </a>
+            </div>
+          {% else %}
+            <div class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4 mb-4">
+              <div class="flex">
+                <i class="fas fa-exclamation-triangle text-yellow-500 mr-3 mt-1"></i>
+                <div>
+                  <h6 class="text-yellow-800 dark:text-yellow-200 font-medium mb-1">Please Sign In</h6>
+                  <p class="text-sm text-yellow-700 dark:text-yellow-300">To access your purchased VCF and view Contact Analytics, please sign in to your account.</p>
+                </div>
+              </div>
+            </div>
+            
+            <a href="{% url 'members:login' %}" 
+               class="inline-block px-8 py-3 mb-2 font-bold text-center text-white uppercase align-middle transition-all bg-gradient-to-tl from-blue-500 to-violet-500 border-0 rounded-lg cursor-pointer leading-normal text-sm ease-in tracking-tight-rem shadow-md bg-150 bg-x-25 hover:-translate-y-px active:opacity-85 hover:shadow-xs">
+              <i class="fas fa-sign-in-alt mr-2"></i>
+              Sign In to Access
+            </a>
+          {% endif %}
+        </div>
+        
+        <!-- Information -->
+        <div class="relative flex flex-col min-w-0 break-words bg-blue-50 dark:bg-blue-900/20 border-0 shadow-md rounded-2xl bg-clip-border mt-6">
+          <div class="p-4">
+            <div class="flex items-start">
+              <div class="flex items-center justify-center w-10 h-10 mr-4 text-blue-500 bg-blue-100 dark:bg-blue-500/20 rounded-lg flex-shrink-0">
+                <i class="fas fa-info-circle"></i>
+              </div>
+              <div>
+                <h6 class="mb-2 text-sm font-bold text-blue-800 dark:text-blue-200">What's Next?</h6>
+                <ul class="text-xs text-blue-700 dark:text-blue-300 space-y-1">
+                  <li>• Your VCF package is now active and ready to use</li>
+                  <li>• Access Contact Analytics to view detailed insights</li>
+                  <li>• Download your VCF files from the VCF library</li>
+                  <li>• Check your purchase history in your dashboard</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
