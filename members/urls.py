@@ -38,6 +38,13 @@ urlpatterns = [
     # -------------------------
     path('auth_email/', views.auth_email, name='auth_email'),
     path('send_email_code/', views.send_email_code, name='send_email_code'),  # send_email_code Changed from send-email-code/
+    
+    # -------------------------
+    # Password Reset via Settings
+    # -------------------------
+    path('ajax/send-reset-code/', views.ajax_send_reset_code, name='ajax_send_reset_code'),
+    path('ajax/verify-reset-code/', views.ajax_verify_reset_code, name='ajax_verify_reset_code'),
+    path('ajax/change-password-with-code/', views.ajax_change_password_with_code, name='ajax_change_password_with_code'),
     path('verify_email_code/', views.verify_email_code, name='verify_email_code'),
 
     # -------------------------

@@ -6,10 +6,6 @@
 {% block breadcrumb_page2 %}Profile{% endblock %}
 {% block navbar %}{% endblock %}
 
-{% block extra_js %}
-<script src="{% static 'members/js/password_reset.js' %}"></script>
-{% endblock %}
-
 {% block content %}
 {% csrf_token %}
 <div class="relative w-full mx-auto mt-60">
@@ -394,7 +390,7 @@
                     <h5 class="text-sm font-semibold dark:text-white">Reset Password</h5>
                     <p class="text-xs text-gray-500 dark:text-gray-400">Change your password for enhanced security</p>
                   </div>
-                  <button type="button" id="resetPasswordBtn" class="px-4 py-2 font-bold text-white bg-blue-500 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 text-xs">Reset Password</button>
+                  <button type="button" id="resetPasswordBtn" class="px-4 py-2 font-bold text-white bg-blue-500 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 text-xs" onclick="console.log('Button clicked via onclick'); document.getElementById('resetPasswordModal').classList.add('show');">Reset Password</button>
                 </div>
                 
                 <div class="flex items-center justify-between p-4 border rounded-lg dark:border-gray-700">
@@ -819,6 +815,23 @@
     background-color: rgba(239, 68, 68, 0.1);
     color: #fca5a5;
   }
+  
+  /* Dynamic button colors */
+  .dynamic-button.verify-state {
+    border-color: #16a34a !important;
+  }
+  
+  .dynamic-button.verify-state:hover {
+    border-color: #15803d !important;
+  }
+  
+  .dynamic-button.partial-state {
+    border-color: #ea580c !important;
+  }
+  
+  .dynamic-button.partial-state:hover {
+    border-color: #dc2626 !important;
+  }
 </style>
 
 <!-- Reset Password Modal -->
@@ -898,9 +911,107 @@
       <button type="button" id="cancelResetBtn" class="px-4 py-2 text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white font-medium rounded-lg transition-colors">
         Cancel
       </button>
-      <button type="button" id="verifyResetCodeBtn" class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 shadow-lg border-0">
-        <i class="fas fa-paper-plane mr-2 text-white"></i>
-        <span class="text-white">Send Code</span>
+      <button type="button" id="verifyResetCodeBtn" class="px-6 py-2 bg-white hover:bg-gray-50 text-blue-600 font-bold rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 shadow-lg border-2 border-blue-600 hover:border-blue-700 dynamic-button">
+        <i class="fas fa-paper-plane mr-2 text-blue-600"></i>
+        <span class="text-blue-600">Send Code</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Password Change Modal -->
+<div id="passwordChangeModal" class="reset-password-modal">
+  <div class="reset-modal-content">
+    <!-- Modal Header -->
+    <div class="reset-modal-header">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center">
+          <div class="w-8 h-8 bg-green-100 dark:bg-green-900/20 rounded-lg flex items-center justify-center mr-3">
+            <i class="fas fa-lock text-green-600 dark:text-green-400 text-sm"></i>
+          </div>
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Set New Password</h3>
+        </div>
+        <button type="button" id="closePasswordModal" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
+          <i class="fas fa-times text-xl"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Modal Body -->
+    <div class="reset-modal-body">
+      <!-- Progress Message Section -->
+      <div id="passwordProgressMessage" class="progress-message progress-info" style="display: none;">
+        <div class="flex items-center">
+          <i class="fas fa-info-circle mr-2"></i>
+          <span id="passwordProgressText">Ready to set your new password</span>
+        </div>
+      </div>
+
+      <!-- Instructions -->
+      <div class="mb-6">
+        <p class="text-sm text-gray-600 dark:text-gray-300">
+          Your identity has been verified. Please enter your new password below.
+        </p>
+      </div>
+
+      <!-- New Password Input -->
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          New Password
+        </label>
+        <div class="relative">
+          <input type="password" id="newPassword" class="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors" placeholder="Enter your new password">
+          <button type="button" id="toggleNewPassword" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600">
+            <i class="fas fa-eye"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Confirm Password Input -->
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          Confirm New Password
+        </label>
+        <div class="relative">
+          <input type="password" id="confirmPassword" class="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors" placeholder="Confirm your new password">
+          <button type="button" id="toggleConfirmPassword" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600">
+            <i class="fas fa-eye"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Password Requirements -->
+      <div class="mb-6">
+        <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">Password must contain:</p>
+        <ul class="text-xs text-gray-500 dark:text-gray-400 space-y-1">
+          <li class="flex items-center">
+            <i class="fas fa-circle text-gray-300 mr-2" style="font-size: 4px;"></i>
+            At least 8 characters
+          </li>
+          <li class="flex items-center">
+            <i class="fas fa-circle text-gray-300 mr-2" style="font-size: 4px;"></i>
+            At least one uppercase letter
+          </li>
+          <li class="flex items-center">
+            <i class="fas fa-circle text-gray-300 mr-2" style="font-size: 4px;"></i>
+            At least one lowercase letter
+          </li>
+          <li class="flex items-center">
+            <i class="fas fa-circle text-gray-300 mr-2" style="font-size: 4px;"></i>
+            At least one number
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Modal Footer -->
+    <div class="reset-modal-footer">
+      <button type="button" id="cancelPasswordBtn" class="px-4 py-2 text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white font-medium rounded-lg transition-colors">
+        Cancel
+      </button>
+      <button type="button" id="savePasswordBtn" class="px-6 py-2 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 shadow-lg">
+        <i class="fas fa-save mr-2"></i>
+        Save Password
       </button>
     </div>
   </div>
@@ -1001,6 +1112,8 @@
 <script>
 // Reset Password Modal Functionality
 document.addEventListener('DOMContentLoaded', function() {
+  console.log('DOM loaded, initializing reset password modal...');
+  
   const resetPasswordBtn = document.getElementById('resetPasswordBtn');
   const resetPasswordModal = document.getElementById('resetPasswordModal');
   const closeResetModal = document.getElementById('closeResetModal');
@@ -1009,13 +1122,35 @@ document.addEventListener('DOMContentLoaded', function() {
   const progressMessage = document.getElementById('resetProgressMessage');
   const progressText = document.getElementById('resetProgressText');
 
+  console.log('resetPasswordBtn:', resetPasswordBtn);
+  console.log('resetPasswordModal:', resetPasswordModal);
+  
+  if (!resetPasswordBtn) {
+    console.error('Reset password button not found!');
+    return;
+  }
+  
+  if (!resetPasswordModal) {
+    console.error('Reset password modal not found!');
+    return;
+  }
+
   // Code inputs
   const codeInputs = document.querySelectorAll('.code-input');
 
   // Open modal
-  resetPasswordBtn.addEventListener('click', function() {
-    resetPasswordModal.classList.add('show');
-    showProgressMessage('Ready to send verification code to your email', 'info');
+  resetPasswordBtn.addEventListener('click', function(e) {
+    console.log('Reset password button clicked!');
+    e.preventDefault();
+    
+    if (resetPasswordModal) {
+      console.log('Adding show class to modal');
+      resetPasswordModal.classList.add('show');
+      console.log('Modal classes after adding show:', resetPasswordModal.classList);
+      showProgressMessage('Ready to send verification code to your email', 'info');
+    } else {
+      console.error('Modal element is null');
+    }
   });
 
   // Close modal functions
@@ -1042,7 +1177,10 @@ document.addEventListener('DOMContentLoaded', function() {
     codeInputs.forEach(input => input.value = '');
     progressMessage.style.display = 'none';
     verifyResetCodeBtn.disabled = false;
-    verifyResetCodeBtn.innerHTML = '<i class="fas fa-paper-plane mr-2 text-white"></i><span class="text-white">Send Code</span>';
+    verifyResetCodeBtn.innerHTML = '<i class="fas fa-paper-plane mr-2 text-blue-600"></i><span class="text-blue-600">Send Code</span>';
+    if (countdownInterval) {
+      clearInterval(countdownInterval);
+    }
   }
 
   // Progress message function
@@ -1077,6 +1215,17 @@ document.addEventListener('DOMContentLoaded', function() {
       if (value && index < codeInputs.length - 1) {
         codeInputs[index + 1].focus();
       }
+      
+      // Auto-verify when all 6 digits are entered
+      if (value && index === codeInputs.length - 1) {
+        // Check if all inputs are filled
+        setTimeout(() => {
+          const code = Array.from(codeInputs).map(input => input.value).join('');
+          if (code.length === 6) {
+            verifyResetCode(code);
+          }
+        }, 100);
+      }
     });
     
     input.addEventListener('keydown', function(e) {
@@ -1087,52 +1236,288 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
 
-  // Send code functionality (placeholder)
+  // Send code functionality
   verifyResetCodeBtn.addEventListener('click', function() {
     const code = Array.from(codeInputs).map(input => input.value).join('');
     
     if (code.length === 0) {
       // If no code entered, send the verification code
-      showProgressMessage('Sending verification code...', 'info');
-      verifyResetCodeBtn.disabled = true;
-      verifyResetCodeBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2 text-white"></i><span class="text-white">Sending...</span>';
-      
-      // Simulate sending code (replace with actual functionality)
-      setTimeout(() => {
-        showProgressMessage('Verification code sent successfully!', 'success');
-        verifyResetCodeBtn.innerHTML = '<i class="fas fa-check mr-2 text-white"></i><span class="text-white">Code Sent</span>';
-        verifyResetCodeBtn.disabled = false;
-        // Focus first code input
+      sendResetCode();
+    } else if (code.length === 6) {
+      // If 6 digits entered, verify the code
+      verifyResetCode(code);
+    } else {
+      showProgressMessage('Please enter all 6 digits or leave empty to send code', 'error');
+    }
+  });
+  
+  // Update button text based on code input
+  function updateButtonText() {
+    const code = Array.from(codeInputs).map(input => input.value).join('');
+    
+    // Remove previous state classes
+    verifyResetCodeBtn.classList.remove('verify-state', 'partial-state');
+    
+    if (code.length === 0) {
+      verifyResetCodeBtn.innerHTML = '<i class="fas fa-paper-plane mr-2 text-blue-600"></i><span class="text-blue-600">Send Code</span>';
+    } else if (code.length === 6) {
+      verifyResetCodeBtn.innerHTML = '<i class="fas fa-check-circle mr-2 text-green-600"></i><span class="text-green-600">Verify Code</span>';
+      verifyResetCodeBtn.classList.add('verify-state');
+    } else {
+      verifyResetCodeBtn.innerHTML = '<i class="fas fa-edit mr-2 text-orange-600"></i><span class="text-orange-600">Enter Code (' + code.length + '/6)</span>';
+      verifyResetCodeBtn.classList.add('partial-state');
+    }
+  }
+  
+  // Add input listeners to update button text
+  codeInputs.forEach((input) => {
+    input.addEventListener('input', updateButtonText);
+    input.addEventListener('keydown', updateButtonText);
+  });
+  
+  // Function to send reset code via AJAX
+  function sendResetCode() {
+    showProgressMessage('Sending reset code to your email...', 'info');
+    verifyResetCodeBtn.disabled = true;
+    verifyResetCodeBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2 text-blue-600"></i><span class="text-blue-600">Sending...</span>';
+    
+    // Get CSRF token
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    
+    fetch('/members/ajax/send-reset-code/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'X-CSRFToken': csrfToken
+      },
+      body: 'csrfmiddlewaretoken=' + encodeURIComponent(csrfToken)
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        showProgressMessage(data.message, 'success');
+        startCountdown(60); // Start 60 second countdown
         document.getElementById('code1').focus();
-      }, 2000);
-      
-      return;
-    }
-    
-    if (code.length !== 6) {
-      showProgressMessage('Please enter all 6 digits', 'error');
-      return;
-    }
-    
+      } else {
+        showProgressMessage(data.error, 'error');
+        verifyResetCodeBtn.disabled = false;
+        verifyResetCodeBtn.innerHTML = '<i class="fas fa-paper-plane mr-2 text-blue-600"></i><span class="text-blue-600">Send Code</span>';
+      }
+    })
+    .catch(error => {
+      console.error('Error sending reset code:', error);
+      showProgressMessage('Failed to send code. Please try again.', 'error');
+      verifyResetCodeBtn.disabled = false;
+      verifyResetCodeBtn.innerHTML = '<i class="fas fa-paper-plane mr-2 text-blue-600"></i><span class="text-blue-600">Send Code</span>';
+    });
+  }
+  
+  // Function to verify reset code via AJAX
+  function verifyResetCode(code) {
     showProgressMessage('Verifying code...', 'info');
     verifyResetCodeBtn.disabled = true;
-    verifyResetCodeBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2 text-white"></i><span class="text-white">Verifying...</span>';
+    verifyResetCodeBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2 text-blue-600"></i><span class="text-blue-600">Verifying...</span>';
     
-    // Simulate verification (replace with actual functionality)
-    setTimeout(() => {
-      showProgressMessage('Code verified! Redirecting to password reset...', 'success');
-      setTimeout(() => {
-        closeModal();
-        // Add redirect logic here
-        alert('Code verified! You can now implement password reset logic.');
-      }, 1500);
-    }, 2000);
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
     
-    // Reset button state
-    setTimeout(() => {
+    fetch('/members/ajax/verify-reset-code/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'X-CSRFToken': csrfToken
+      },
+      body: `csrfmiddlewaretoken=${encodeURIComponent(csrfToken)}&reset_code=${encodeURIComponent(code)}`
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        showProgressMessage(data.message, 'success');
+        setTimeout(() => {
+          closeModal();
+          showPasswordChangeModal();
+        }, 1500);
+      } else {
+        showProgressMessage(data.error, 'error');
+        verifyResetCodeBtn.disabled = false;
+        verifyResetCodeBtn.innerHTML = '<i class="fas fa-check-circle mr-2 text-blue-600"></i><span class="text-blue-600">Verify Code</span>';
+      }
+    })
+    .catch(error => {
+      console.error('Error verifying reset code:', error);
+      showProgressMessage('Failed to verify code. Please try again.', 'error');
       verifyResetCodeBtn.disabled = false;
-      verifyResetCodeBtn.innerHTML = '<i class="fas fa-paper-plane mr-2 text-white"></i><span class="text-white">Send Code</span>';
-    }, 3000);
+      verifyResetCodeBtn.innerHTML = '<i class="fas fa-check-circle mr-2 text-blue-600"></i><span class="text-blue-600">Verify Code</span>';
+    });
+  }
+  
+  // Countdown functionality
+  let countdownInterval;
+  function startCountdown(seconds) {
+    let timeLeft = seconds;
+    
+    countdownInterval = setInterval(() => {
+      if (timeLeft <= 0) {
+        clearInterval(countdownInterval);
+        verifyResetCodeBtn.disabled = false;
+        verifyResetCodeBtn.innerHTML = '<i class="fas fa-paper-plane mr-2 text-blue-600"></i><span class="text-blue-600">Send Code</span>';
+        return;
+      }
+      
+      verifyResetCodeBtn.innerHTML = `<i class="fas fa-clock mr-2 text-blue-600"></i><span class="text-blue-600">Resend in ${timeLeft}s</span>`;
+      timeLeft--;
+    }, 1000);
+  }
+  
+  // Function to show password change modal
+  function showPasswordChangeModal() {
+    const passwordChangeModal = document.getElementById('passwordChangeModal');
+    passwordChangeModal.classList.add('show');
+    showPasswordProgressMessage('Ready to set your new password', 'info');
+  }
+
+  // Password Change Modal Functionality
+  const passwordChangeModal = document.getElementById('passwordChangeModal');
+  const closePasswordModal = document.getElementById('closePasswordModal');
+  const cancelPasswordBtn = document.getElementById('cancelPasswordBtn');
+  const savePasswordBtn = document.getElementById('savePasswordBtn');
+  const newPasswordInput = document.getElementById('newPassword');
+  const confirmPasswordInput = document.getElementById('confirmPassword');
+  const toggleNewPassword = document.getElementById('toggleNewPassword');
+  const toggleConfirmPassword = document.getElementById('toggleConfirmPassword');
+  const passwordProgressMessage = document.getElementById('passwordProgressMessage');
+  const passwordProgressText = document.getElementById('passwordProgressText');
+
+  // Close password modal functions
+  function closePasswordModalFunc() {
+    passwordChangeModal.classList.remove('show');
+    resetPasswordForm();
+  }
+
+  // Close modal on X button
+  closePasswordModal.addEventListener('click', closePasswordModalFunc);
+  
+  // Close modal on Cancel button
+  cancelPasswordBtn.addEventListener('click', closePasswordModalFunc);
+
+  // Close modal on window click (outside modal)
+  window.addEventListener('click', function(event) {
+    if (event.target === passwordChangeModal) {
+      closePasswordModalFunc();
+    }
   });
-</style>
+
+  // Reset password form function
+  function resetPasswordForm() {
+    newPasswordInput.value = '';
+    confirmPasswordInput.value = '';
+    passwordProgressMessage.style.display = 'none';
+    savePasswordBtn.disabled = false;
+    savePasswordBtn.innerHTML = '<i class="fas fa-save mr-2"></i>Save Password';
+  }
+
+  // Progress message function for password modal
+  function showPasswordProgressMessage(message, type) {
+    passwordProgressMessage.style.display = 'block';
+    passwordProgressMessage.className = `progress-message progress-${type}`;
+    passwordProgressText.textContent = message;
+    
+    // Update icon based on type
+    const icon = passwordProgressMessage.querySelector('i');
+    if (type === 'info') {
+      icon.className = 'fas fa-info-circle mr-2';
+    } else if (type === 'success') {
+      icon.className = 'fas fa-check-circle mr-2';
+    } else if (type === 'error') {
+      icon.className = 'fas fa-exclamation-circle mr-2';
+    }
+  }
+
+  // Password visibility toggle
+  toggleNewPassword.addEventListener('click', function() {
+    const type = newPasswordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+    newPasswordInput.setAttribute('type', type);
+    const icon = this.querySelector('i');
+    icon.classList.toggle('fa-eye');
+    icon.classList.toggle('fa-eye-slash');
+  });
+
+  toggleConfirmPassword.addEventListener('click', function() {
+    const type = confirmPasswordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+    confirmPasswordInput.setAttribute('type', type);
+    const icon = this.querySelector('i');
+    icon.classList.toggle('fa-eye');
+    icon.classList.toggle('fa-eye-slash');
+  });
+
+  // Save password functionality
+  savePasswordBtn.addEventListener('click', function() {
+    const newPassword = newPasswordInput.value.trim();
+    const confirmPassword = confirmPasswordInput.value.trim();
+
+    // Validate passwords
+    if (!newPassword || !confirmPassword) {
+      showPasswordProgressMessage('Both password fields are required', 'error');
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      showPasswordProgressMessage('Passwords do not match', 'error');
+      return;
+    }
+
+    if (newPassword.length < 8) {
+      showPasswordProgressMessage('Password must be at least 8 characters long', 'error');
+      return;
+    }
+
+    // Basic password strength validation
+    const hasUpper = /[A-Z]/.test(newPassword);
+    const hasLower = /[a-z]/.test(newPassword);
+    const hasNumber = /\d/.test(newPassword);
+
+    if (!hasUpper || !hasLower || !hasNumber) {
+      showPasswordProgressMessage('Password must contain uppercase, lowercase, and number', 'error');
+      return;
+    }
+
+    // Save password via AJAX
+    showPasswordProgressMessage('Saving your new password...', 'info');
+    savePasswordBtn.disabled = true;
+    savePasswordBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Saving...';
+
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+    fetch('/members/ajax/change-password-with-code/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'X-CSRFToken': csrfToken
+      },
+      body: `csrfmiddlewaretoken=${encodeURIComponent(csrfToken)}&new_password=${encodeURIComponent(newPassword)}&confirm_password=${encodeURIComponent(confirmPassword)}`
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        showPasswordProgressMessage(data.message, 'success');
+        setTimeout(() => {
+          closePasswordModalFunc();
+          // Show success message in main modal or redirect
+          alert('Password changed successfully! You can now use your new password to log in.');
+          location.reload(); // Refresh the page to show updated state
+        }, 2000);
+      } else {
+        showPasswordProgressMessage(data.error, 'error');
+        savePasswordBtn.disabled = false;
+        savePasswordBtn.innerHTML = '<i class="fas fa-save mr-2"></i>Save Password';
+      }
+    })
+    .catch(error => {
+      console.error('Error saving password:', error);
+      showPasswordProgressMessage('Failed to save password. Please try again.', 'error');
+      savePasswordBtn.disabled = false;
+      savePasswordBtn.innerHTML = '<i class="fas fa-save mr-2"></i>Save Password';
+    });
+  });
+});
+</script>
 {% endblock %}

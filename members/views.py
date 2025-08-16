@@ -6,10 +6,12 @@ import hashlib
 import json
 import logging
 import random
+import string
 from datetime import timedelta
 from django.core.exceptions import ValidationError
 
 from django.contrib.auth import password_validation
+from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth import update_session_auth_hash
 from django.conf import settings
 from django.shortcuts import render, redirect, get_object_or_404
@@ -37,6 +39,8 @@ from common.decorators import member_auth_required
 from customadmin.models import Contact, VCFFile
 from members.utils.email_otp import create_and_send_email_otp
 
+# Set up logging
+logger = logging.getLogger(__name__)
 
 # =================================================================
 # Categories in this file:
@@ -1462,6 +1466,179 @@ def vcf_table(request):
         'vcf_data': vcf_data
     })
 
+
+# -------------------------
+# Password Reset via Settings Modal
+# -------------------------
+
+@login_required
+@require_http_methods(["POST"])
+def ajax_send_reset_code(request):
+    """Send password reset code to user's authentication email"""
+    try:
+        user = request.user
+        
+        # Get user's authentication email
+        email = user.authentication_email or user.email
+        if not email:
+            return JsonResponse({
+                'success': False,
+                'error': 'No email address found for your account'
+            })
+        
+        # Generate 6-digit reset code
+        reset_code = ''.join(random.choices(string.digits, k=6))
+        
+        # Store reset code in cache with 15-minute expiry
+        cache_key = f"password_reset_{user.id}"
+        cache.set(cache_key, reset_code, 900)  # 15 minutes
+        
+        # Prepare email content
+        html_content = render_to_string('members/email/password_reset_email.html', {
+            'user': user,
+            'reset_code': reset_code
+        })
+        
+        # Send email
+        try:
+            send_mail(
+                subject='Password Reset Code - Litarch Contact Gain',
+                message='',  # Plain text version
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[email],
+                html_message=html_content,
+                fail_silently=False
+            )
+            
+            logger.info(f"Password reset code sent to user {user.id} at {email}")
+            
+            return JsonResponse({
+                'success': True,
+                'message': f'Reset code sent to {email[:3]}***@{email.split("@")[1]}',
+                'countdown': 900  # 15 minutes in seconds
+            })
+            
+        except Exception as e:
+            logger.error(f"Failed to send password reset email to {email}: {str(e)}")
+            return JsonResponse({
+                'success': False,
+                'error': 'Failed to send email. Please try again later.'
+            })
+            
+    except Exception as e:
+        logger.error(f"Error in ajax_send_reset_code: {str(e)}")
+        return JsonResponse({
+            'success': False,
+            'error': 'An unexpected error occurred'
+        })
+
+@login_required
+@require_http_methods(["POST"])
+def ajax_verify_reset_code(request):
+    """Verify the password reset code"""
+    try:
+        reset_code = request.POST.get('reset_code', '').strip()
+        
+        if not reset_code or len(reset_code) != 6:
+            return JsonResponse({
+                'success': False,
+                'error': 'Please enter a valid 6-digit code'
+            })
+        
+        # Get stored code from cache
+        cache_key = f"password_reset_{request.user.id}"
+        stored_code = cache.get(cache_key)
+        
+        if not stored_code:
+            return JsonResponse({
+                'success': False,
+                'error': 'Reset code has expired. Please request a new one.'
+            })
+        
+        if reset_code != stored_code:
+            return JsonResponse({
+                'success': False,
+                'error': 'Invalid reset code. Please check and try again.'
+            })
+        
+        # Code is valid - mark it as used and extend expiry for password change
+        cache.set(f"reset_verified_{request.user.id}", True, 300)  # 5 minutes to change password
+        cache.delete(cache_key)  # Remove the original code
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Code verified successfully! You can now set a new password.'
+        })
+        
+    except Exception as e:
+        logger.error(f"Error in ajax_verify_reset_code: {str(e)}")
+        return JsonResponse({
+            'success': False,
+            'error': 'An unexpected error occurred'
+        })
+
+@login_required
+@require_http_methods(["POST"])
+def ajax_change_password_with_code(request):
+    """Change password after code verification"""
+    try:
+        new_password = request.POST.get('new_password', '').strip()
+        confirm_password = request.POST.get('confirm_password', '').strip()
+        
+        # Check if code was verified
+        verification_key = f"reset_verified_{request.user.id}"
+        if not cache.get(verification_key):
+            return JsonResponse({
+                'success': False,
+                'error': 'Code verification expired. Please start the reset process again.'
+            })
+        
+        # Validate passwords
+        if not new_password or not confirm_password:
+            return JsonResponse({
+                'success': False,
+                'error': 'Both password fields are required'
+            })
+        
+        if new_password != confirm_password:
+            return JsonResponse({
+                'success': False,
+                'error': 'Passwords do not match'
+            })
+        
+        # Validate password strength
+        try:
+            validate_password(new_password, request.user)
+        except ValidationError as e:
+            return JsonResponse({
+                'success': False,
+                'error': '; '.join(e.messages)
+            })
+        
+        # Change password
+        user = request.user
+        user.set_password(new_password)
+        user.save()
+        
+        # Update session to prevent logout
+        update_session_auth_hash(request, user)
+        
+        # Clean up cache
+        cache.delete(verification_key)
+        
+        logger.info(f"Password successfully reset for user {user.id}")
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Password changed successfully!'
+        })
+        
+    except Exception as e:
+        logger.error(f"Error in ajax_change_password_with_code: {str(e)}")
+        return JsonResponse({
+            'success': False,
+            'error': 'An unexpected error occurred'
+        })
 # =================================================================
 # Password Reset Views
 # =================================================================
